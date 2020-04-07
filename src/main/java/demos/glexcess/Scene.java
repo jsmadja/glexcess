@@ -1,6 +1,6 @@
 package demos.glexcess;
 
-import net.java.games.jogl.GLDrawable;
+import com.jogamp.opengl.GLDrawable;
 
 /**
  * GLExcess v1.0 Demo

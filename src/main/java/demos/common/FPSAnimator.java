@@ -39,9 +39,9 @@
 
 package demos.common;
 
-import net.java.games.jogl.Animator;
-import net.java.games.jogl.GLDrawable;
-import net.java.games.jogl.GLException;
+import com.jogamp.opengl.GLDrawable;
+import com.jogamp.opengl.GLException;
+import com.jogamp.opengl.util.Animator;
 
 import java.util.Timer;
 import java.util.TimerTask;

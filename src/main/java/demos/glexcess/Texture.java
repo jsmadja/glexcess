@@ -1,8 +1,7 @@
 package demos.glexcess;
 
-import net.java.games.jogl.GL;
-import net.java.games.jogl.GLU;
-import net.java.games.jogl.util.BufferUtils;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.glu.GLU;
 
 import java.io.DataInputStream;
 import java.io.IOException;

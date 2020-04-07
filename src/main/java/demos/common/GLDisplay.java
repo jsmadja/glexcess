@@ -1,6 +1,10 @@
 package demos.common;
 
-import net.java.games.jogl.*;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLDrawable;
+import com.jogamp.opengl.GLDrawableFactory;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.awt.*;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,10 +1,10 @@
 package demos.glexcess;
 
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GLDrawable;
+import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.util.gl2.GLUT;
 import demos.common.ResourceRetriever;
-import net.java.games.jogl.GL;
-import net.java.games.jogl.GLDrawable;
-import net.java.games.jogl.GLU;
-import net.java.games.jogl.util.GLUT;
 
 import java.io.BufferedReader;
 import java.io.IOException;
