@@ -18,7 +18,7 @@ import demos.common.GLDisplay;
  * @author Paolo "Bustard" Martella
  * @author Pepijn Van Eeckhoudt
  */
-public final class GLXS {
+public class GLXS {
     public static void main(String[] args) {
         GLDisplay neheGLDisplay = GLDisplay.createGLDisplay("GLExcess");
         neheGLDisplay.setFrameRateLimitEnabled(false);

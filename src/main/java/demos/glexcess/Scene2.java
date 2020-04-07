@@ -1,11 +1,13 @@
 package demos.glexcess;
 
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GLDrawable;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.glu.gl2.GLUgl2;
 import demos.common.ResourceRetriever;
 
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.util.Random;
 
 /**
@@ -145,10 +147,10 @@ final class Scene2 implements Scene {
             }
     }
 
-    private void init(GLDrawable g) {
-        GL gl = g.getGL();
-        GLU glu = g.getGLU();
-        gl.glDisable(GL.GL_LIGHT0);
+    private void init(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
+        GLUgl2 glu = new GLUgl2();
+        gl.glDisable(GL2.GL_LIGHT0);
         a_time = 2.0f;
         a_gets = 0;
         gendep = 1.55f;
@@ -224,19 +226,19 @@ final class Scene2 implements Scene {
         camera[1] = 12.8f;
         camera[2] = 5;
 
-        gl.glMatrixMode(GL.GL_PROJECTION);
+        gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
-        glu.gluPerspective(45.0f, (float) g.getSize().width / (float) g.getSize().height, 0.1f, 100.0f);
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        glu.gluPerspective(45.0f, (float) g.getSurfaceWidth() / (float) g.getSurfaceHeight(), 0.1f, 100.0f);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
 
-        gl.glShadeModel(GL.GL_SMOOTH);
+        gl.glShadeModel(GL2.GL_SMOOTH);
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
         gl.glClearDepth(1.0f);
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-        gl.glEnable(GL.GL_DEPTH_TEST);
-        gl.glDepthFunc(GL.GL_LEQUAL);
-        gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
+        gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
+        gl.glEnable(GL2.GL_DEPTH_TEST);
+        gl.glDepthFunc(GL2.GL_LEQUAL);
+        gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
 
         a_Text = new Texture[numtexs];
         for (int i = 0; i < a_Text.length; i++) {
@@ -251,21 +253,21 @@ final class Scene2 implements Scene {
             throw new RuntimeException(e);
         }
 
-        gl.glEnable(GL.GL_LIGHTING);
-        gl.glEnable(GL.GL_LIGHT1);
+        gl.glEnable(GL2.GL_LIGHTING);
+        gl.glEnable(GL2.GL_LIGHT1);
 
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_DIFFUSE, a_LightDiffuse);
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT, a_LightAmbient);
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_SPECULAR, a_LightSpecular);
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, a_LightPosition);
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_DIFFUSE, FloatBuffer.wrap(a_LightDiffuse));
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_AMBIENT, FloatBuffer.wrap(a_LightAmbient));
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_SPECULAR, FloatBuffer.wrap(a_LightSpecular));
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, FloatBuffer.wrap(a_LightPosition));
 
-        gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, a_diffuse);
-        gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT, a_ambient);
-        gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, a_specular);
-        gl.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, 10.0f);
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, FloatBuffer.wrap(a_diffuse));
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, FloatBuffer.wrap(a_ambient));
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, FloatBuffer.wrap(a_specular));
+        gl.glMaterialf(GL2.GL_FRONT, GL2.GL_SHININESS, 10.0f);
 
-        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
-        gl.glEnable(GL.GL_TEXTURE_2D);
+        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+        gl.glEnable(GL2.GL_TEXTURE_2D);
         for (int a_x = 0; a_x < size; a_x++) {
             for (int a_y = 0; a_y < size; a_y++) {
                 a_points[a_x][a_y][0] = a_x / (1.25f * size / 32);
@@ -290,15 +292,15 @@ final class Scene2 implements Scene {
         }
 
         a_mod = 1.0f;
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-        gl.glEnable(GL.GL_BLEND);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+        gl.glEnable(GL2.GL_BLEND);
 
-        gl.glDisable(GL.GL_DEPTH_TEST);
+        gl.glDisable(GL2.GL_DEPTH_TEST);
         a_setpart();
     }
 
-    public final void clean(GLDrawable g) {
-        GL gl = g.getGL();
+    public final void clean(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
         a_Text[1].kill(gl);
         a_Text[2].kill(gl);
         a_Text[3].kill(gl);
@@ -312,8 +314,8 @@ final class Scene2 implements Scene {
             parts[a].time = time;
     }
 
-    private static void a_drawquad(GL gl, float size) {
-        gl.glBegin(GL.GL_QUADS);
+    private static void a_drawquad(GL2 gl, float size) {
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex3f(-.5f * size, -.5f * size, 0);
         gl.glTexCoord2f(1.0f, 0.0f);
@@ -345,13 +347,13 @@ final class Scene2 implements Scene {
 
     }
 
-    public final boolean drawScene(GLDrawable g, float globtime) {
+    public final boolean drawScene(GLAutoDrawable g, float globtime) {
         if (init) {
             init(g);
             init = false;
         }
 
-        GL gl = g.getGL();
+        GL2 gl = g.getGL().getGL2();
 
         a_time = 2.0f + globtime * .01f;
         // MOTION
@@ -370,32 +372,32 @@ final class Scene2 implements Scene {
 
         if (a_mod > 0.5f) a_mod = 1.0f - .03f * (a_time - a_gets); else a_mod = .5f - 0.015f * (a_time - a_gets);
         if (a_mod < 0.0f) a_mod = 0.0f;
-        gl.glDisable(GL.GL_TEXTURE_2D);
+        gl.glDisable(GL2.GL_TEXTURE_2D);
         gl.glLoadIdentity();
         gl.glTranslatef(0, 0, -5);
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
         if (a_zeta > -20.0f)
             gl.glColor4f(0, 0, 0, -(a_zeta + 20.0f) / 40.0f + .25f);
         else
             gl.glColor4f(0, 0, 0, .25f);
-        gl.glDisable(GL.GL_LIGHTING);
-        gl.glEnable(GL.GL_BLEND);
+        gl.glDisable(GL2.GL_LIGHTING);
+        gl.glEnable(GL2.GL_BLEND);
         a_drawquad(gl, 6);
         if (first)//a_time<3.01f)
         {
-            gl.glDisable(GL.GL_BLEND);
+            gl.glDisable(GL2.GL_BLEND);
             gl.glColor4ub((byte)255, (byte)255, (byte)255, (byte)255);
             a_drawquad(gl, 6);
-            gl.glEnable(GL.GL_BLEND);
+            gl.glEnable(GL2.GL_BLEND);
             first = false;
         }
         if (a_time > 95.0f) {
             gl.glColor4f(1.0f, 1.0f, 1.0f, (a_time - 95.0f) / 1.5f);
             a_drawquad(gl, 6);
         }
-        gl.glEnable(GL.GL_TEXTURE_2D);
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-        gl.glEnable(GL.GL_LIGHTING);
+        gl.glEnable(GL2.GL_TEXTURE_2D);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+        gl.glEnable(GL2.GL_LIGHTING);
         gl.glLoadIdentity();
         if (a_time > 30.0)
             gl.glTranslatef(0.0f, 1.5f, a_zeta);
@@ -458,12 +460,12 @@ final class Scene2 implements Scene {
         if (a_time > 34.0f) quantos = 2.0f + (a_time - 34.0f) / 1.5f;
 
         a_Text[1].use(gl);
-        gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, a_diffuse);
-        gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT, a_ambient);
-        gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, a_specular);
-        gl.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, 10.0f);
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, FloatBuffer.wrap(a_diffuse));
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, FloatBuffer.wrap(a_ambient));
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, FloatBuffer.wrap(a_specular));
+        gl.glMaterialf(GL2.GL_FRONT, GL2.GL_SHININESS, 10.0f);
         gl.glPushMatrix();
-        //glDisable(GL.GL_LIGHTING);
+        //glDisable(GL2.GL_LIGHTING);
         gl.glScalef(-1, -1, 1);
         gl.glColor4f(1, 1, 1, 1);
 
@@ -475,12 +477,12 @@ final class Scene2 implements Scene {
         for (int cc = 0; cc < 1; cc++) {
             if ((cc % 2) == 0) {
                 gl.glScalef(1, -1, 1);
-                gl.glFrontFace(GL.GL_CCW);
+                gl.glFrontFace(GL2.GL_CCW);
             } else {
                 gl.glScalef(-1, 1, 1);
-                gl.glFrontFace(GL.GL_CW);
+                gl.glFrontFace(GL2.GL_CW);
             }
-            gl.glBegin(GL.GL_QUADS);
+            gl.glBegin(GL2.GL_QUADS);
             for (a_x = 0; a_x < size - 1; a_x++) {
                 if (true)//a_x%2==0)
                 {
@@ -520,9 +522,9 @@ final class Scene2 implements Scene {
             gl.glEnd();
         }
         gl.glPushMatrix();
-        gl.glDisable(GL.GL_DEPTH_TEST);
+        gl.glDisable(GL2.GL_DEPTH_TEST);
         gl.glPopMatrix();
-        gl.glDisable(GL.GL_LIGHTING);
+        gl.glDisable(GL2.GL_LIGHTING);
         a_Text[4].use(gl);
         a_counter = a_time * 10.0f;
 
@@ -576,9 +578,9 @@ final class Scene2 implements Scene {
         a_LightPosition[0] = 0;//a_Sinus[0];//10.0f*(float)Math.sin(a_counter*4.0f*3.14f/360.0f);
         a_LightPosition[1] = 0;//a_Sinus[1];//0.0f+10.0f*(float)Math.sin(a_counter*2*3.14/360.0);
         a_LightPosition[2] = 0;//a_Sinus[2];//3.0f-2.5f*(float)Math.cos(a_counter*8.0f*3.14f/360.0f);
-        gl.glEnable(GL.GL_LIGHTING);
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, a_LightPosition);
-        gl.glDisable(GL.GL_LIGHTING);
+        gl.glEnable(GL2.GL_LIGHTING);
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, FloatBuffer.wrap(a_LightPosition));
+        gl.glDisable(GL2.GL_LIGHTING);
         a_Text[2].use(gl);
         a_drawquad(gl, 1.0f + (float) Math.sin(a_counter * 12.0f * 3.1415f / 360.0f) + 3.1415f / 2.0f);
         a_Text[3].use(gl);
@@ -590,8 +592,8 @@ final class Scene2 implements Scene {
 	a_LightPosition[1]=0.0f+10.0f*(float)Math.sin(a_counter*2*3.14/360.0);
 	a_LightPosition[2]=3.0f-2.5f*(float)Math.cos(a_counter*8.0f*3.14f/360.0f);
 //	glTranslatef(a_LightPosition[0],a_LightPosition[1],a_LightPosition[2]);
-	glEnable(GL.GL_LIGHTING);
-	glLightfv(GL.GL_LIGHT1,GL.GL_POSITION,a_LightPosition);
+	glEnable(GL2.GL_LIGHTING);
+	glLightfv(GL2.GL_LIGHT1,GL2.GL_POSITION,a_LightPosition);
 	*/
 
 //	a_time=2.0f+(1)/500.0f;//************************************

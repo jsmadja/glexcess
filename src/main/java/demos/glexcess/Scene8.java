@@ -1,8 +1,10 @@
 package demos.glexcess;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GLDrawable;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.glu.gl2.GLUgl2;
 import com.jogamp.opengl.util.gl2.GLUT;
 import demos.common.ResourceRetriever;
 
@@ -83,8 +85,8 @@ final class Scene8 implements Scene {
 
     private final GLUT glut = new GLUT();
 
-    public final void clean(GLDrawable g) {
-        GL gl = g.getGL();
+    public final void clean(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
         g_Text[0].kill(gl);
         g_Text[1].kill(gl);
         g_Text[2].kill(gl);
@@ -105,8 +107,8 @@ final class Scene8 implements Scene {
         init = true;
     }
 
-    private static void g_drawquad(GL gl, float size) {
-        gl.glBegin(GL.GL_QUADS);
+    private static void g_drawquad(GL2 gl, float size) {
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex3f(-.5f * size, -.5f * size, 0);
         gl.glTexCoord2f(1.0f, 0.0f);
@@ -118,8 +120,8 @@ final class Scene8 implements Scene {
         gl.glEnd();
     }
 
-    private static void g_drawquadr(GL gl, float size) {
-        gl.glBegin(GL.GL_QUADS);
+    private static void g_drawquadr(GL2 gl, float size) {
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(0.0f, 1.0f);
         gl.glVertex3f(-.5f * size, -.5f * size, 0);
         gl.glTexCoord2f(1.0f, 1.0f);
@@ -151,9 +153,9 @@ final class Scene8 implements Scene {
     }
 
 
-    private void init(GLDrawable g) {
-        GL gl = g.getGL();
-        GLU glu = g.getGLU();
+    private void init(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
+        GLUgl2 glu = new GLUgl2();
 
         g_Text = new Texture[numtexs];
         limit = 0;
@@ -174,12 +176,12 @@ final class Scene8 implements Scene {
         g_ext = 10.0f;
         playjet = true;
         //jet=FSOUND_Sample_LoadMpeg(FSOUND_FREE,"data/jet.mp3",FSOUND_NORMAL);
-        gl.glMatrixMode(GL.GL_PROJECTION);
+        gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
-        glu.gluPerspective(45.0f, (float) g.getSize().width / (float) g.getSize().height, 0.1f, 40.0f);
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        glu.gluPerspective(45.0f, (float) g.getSurfaceWidth() / (float) g.getSurfaceHeight(), 0.1f, 40.0f);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
-        gl.glDisable(GL.GL_FOG);
+        gl.glDisable(GL2.GL_FOG);
 
         for (int i = 0; i < g_Text.length; i++) {
             g_Text[i] = new Texture();
@@ -206,20 +208,20 @@ final class Scene8 implements Scene {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
-        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+        gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_REPEAT);
+        gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_REPEAT);
 
-        gl.glShadeModel(GL.GL_FLAT);
+        gl.glShadeModel(GL2.GL_FLAT);
         gl.glClearColor(1.0f, 1.0f, 1.0f, 0.5f);
         gl.glClearColor(.4862f, .4352f, .2627f, 0.5f);
         gl.glClearColor(0, 0, 0, 0.5f);
         gl.glClearDepth(1.0f);
-        gl.glEnable(GL.GL_DEPTH_TEST);
-        gl.glDepthFunc(GL.GL_LEQUAL);
-        gl.glEnable(GL.GL_CULL_FACE);
-        gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
-        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
-        gl.glFrontFace(GL.GL_CCW);
+        gl.glEnable(GL2.GL_DEPTH_TEST);
+        gl.glDepthFunc(GL2.GL_LEQUAL);
+        gl.glEnable(GL2.GL_CULL_FACE);
+        gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
+        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+        gl.glFrontFace(GL2.GL_CCW);
 
         for (int x = 0; x < 64; x++) {
             for (int y = 0; y < 63; y++) {
@@ -242,27 +244,27 @@ final class Scene8 implements Scene {
             g_rst1(x);
         }
 
-        gl.glEnable(GL.GL_TEXTURE_GEN_S);
-        gl.glEnable(GL.GL_TEXTURE_GEN_T);
+        gl.glEnable(GL2.GL_TEXTURE_GEN_S);
+        gl.glEnable(GL2.GL_TEXTURE_GEN_T);
 
-        gl.glTexGeni(GL.GL_T, GL.GL_TEXTURE_GEN_MODE, GL.GL_EYE_LINEAR);
-        gl.glTexGeni(GL.GL_S, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
+        gl.glTexGeni(GL2.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_EYE_LINEAR);
+        gl.glTexGeni(GL2.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
 
-        gl.glEnable(GL.GL_TEXTURE_2D);
-        gl.glDisable(GL.GL_BLEND);
+        gl.glEnable(GL2.GL_TEXTURE_2D);
+        gl.glDisable(GL2.GL_BLEND);
         g_zeta = 66.0f + 45.0f * ((((float) g_gettime)) / 13000.0f) * ((((float) g_gettime)) / 13000.0f);
         g_rota = -.3f + ((float) (g_gettime - limit)) / 2500.0f;
         g_rot = 1.5f + (g_zeta - 1.0f) / 15.0f;
     }
 
-    public final boolean drawScene(GLDrawable g, float globtime) {
+    public final boolean drawScene(GLAutoDrawable g, float globtime) {
         if (init) {
             init(g);
             init = false;
         }
 
-        GL gl = g.getGL();
-        GLU glu = g.getGLU();
+        GL2 gl = g.getGL().getGL2();
+        GLUgl2 glu = new GLUgl2();
 
         g_time = 5 * globtime;
 
@@ -275,7 +277,7 @@ final class Scene8 implements Scene {
             //g_rota=-0.5f;
         }
 //	if (g_rota<0.0f) gl.glClearColor(-g_rota,-g_rota,-g_rota,1);
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+        gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
         gl.glColor4f(1, 1, 1, 1);
         gl.glLoadIdentity();
@@ -286,24 +288,24 @@ final class Scene8 implements Scene {
         //gluLookAt(16,0,.05,16,16,0,0,1,0);
         glu.gluLookAt(16, 0, .05, 16, 16, 0, 0, 1, 0);
         //glRotatef(45,1,0,0);
-        glut.glutSolidSphere(glu, 0, 10, 10);
+        glut.glutSolidSphere(0, 10, 10);
 
-        //glBindTexture(GL.GL_TEXTURE_2D, g_Text[ure[0]);
+        //glBindTexture(GL2.GL_TEXTURE_2D, g_Text[ure[0]);
         if (g_scene == 0)
             g_Text[1].use(gl);
         else if (g_scene == 1)
             g_Text[11].use(gl);
         else
             g_Text[13].use(gl);
-        gl.glEnable(GL.GL_TEXTURE_GEN_S);
-        gl.glEnable(GL.GL_TEXTURE_GEN_T);
+        gl.glEnable(GL2.GL_TEXTURE_GEN_S);
+        gl.glEnable(GL2.GL_TEXTURE_GEN_T);
         if (((int) g_zeta) / 64 == g_c) {
             if ((g_c % 2) == 0) g_b++; else g_a++;
             g_c++;
         }
         gl.glPushMatrix();
         gl.glTranslatef(-5, (126 * g_a), 0);
-        gl.glBegin(GL.GL_QUADS);
+        gl.glBegin(GL2.GL_QUADS);
         for (g_gx = 0; g_gx < 63; g_gx++) {
             for (g_gy = 0; g_gy < 63; g_gy++) {
                 gl.glVertex3f( (float)(g_gx) / 1.5f, (float)(g_gy), g_points[g_gx][g_gy]);
@@ -315,7 +317,7 @@ final class Scene8 implements Scene {
         gl.glEnd();
         gl.glPopMatrix();
         gl.glTranslatef(-5, 63 + (126 * g_b), 0);
-        gl.glBegin(GL.GL_QUADS);
+        gl.glBegin(GL2.GL_QUADS);
         for (g_gx = 0; g_gx < 63; g_gx++) {
             for (g_gy = 0; g_gy < 63; g_gy++) {
                 gl.glVertex3f( (float)(g_gx) / 1.5f, (float)(g_gy), g_points[g_gx][g_gy]);
@@ -325,28 +327,28 @@ final class Scene8 implements Scene {
             }
         }
         gl.glEnd();
-        //glDisable(GL.GL_FOG);
+        //glDisable(GL2.GL_FOG);
         gl.glLoadIdentity();
 
         gl.glTranslatef(0, -3, -40);
-        gl.glDisable(GL.GL_CULL_FACE);
+        gl.glDisable(GL2.GL_CULL_FACE);
 
-        //glBindTexture(GL.GL_TEXTURE_2D, g_Text[ure[0]);
+        //glBindTexture(GL2.GL_TEXTURE_2D, g_Text[ure[0]);
         if (g_scene == 0)
             g_Text[2].use(gl);
         else if (g_scene == 1)
             g_Text[12].use(gl);
         else
             g_Text[14].use(gl);
-        gl.glDisable(GL.GL_TEXTURE_GEN_S);
-        gl.glDisable(GL.GL_TEXTURE_GEN_T);
+        gl.glDisable(GL2.GL_TEXTURE_GEN_S);
+        gl.glDisable(GL2.GL_TEXTURE_GEN_T);
 
         gl.glRotatef(g_rot, 1, 0, 0);
         //glTranslatef(-8+g_rot/2,9+g_rot/2,0);
         gl.glTranslatef(-0, 8.8f + g_rot / 5, 0);
         //glScalef(30,8+g_rot/2,1);
         gl.glScalef(22.1f, 8.8f + g_rot / 5, 1);
-        gl.glBegin(GL.GL_QUADS);
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2d(0, 1);
         gl.glVertex3f(-1.0f, -1.0f, 0.0f);
         gl.glTexCoord2d(1, 1);
@@ -358,15 +360,15 @@ final class Scene8 implements Scene {
         gl.glEnd();
         for (g_gy = 0; g_gy < 64; g_gy++) for (g_gx = 0; g_gx < 64; g_gx++) g_points[g_gx][g_gy] = .025f * (float)Math.sin(g_speed[g_gx][g_gy] * g_rota + g_phase[g_gx][g_gy]);
 
-        gl.glEnable(GL.GL_BLEND);
-        gl.glDisable(GL.GL_DEPTH_TEST);
+        gl.glEnable(GL2.GL_BLEND);
+        gl.glDisable(GL2.GL_DEPTH_TEST);
         g_Text[10].use(gl);
-        gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
-        gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
+        gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
+        gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP);
         if (g_scene != 2)
-            gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+            gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
         else
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
         gl.glLoadIdentity();
         if (g_scene == 0)
             gl.glTranslatef(.15f, -.11f, -1.0f);//MOON
@@ -382,15 +384,15 @@ final class Scene8 implements Scene {
             gl.glScalef(2.5f, .05f, 1);
         gl.glColor4f(1, 1, 1, 1);
         g_drawquadr(gl, 1);
-        gl.glDisable(GL.GL_BLEND);
-        gl.glEnable(GL.GL_DEPTH_TEST);
+        gl.glDisable(GL2.GL_BLEND);
+        gl.glEnable(GL2.GL_DEPTH_TEST);
 
 
         g_rota = -.3f + ((float) (g_gettime - limit)) / 2500.0f;
         g_rot = 1.5f + (g_zeta - 1.0f) / 15.0f;
         //else if (!g_scene) g_rot=1.5f+(g_zeta-1.0f)/15.0f;
 
-        gl.glEnable(GL.GL_CULL_FACE);
+        gl.glEnable(GL2.GL_CULL_FACE);
         if ((g_radius > -6.0f) && (g_radius < 3.0f)) {
             gl.glLoadIdentity();
             gl.glTranslatef(-4, 1, -5);
@@ -401,34 +403,34 @@ final class Scene8 implements Scene {
             gl.glTranslatef(2 * (float)Math.cos(g_radius), .5f * (float)Math.sin(g_radius), -g_radius * 1.5f);
 
             gl.glRotatef(45 + g_radius * 15, 0, 0, 1);
-            gl.glEnable(GL.GL_BLEND);
-            gl.glBlendFunc(GL.GL_DST_COLOR, GL.GL_ZERO);
-            //glBindTexture(GL.GL_TEXTURE_2D, g_Text[ure[3]);
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glBlendFunc(GL2.GL_DST_COLOR, GL2.GL_ZERO);
+            //glBindTexture(GL2.GL_TEXTURE_2D, g_Text[ure[3]);
             g_Text[4].use(gl);
             g_drawquad(gl, 1);
 
-            gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE);
-            //glBindTexture(GL.GL_TEXTURE_2D, g_Text[ure[2]);
+            gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE);
+            //glBindTexture(GL2.GL_TEXTURE_2D, g_Text[ure[2]);
             g_Text[3].use(gl);
             g_drawquad(gl, 1);
 
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);/////////////////////////////////////////
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);/////////////////////////////////////////
             gl.glColor4f(1.0f, 1.0f, 1.0f, g_litetop);
-            //glBindTexture(GL.GL_TEXTURE_2D, g_Text[ure[6]);
+            //glBindTexture(GL2.GL_TEXTURE_2D, g_Text[ure[6]);
             g_Text[7].use(gl);
             g_drawquad(gl, 1);////////////////////////////////////////////
             g_litetop -= .05f;
             if (g_litetop < 0) g_litetop = 1.0f;
 
             gl.glColor4f(.10f, .75f, .25f, g_liteleft);
-            //glBindTexture(GL.GL_TEXTURE_2D, g_Text[ure[7]);
+            //glBindTexture(GL2.GL_TEXTURE_2D, g_Text[ure[7]);
             g_Text[8].use(gl);
             g_drawquad(gl, 1);////////////////////////////////////////////
             g_liteleft -= .25f;
             if (g_liteleft < -2) g_liteleft = 1.0f;
 
             gl.glColor4f(1.0f, .25f, .25f, g_liteleft);
-            //glBindTexture(GL.GL_TEXTURE_2D, g_Text[ure[8]);
+            //glBindTexture(GL2.GL_TEXTURE_2D, g_Text[ure[8]);
             g_Text[9].use(gl);
             g_drawquad(gl, 1);////////////////////////////////////////////
             g_literite -= .1f;
@@ -442,12 +444,12 @@ final class Scene8 implements Scene {
 
             gl.glRotatef(-45, 0, 0, 1);
 
-            gl.glEnable(GL.GL_TEXTURE_2D);
-            //glBindTexture(GL.GL_TEXTURE_2D, g_Text[ure[4]);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
+            //glBindTexture(GL2.GL_TEXTURE_2D, g_Text[ure[4]);
             g_Text[5].use(gl);
-            //glDisable(GL.GL_FOG);
+            //glDisable(GL2.GL_FOG);
 
-            gl.glDisable(GL.GL_DEPTH_TEST);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
 
             gl.glLoadIdentity();
             if (g_radius < 0.0f)
@@ -476,7 +478,7 @@ final class Scene8 implements Scene {
                     else
                         gl.glRotatef(5 - 12.5f * g_radius, 0, 1, 0);
                     gl.glRotatef(-20 - g_radius * 20, 1, 0, 0);
-                    //glBindTexture(GL.GL_TEXTURE_2D, g_Text[ure[5]);
+                    //glBindTexture(GL2.GL_TEXTURE_2D, g_Text[ure[5]);
                     g_Text[6].use(gl);
                     gl.glScalef(.35f, .7f, 1);
                     gl.glRotatef(-g_radius * 50, 0, 0, 1);
@@ -498,17 +500,17 @@ final class Scene8 implements Scene {
             gl.glLoadIdentity();
             gl.glTranslatef(-3 + 2 * (float)Math.cos(g_radius * 1.25), -1, -2 - 2 * g_radius);
             gl.glColor4f(.2f, .2f, .2f, .5f);
-            gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+            gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
             gl.glRotatef(-90, 1, 0, 0);
-            //glBindTexture(GL.GL_TEXTURE_2D, g_Text[ure[4]);
+            //glBindTexture(GL2.GL_TEXTURE_2D, g_Text[ure[4]);
             g_Text[5].use(gl);
             gl.glRotatef(25 * g_radius, 0, 0, 1);
             gl.glScalef(1, 3, 1);
             g_drawquad(gl, 1);
         }
-        gl.glDisable(GL.GL_BLEND);
-        gl.glEnable(GL.GL_TEXTURE_2D);
-        gl.glEnable(GL.GL_DEPTH_TEST);
+        gl.glDisable(GL2.GL_BLEND);
+        gl.glEnable(GL2.GL_TEXTURE_2D);
+        gl.glEnable(GL2.GL_DEPTH_TEST);
         if (g_scene == 0)
             g_zeta = 66.0f + 45.0f * ((((float) g_gettime - limit)) / 13000.0f) * ((((float) g_gettime - limit)) / 13000.0f);
         else if (g_scene == 1)
@@ -520,11 +522,11 @@ final class Scene8 implements Scene {
 
         if ((g_scene == 2) && (g_radius < 3)) g_radius = -6.0f + (g_zeta - 20.0f) * (g_zeta - 20.0f) / 2000.0f;
 
-        gl.glEnable(GL.GL_BLEND);
-        gl.glDisable(GL.GL_DEPTH_TEST);
+        gl.glEnable(GL2.GL_BLEND);
+        gl.glDisable(GL2.GL_DEPTH_TEST);
 
         g_Text[0].use(gl);
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
         gl.glLoadIdentity();
 
         if (g_scene == 0)
@@ -597,7 +599,7 @@ final class Scene8 implements Scene {
             gl.glTranslatef(.2f + g_rota / 1000.0f, .185f + g_rota / 1100.0f, -1.0f);
             gl.glColor4f(1, 1, 1, .5f);
             g_drawquad(gl, .2f + .05f * (float)Math.sin(cips));
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_COLOR);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_COLOR);
             gl.glColor4f(1, 1, 1, 1);
             g_Text[17].use(gl);
             g_drawquad(gl, .08f);
@@ -627,17 +629,17 @@ final class Scene8 implements Scene {
             g_drawquad(gl, .3f);//+.1*(float)Math.cos(cips)*(float)Math.cos(cips));
         }
 
-        gl.glEnable(GL.GL_BLEND);
-        gl.glDisable(GL.GL_DEPTH_TEST);
+        gl.glEnable(GL2.GL_BLEND);
+        gl.glDisable(GL2.GL_DEPTH_TEST);
         if ((g_rota < 1.0f) ||
                 ((g_rota > 9.2f) && (g_scene == 0)) ||
                 ((g_rota > 5.7f) && (g_scene == 1)) ||
                 ((g_rota > 4.0f) && (g_scene == 2))
         ) {
             if ((g_scene == 0) && (g_rota < 1.0f))
-                gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_ALPHA);
+                gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_ALPHA);
             else
-                gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+                gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -.9f);
             if (g_rota < 0)
@@ -646,13 +648,13 @@ final class Scene8 implements Scene {
             if (g_rota > 9.2) gl.glColor4f(1, 1, 1, .5f * (1.0f + (float)Math.cos(-3.1415f + (g_rota - 9.2f) * 4.0f * 3.1415f)));
             if ((g_scene == 1) && (g_rota > 5.7f)) gl.glColor4f(1, 1, 1, .5f * (1.0f + (float)Math.cos(-3.1415f + (g_rota - 5.7f) * 4.0f * 3.1415f)));
             if ((g_scene == 2) && (g_rota > 4.0f)) gl.glColor4f(1, 1, 1, .5f * (1.0f + (float)Math.cos(-3.1415f + (g_rota - 4.0f) * 3.1415f)));
-            gl.glDisable(GL.GL_TEXTURE_2D);
+            gl.glDisable(GL2.GL_TEXTURE_2D);
             gl.glScalef(1.1f, .8f, 1);
             g_drawquad(gl, 1);
-            gl.glEnable(GL.GL_TEXTURE_2D);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
         }
-        //glEnable(GL.GL_DEPTH_TEST);
-        gl.glDisable(GL.GL_BLEND);
+        //glEnable(GL2.GL_DEPTH_TEST);
+        gl.glDisable(GL2.GL_BLEND);
         if ((g_scene == 2) && (g_rota > 1.6) && (playjet)) {
             playjet = false;
 //		FSOUND_PlaySound(FSOUND_FREE, jet);

@@ -1,14 +1,28 @@
 package demos.common;
 
+import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
-import com.jogamp.opengl.GLDrawable;
-import com.jogamp.opengl.GLDrawableFactory;
 import com.jogamp.opengl.GLEventListener;
-import com.jogamp.opengl.awt.*;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.awt.GLCanvas;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.DisplayMode;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -52,7 +66,7 @@ public class GLDisplay {
     }
 
     private GLDisplay(String title, int width, int height, boolean fullscreen) {
-        glCanvas = GLDrawableFactory.getFactory().createGLCanvas(new GLCapabilities());
+        glCanvas = new GLCanvas(new GLCapabilities(GLProfile.getDefault()));
         glCanvas.setSize(width, height);
         glCanvas.setIgnoreRepaint(true);
         glCanvas.addGLEventListener(helpOverlayGLEventListener);
@@ -274,7 +288,7 @@ public class GLDisplay {
             eventListeners.remove(glEventListener);
         }
 
-        public void display(GLDrawable glDrawable) {
+        public void display(GLAutoDrawable glDrawable) {
             for (int i = 0; i < eventListeners.size(); i++) {
                 ((GLEventListener) eventListeners.get(i)).display(glDrawable);
             }
@@ -282,19 +296,27 @@ public class GLDisplay {
                 helpOverlay.display(glDrawable);
         }
 
+        // TODO
+        /*
         public void displayChanged(GLDrawable glDrawable, boolean b, boolean b1) {
             for (int i = 0; i < eventListeners.size(); i++) {
                 ((GLEventListener) eventListeners.get(i)).displayChanged(glDrawable, b, b1);
             }
         }
+        */
 
-        public void init(GLDrawable glDrawable) {
+        public void init(GLAutoDrawable glDrawable) {
             for (int i = 0; i < eventListeners.size(); i++) {
                 ((GLEventListener) eventListeners.get(i)).init(glDrawable);
             }
         }
 
-        public void reshape(GLDrawable glDrawable, int i0, int i1, int i2, int i3) {
+        @Override
+        public void dispose(GLAutoDrawable glAutoDrawable) {
+            // TODO
+        }
+
+        public void reshape(GLAutoDrawable glDrawable, int i0, int i1, int i2, int i3) {
             for (int i = 0; i < eventListeners.size(); i++) {
                 ((GLEventListener) eventListeners.get(i)).reshape(glDrawable, i0, i1, i2, i3);
             }

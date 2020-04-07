@@ -1,8 +1,10 @@
 package demos.glexcess;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GLDrawable;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.glu.gl2.GLUgl2;
 import demos.common.ResourceRetriever;
 
 import java.io.DataInputStream;
@@ -41,7 +43,7 @@ final class Scene3 implements Scene {
     private int face;
     private final int facesize = 128;
 
-    private void dolist(GL gl) {
+    private void dolist(GL2 gl) {
         b_points = new float[facesize][facesize][3];
         for (int a = 0; a < facesize; a++) {
             for (int b = 0; b < facesize; b++) {
@@ -78,8 +80,8 @@ final class Scene3 implements Scene {
         }
 
         face = gl.glGenLists(1);
-        gl.glNewList(face, GL.GL_COMPILE);
-        gl.glBegin(GL.GL_QUADS);
+        gl.glNewList(face, GL2.GL_COMPILE);
+        gl.glBegin(GL2.GL_QUADS);
         for (int x = 0; x < 127; x++) {
             for (int y = 0; y < 127; y++) {
                 float float_x = x / 127.0f;
@@ -104,19 +106,19 @@ final class Scene3 implements Scene {
         gl.glEndList();
     }
 
-    private void init(GLDrawable g) {
+    private void init(GLAutoDrawable g) {
         b_zeta = -10.2f;
         b_count = 0;
         b_switch = true;
         flag = true;
         b_switch2 = true;
 
-        GL gl = g.getGL();
-        GLU glu = g.getGLU();
-        gl.glMatrixMode(GL.GL_PROJECTION);
+        GL2 gl = g.getGL().getGL2();
+        GLUgl2 glu = new GLUgl2();
+        gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
-        glu.gluPerspective(45.0f, (float) g.getSize().getWidth() / (float) g.getSize().getWidth(), 0.1f, 100.0f);
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        glu.gluPerspective(45.0f, (float) g.getSurfaceWidth() / (float) g.getSurfaceWidth(), 0.1f, 100.0f);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
 
         b_Text = new Texture[numtexs];
@@ -144,27 +146,27 @@ final class Scene3 implements Scene {
             throw new RuntimeException(e);
         }
 
-        gl.glFogf(GL.GL_FOG_MODE, GL.GL_LINEAR);
-        gl.glFogf(GL.GL_FOG_START, 40.0f);
-        gl.glFogf(GL.GL_FOG_END, 55.0f);
-        gl.glFogf(GL.GL_FOG_DENSITY, 0.175f);
-        gl.glShadeModel(GL.GL_FLAT);
+        gl.glFogf(GL2.GL_FOG_MODE, GL2.GL_LINEAR);
+        gl.glFogf(GL2.GL_FOG_START, 40.0f);
+        gl.glFogf(GL2.GL_FOG_END, 55.0f);
+        gl.glFogf(GL2.GL_FOG_DENSITY, 0.175f);
+        gl.glShadeModel(GL2.GL_FLAT);
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
         gl.glClearDepth(1.0f);
-        gl.glEnable(GL.GL_DEPTH_TEST);
-        gl.glDepthFunc(GL.GL_LEQUAL);
-        gl.glEnable(GL.GL_CULL_FACE);
-        gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
-        gl.glPolygonMode(GL.GL_FRONT, GL.GL_FILL);
-        gl.glEnable(GL.GL_TEXTURE_2D);
-        gl.glFrontFace(GL.GL_CW);
+        gl.glEnable(GL2.GL_DEPTH_TEST);
+        gl.glDepthFunc(GL2.GL_LEQUAL);
+        gl.glEnable(GL2.GL_CULL_FACE);
+        gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
+        gl.glPolygonMode(GL2.GL_FRONT, GL2.GL_FILL);
+        gl.glEnable(GL2.GL_TEXTURE_2D);
+        gl.glFrontFace(GL2.GL_CW);
 
-        gl.glDisable(GL.GL_LIGHTING);
+        gl.glDisable(GL2.GL_LIGHTING);
         dolist(gl);
     }
 
-    public final void clean(GLDrawable g) {
-        GL gl = g.getGL();
+    public final void clean(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
         b_Text[1].kill(gl);
         b_Text[2].kill(gl);
         b_Text[3].kill(gl);
@@ -184,8 +186,8 @@ final class Scene3 implements Scene {
         init = true;
     }
 
-    private static void b_drawrect(GL gl, float b, float h) {
-        gl.glBegin(GL.GL_QUADS);
+    private static void b_drawrect(GL2 gl, float b, float h) {
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex3f(-b / 2, -h / 2, 0.0f);
         gl.glTexCoord2f(1.0f, 0.0f);
@@ -197,14 +199,14 @@ final class Scene3 implements Scene {
         gl.glEnd();
     }
 
-    public final boolean drawScene(GLDrawable g, float globtime) {
+    public final boolean drawScene(GLAutoDrawable g, float globtime) {
         if (init) {
             init(g);
             init = false;
         }
 
-        GL gl = g.getGL();
-        GLU glu = g.getGLU();
+        GL2 gl = g.getGL().getGL2();
+        GLU glu = new GLUgl2();
 
         b_time = 4 * globtime;
         int x, y;
@@ -217,20 +219,20 @@ final class Scene3 implements Scene {
                 canc = .375f * (1.0f + (float)Math.cos((b_zeta - 98.0f) * 3.1415f / 2.0f));
             else
                 canc = .75f;
-            gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
-            gl.glDisable(GL.GL_DEPTH_TEST);
-            gl.glDisable(GL.GL_TEXTURE_2D);
-            gl.glEnable(GL.GL_BLEND);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+            gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
+            gl.glDisable(GL2.GL_TEXTURE_2D);
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -1.0f);
             gl.glColor4f(0, 0, 0, 1.0f - canc);
             b_drawrect(gl, 1.2f, 1.2f);
-            gl.glEnable(GL.GL_TEXTURE_2D);
-            gl.glEnable(GL.GL_DEPTH_TEST);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
+            gl.glEnable(GL2.GL_DEPTH_TEST);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
         } else
-            gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+            gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();
         if (b_zeta < 6.0f) {
             glu.gluLookAt(13 * (float)Math.sin(b_zeta / 10), 2 - (b_zeta + 2) * (b_zeta + 2) / 50, -9 + 10 * (float)Math.cos(b_zeta / 10),
@@ -240,7 +242,7 @@ final class Scene3 implements Scene {
             gl.glRotatef(-90, 0, 0, 1);
         } else if (b_zeta < 37.0f) {
             if (b_switch) {
-                gl.glFrontFace(GL.GL_CCW);
+                gl.glFrontFace(GL2.GL_CCW);
                 b_switch = false;
             }
             glu.gluLookAt(3 * (float)Math.cos((b_zeta - 7.5f) / 4.0f), 1 + (float)Math.cos((b_zeta - 8.5f) / 6.0f) * (float)Math.cos((b_zeta - 8.5f) / 6.0f), -16 + (b_zeta - 6.5f),
@@ -284,12 +286,12 @@ final class Scene3 implements Scene {
         float offset = 5.0f;
         if ((b_zeta > -offset) && (b_zeta < 6)) {
             gl.glPushMatrix();
-            gl.glEnable(GL.GL_BLEND);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-            gl.glDisable(GL.GL_DEPTH_TEST);
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
             b_Text[5].use(gl);
-            gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
-            gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
+            gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
+            gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP);
             gl.glLoadIdentity();
             gl.glTranslatef(-.25f, .25f + (b_zeta + offset) / 30.0f, -2.0f);
             gl.glRotatef(180, 1, 0, 0);
@@ -306,15 +308,15 @@ final class Scene3 implements Scene {
             gl.glLoadIdentity();
             gl.glTranslatef(.5f - (b_zeta + offset) / 10.0f, .25f + (b_zeta + offset) / 30.0f, -2.0f);
             b_Text[6].use(gl);
-            gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+            gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
             gl.glColor4f((b_zeta + offset) / 4, (b_zeta + offset) / 4, (b_zeta + offset) / 4, 1);
             gl.glRotatef(180, 1, 0, 0);
             if ((b_zeta + offset) > 8)
                 b_drawrect(gl, 1.5f - (b_zeta + offset) / 20.0f, (.5f + 1.0f * (1.0f - (float)Math.cos((b_zeta + offset - 8) * 3.1415 / 4.0f))));
             else
                 b_drawrect(gl, 1.5f - (b_zeta + offset) / 20.0f, .5f);
-            gl.glDisable(GL.GL_BLEND);
-            gl.glEnable(GL.GL_DEPTH_TEST);
+            gl.glDisable(GL2.GL_BLEND);
+            gl.glEnable(GL2.GL_DEPTH_TEST);
             gl.glPopMatrix();
         }
 
@@ -327,7 +329,7 @@ final class Scene3 implements Scene {
                 if (!flag) {
                     gl.glCallList(face);
                 } else {
-                    gl.glBegin(GL.GL_LINES);
+                    gl.glBegin(GL2.GL_LINES);
                     for (x = 0; x < 127; x++) {
                         for (y = 0; y < 127; y++) {
                             float_x = x / 127.0f;
@@ -349,29 +351,29 @@ final class Scene3 implements Scene {
                 }
             } else {
                 gl.glLoadIdentity();
-                gl.glFrontFace(GL.GL_CW);
+                gl.glFrontFace(GL2.GL_CW);
                 gl.glScalef(-1, 1, 1);
-                gl.glDisable(GL.GL_DEPTH_TEST);
+                gl.glDisable(GL2.GL_DEPTH_TEST);
                 gl.glTranslatef(-0.001f, .028f, -1.2f - (b_zeta - 91.0f) / 3.5f);
-                gl.glEnable(GL.GL_BLEND);
-                gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+                gl.glEnable(GL2.GL_BLEND);
+                gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
                 gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f - (b_zeta - 92.5f) / 5.5f);
                 gl.glRotatef(-90, 0, 0, 1);
                 b_drawrect(gl, .66f, .649f);
-                gl.glEnable(GL.GL_DEPTH_TEST);
-                gl.glFrontFace(GL.GL_CCW);
-                gl.glDisable(GL.GL_BLEND);
+                gl.glEnable(GL2.GL_DEPTH_TEST);
+                gl.glFrontFace(GL2.GL_CCW);
+                gl.glDisable(GL2.GL_BLEND);
             }
         }
         if (-b_zeta > 5.2f) b_count = -(-b_zeta - 10.2f) * 18.0f;
         if ((b_zeta < -9.0f) || ((b_zeta > -3.5f) && (b_zeta < -2.5f)) || ((b_zeta > 5.5f) && (b_zeta < 6.5f)) || ((b_zeta > 36.0f) && (b_zeta < 38.0f)) ||
                 ((b_zeta > 47.35f) && (b_zeta < 48.35f)) || ((b_zeta > 58.35f) && (b_zeta < 60.35f)) || ((b_zeta > 86.35) && (b_zeta < 87.35))) {
             gl.glLoadIdentity();
-            gl.glDisable(GL.GL_DEPTH_TEST);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
             gl.glTranslatef(0, 0, -0.5f);
-            gl.glDisable(GL.GL_TEXTURE_2D);
-            gl.glEnable(GL.GL_BLEND);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glDisable(GL2.GL_TEXTURE_2D);
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
             if (b_zeta < -9)
                 gl.glColor4f(1.0f, 1.0f, 1.0f, -b_zeta - 9.0f);
             else if (b_zeta < -2.5f)
@@ -388,9 +390,9 @@ final class Scene3 implements Scene {
                 gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f - (b_zeta - 86.35f));
             if (b_switch) gl.glScalef(1, -1, 1);
             b_drawrect(gl, .6f, .45f);
-            gl.glEnable(GL.GL_TEXTURE_2D);
-            gl.glDisable(GL.GL_BLEND);
-            gl.glEnable(GL.GL_DEPTH_TEST);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
+            gl.glDisable(GL2.GL_BLEND);
+            gl.glEnable(GL2.GL_DEPTH_TEST);
         }
 
         ////////////////////////////////////////////////////
@@ -402,9 +404,9 @@ final class Scene3 implements Scene {
         ////////////////////////////////////////////////////
 
         if (b_zeta > 92.5f) {
-            gl.glDisable(GL.GL_DEPTH_TEST);
-            gl.glEnable(GL.GL_BLEND);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
             gl.glLoadIdentity();
             if (b_zeta < 97.5f) {
                 b_Text[2].use(gl);
@@ -420,7 +422,7 @@ final class Scene3 implements Scene {
                     gl.glPopMatrix();
                 }
                 if (b_zeta - 92.5f < 1.0f) {
-                    gl.glDisable(GL.GL_TEXTURE_2D);
+                    gl.glDisable(GL2.GL_TEXTURE_2D);
                     gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f - (b_zeta - 92.5f));
                     gl.glLoadIdentity();
                     gl.glTranslatef(0, 0, -.75f);
@@ -435,9 +437,9 @@ final class Scene3 implements Scene {
                     gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f - (b_zeta - 105.0f) / 5.0f);
                 b_drawrect(gl, 4.9f, 2.5f);
             }
-            gl.glEnable(GL.GL_TEXTURE_2D);
-            gl.glEnable(GL.GL_DEPTH_TEST);
-            gl.glDisable(GL.GL_BLEND);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
+            gl.glEnable(GL2.GL_DEPTH_TEST);
+            gl.glDisable(GL2.GL_BLEND);
         }
 
         ////////////////////////////////////////////////////
@@ -449,9 +451,9 @@ final class Scene3 implements Scene {
         ////////////////////////////////////////////////////
 
         if (b_zeta > 95.0f) {
-            gl.glDisable(GL.GL_DEPTH_TEST);
-            gl.glEnable(GL.GL_BLEND);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
             gl.glLoadIdentity();
             if (b_zeta < 100.0f) {
 
@@ -476,24 +478,24 @@ final class Scene3 implements Scene {
                     gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f - (b_zeta - 105.0f) / 5.0f);
                 b_drawrect(gl, 5.6f, 5.35f);
             }
-            gl.glEnable(GL.GL_TEXTURE_2D);
-            gl.glEnable(GL.GL_DEPTH_TEST);
-            gl.glDisable(GL.GL_BLEND);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
+            gl.glEnable(GL2.GL_DEPTH_TEST);
+            gl.glDisable(GL2.GL_BLEND);
         }
 
 
         if (b_zeta > 100.0f) {
-            gl.glDisable(GL.GL_DEPTH_TEST);
-            gl.glEnable(GL.GL_BLEND);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -15.0f);
             b_Text[4].use(gl);
             gl.glColor4f(1.0f, 1.0f, 1.0f, (b_zeta - 100.0f) / 10.0f);
             b_drawrect(gl, 10, 5);
-            gl.glEnable(GL.GL_TEXTURE_2D);
-            gl.glEnable(GL.GL_DEPTH_TEST);
-            gl.glDisable(GL.GL_BLEND);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
+            gl.glEnable(GL2.GL_DEPTH_TEST);
+            gl.glDisable(GL2.GL_BLEND);
         }
 
         b_zeta = -10.2f + (b_time) / 400.0f;
@@ -516,9 +518,9 @@ final class Scene3 implements Scene {
         offset = 59.35f;
         if ((b_zeta - offset > 0) && (b_zeta - offset < 20)) {
             float factor = 1.0f;
-            gl.glEnable(GL.GL_BLEND);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-            gl.glDisable(GL.GL_DEPTH_TEST);
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
             gl.glLoadIdentity();
             gl.glTranslatef(-.25f, 0, -1.5f);
             b_Text[7].use(gl);
@@ -533,8 +535,8 @@ final class Scene3 implements Scene {
                 b_drawrect(gl, .5f, .5f);
                 gl.glPopMatrix();
             }
-            gl.glDisable(GL.GL_BLEND);
-            gl.glEnable(GL.GL_DEPTH_TEST);
+            gl.glDisable(GL2.GL_BLEND);
+            gl.glEnable(GL2.GL_DEPTH_TEST);
         }
 
         ////////////////////////////////////////////////////
@@ -548,11 +550,11 @@ final class Scene3 implements Scene {
         ////////////////////////////////////////////////////
         offset = 16.0f;
         if ((b_zeta - offset > 0) && (b_zeta - offset < 12)) {
-            gl.glEnable(GL.GL_BLEND);
-            gl.glDisable(GL.GL_DEPTH_TEST);
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
             gl.glLoadIdentity();
             gl.glTranslatef(.35f - (b_zeta - offset) / 20.0f, -.2f, -1.0f);
-            gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+            gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
             if ((b_zeta - offset) < 4)
                 gl.glColor4f((b_zeta - offset) / 10, (b_zeta - offset) / 10, (b_zeta - offset) / 10, 1);
             else if ((b_zeta - offset) > 8)
@@ -566,7 +568,7 @@ final class Scene3 implements Scene {
                 b_drawrect(gl, (.55f + 1.0f * (1.0f - (float)Math.cos((b_zeta - offset - 10) * 3.1415 / 4.0f))), .25f);
             else
                 b_drawrect(gl, .55f, .25f);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
             b_Text[13].use(gl);
             if ((b_zeta - offset) < 4)
                 gl.glColor4f(1, 1, 1, (b_zeta - offset) / 6);
@@ -580,8 +582,8 @@ final class Scene3 implements Scene {
                 b_drawrect(gl, (.5f + 1.0f * (1.0f - (float)Math.cos((b_zeta - offset - 10) * 3.1415 / 4.0f))), .25f);
             else
                 b_drawrect(gl, .5f, .25f);
-            gl.glDisable(GL.GL_BLEND);
-            gl.glEnable(GL.GL_DEPTH_TEST);
+            gl.glDisable(GL2.GL_BLEND);
+            gl.glEnable(GL2.GL_DEPTH_TEST);
         }
 
         ////////////////////////////////////////////////////
@@ -605,9 +607,9 @@ final class Scene3 implements Scene {
             if (b_zeta < 6) {
                 float fall = 0.0f;
                 if (b_zeta > 0) fall = b_zeta * b_zeta * b_zeta / 5.0f;
-                gl.glEnable(GL.GL_BLEND);
-                gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-                gl.glDisable(GL.GL_DEPTH_TEST);
+                gl.glEnable(GL2.GL_BLEND);
+                gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+                gl.glDisable(GL2.GL_DEPTH_TEST);
                 gl.glLoadIdentity();
                 gl.glTranslatef(0, 1.25f - fall, -5.0f * zoomer);
                 b_Text[8].use(gl);
@@ -624,15 +626,15 @@ final class Scene3 implements Scene {
                 gl.glRotatef(-15.0f * fall, 0, 0, 1);
                 gl.glRotatef(-15.0f * fall, 1, 0, 0);
                 b_drawrect(gl, .5f, .5f);
-                gl.glDisable(GL.GL_BLEND);
-                gl.glEnable(GL.GL_DEPTH_TEST);
+                gl.glDisable(GL2.GL_BLEND);
+                gl.glEnable(GL2.GL_DEPTH_TEST);
             }
             if (b_zeta > -9.2f) {
                 float fall = 0.0f;
                 if (b_zeta > .5) fall = (b_zeta - .5f) * (b_zeta - .5f) * (b_zeta - .5f) / 5.0f;
-                gl.glEnable(GL.GL_BLEND);
-                gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-                gl.glDisable(GL.GL_DEPTH_TEST);
+                gl.glEnable(GL2.GL_BLEND);
+                gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+                gl.glDisable(GL2.GL_DEPTH_TEST);
                 gl.glLoadIdentity();
                 gl.glTranslatef(.5f, 1.25f - fall, -5.0f * zoomer);
                 b_Text[9].use(gl);
@@ -648,15 +650,15 @@ final class Scene3 implements Scene {
                 gl.glRotatef(25.0f * fall, 0, 0, 1);
                 gl.glRotatef(25.0f * fall, 1, 0, 0);
                 b_drawrect(gl, .5f, .5f);
-                gl.glDisable(GL.GL_BLEND);
-                gl.glEnable(GL.GL_DEPTH_TEST);
+                gl.glDisable(GL2.GL_BLEND);
+                gl.glEnable(GL2.GL_DEPTH_TEST);
             }
             if (b_zeta > -8.2f) {
                 float fall = 0.0f;
                 if (b_zeta > 1.0) fall = (b_zeta - 1) * (b_zeta - 1) * (b_zeta - 1) / 5.0f;
-                gl.glEnable(GL.GL_BLEND);
-                gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-                gl.glDisable(GL.GL_DEPTH_TEST);
+                gl.glEnable(GL2.GL_BLEND);
+                gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+                gl.glDisable(GL2.GL_DEPTH_TEST);
                 gl.glLoadIdentity();
                 gl.glTranslatef(1, 1.25f - fall, -5.0f * zoomer);
                 b_Text[10].use(gl);
@@ -672,15 +674,15 @@ final class Scene3 implements Scene {
                 gl.glRotatef(10.0f * fall, 0, 0, 1);
                 gl.glRotatef(10.0f * fall, 1, 0, 0);
                 b_drawrect(gl, .5f, .5f);
-                gl.glDisable(GL.GL_BLEND);
-                gl.glEnable(GL.GL_DEPTH_TEST);
+                gl.glDisable(GL2.GL_BLEND);
+                gl.glEnable(GL2.GL_DEPTH_TEST);
             }
             if (b_zeta > -7.2f) {
                 float fall = 0.0f;
                 if (b_zeta > 1.5) fall = (b_zeta - 1.5f) * (b_zeta - 1.5f) * (b_zeta - 1.5f) / 5.0f;
-                gl.glEnable(GL.GL_BLEND);
-                gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-                gl.glDisable(GL.GL_DEPTH_TEST);
+                gl.glEnable(GL2.GL_BLEND);
+                gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+                gl.glDisable(GL2.GL_DEPTH_TEST);
                 gl.glLoadIdentity();
                 gl.glTranslatef(1.5f, 1.25f - fall, -5.0f * zoomer);
                 b_Text[11].use(gl);
@@ -696,15 +698,15 @@ final class Scene3 implements Scene {
                 gl.glRotatef(-30.0f * fall, 0, 0, 1);
                 gl.glRotatef(-30.0f * fall, 1, 0, 0);
                 b_drawrect(gl, .5f, .5f);
-                gl.glDisable(GL.GL_BLEND);
-                gl.glEnable(GL.GL_DEPTH_TEST);
+                gl.glDisable(GL2.GL_BLEND);
+                gl.glEnable(GL2.GL_DEPTH_TEST);
             }
             if (b_zeta > -6.2f) {
                 float fall = 0.0f;
                 if (b_zeta > 2.0) fall = (b_zeta - 2) * (b_zeta - 2) * (b_zeta - 2) / 5.0f;
-                gl.glEnable(GL.GL_BLEND);
-                gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-                gl.glDisable(GL.GL_DEPTH_TEST);
+                gl.glEnable(GL2.GL_BLEND);
+                gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+                gl.glDisable(GL2.GL_DEPTH_TEST);
                 gl.glLoadIdentity();
                 gl.glTranslatef(2.0f, 1.25f - fall, -5.0f * zoomer);
                 b_Text[12].use(gl);
@@ -720,8 +722,8 @@ final class Scene3 implements Scene {
                 gl.glRotatef(20.0f * fall, 0, 0, 1);
                 gl.glRotatef(20.0f * fall, 1, 0, 0);
                 b_drawrect(gl, .5f, .5f);
-                gl.glDisable(GL.GL_BLEND);
-                gl.glEnable(GL.GL_DEPTH_TEST);
+                gl.glDisable(GL2.GL_BLEND);
+                gl.glEnable(GL2.GL_DEPTH_TEST);
             }
             b_zeta = b_zeta + offset + 10;
         }
@@ -738,8 +740,8 @@ final class Scene3 implements Scene {
         offset = 62.5f;
         if ((b_zeta - offset > 0) && (b_zeta - offset < 15)) {
             b_zeta = b_zeta - offset - 10;
-            gl.glEnable(GL.GL_BLEND);
-            gl.glDisable(GL.GL_DEPTH_TEST);
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -1.25f);
             float rot;
@@ -751,22 +753,22 @@ final class Scene3 implements Scene {
                 rot = 0.0f;
             gl.glRotatef(90.0f * rot, 1, 0, 0);
             gl.glTranslatef(0, 0, .25f);
-            gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+            gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
             b_Text[16].use(gl);
             if (-b_zeta > 6.2)
                 gl.glColor4f(1 - rot, 1 - rot, 1 - rot, 1);
             else
                 gl.glColor4f(1 + 2 * rot, 1 + 2 * rot, 1 + 2 * rot, 1);
             b_drawrect(gl, .55f, .11f);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
             b_Text[15].use(gl);
             if (-b_zeta > 6.2)
                 gl.glColor4f(1, 1, 1, 1 - rot);
             else
                 gl.glColor4f(1, 1, 1, 1 + 2 * rot);
             b_drawrect(gl, .5f, .0625f);
-            gl.glDisable(GL.GL_BLEND);
-            gl.glEnable(GL.GL_DEPTH_TEST);
+            gl.glDisable(GL2.GL_BLEND);
+            gl.glEnable(GL2.GL_DEPTH_TEST);
             b_zeta = b_zeta + offset + 10;
         }
         if ((flag) && (b_zeta > -3.0f)) flag = false;

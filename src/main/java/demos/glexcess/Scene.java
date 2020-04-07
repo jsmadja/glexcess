@@ -1,6 +1,6 @@
 package demos.glexcess;
 
-import com.jogamp.opengl.GLDrawable;
+import com.jogamp.opengl.GLAutoDrawable;
 
 /**
  * GLExcess v1.0 Demo
@@ -19,6 +19,6 @@ import com.jogamp.opengl.GLDrawable;
  * @author Pepijn Van Eeckhoudt
  */
 interface Scene {
-    void clean(GLDrawable g);
-    boolean drawScene(GLDrawable g, float time);
+    void clean(GLAutoDrawable g);
+    boolean drawScene(GLAutoDrawable g, float time);
 }

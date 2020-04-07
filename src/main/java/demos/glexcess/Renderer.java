@@ -1,8 +1,6 @@
 package demos.glexcess;
 
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GLDrawable;
-import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.*;
 import com.jogamp.opengl.glu.GLU;
 
 /**
@@ -22,7 +20,7 @@ import com.jogamp.opengl.glu.GLU;
  * @author Pepijn Van Eeckhoudt
  */
 final class Renderer implements GLEventListener {
-    private static final boolean loop = true;
+    private static final boolean loop = false;
     private float timing = 0;
     private float step = 1;
     private final Scene[] scenes = new Scene[]{
@@ -42,21 +40,26 @@ final class Renderer implements GLEventListener {
     private int currentScene = 0;
     private boolean switchScene;
 
-    public final void init(GLDrawable drawable) {
+    public final void init(GLAutoDrawable drawable) {
     }
 
-    public final void display(GLDrawable drawable) {
+    @Override
+    public void dispose(GLAutoDrawable glAutoDrawable) {
+        //TODO
+    }
+
+    public final void display(GLAutoDrawable drawable) {
         timing += step;
         drawscene(drawable);
     }
 
-    public final void reshape(GLDrawable drawable,
-                        int xstart,
-                        int ystart,
-                        int width,
-                        int height) {
-        GL gl = drawable.getGL();
-        GLU glu = drawable.getGLU();
+    public final void reshape(GLAutoDrawable drawable,
+                              int xstart,
+                              int ystart,
+                              int width,
+                              int height) {
+        GL2 gl = drawable.getGL().getGL2();
+        GLU glu = new GLU();
 
         height = (height == 0) ? 1 : height;
 
@@ -69,12 +72,12 @@ final class Renderer implements GLEventListener {
         gl.glLoadIdentity();
     }
 
-    public final void displayChanged(GLDrawable drawable,
+    public final void displayChanged(GLAutoDrawable drawable,
                                boolean modeChanged,
                                boolean deviceChanged) {
     }
 
-    private void drawscene(GLDrawable g) {
+    private void drawscene(GLAutoDrawable g) {
         if (switchScene)
             nextScene(g);
 
@@ -88,7 +91,7 @@ final class Renderer implements GLEventListener {
         switchScene = true;
     }
 
-    private void nextScene(GLDrawable g) {
+    private void nextScene(GLAutoDrawable g) {
         scenes[currentScene].clean(g);
         timing = 0;
         currentScene++;

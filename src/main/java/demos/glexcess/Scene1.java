@@ -1,9 +1,11 @@
 package demos.glexcess;
 
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GLDrawable;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.glu.gl2.GLUgl2;
 import demos.common.ResourceRetriever;
+
 import java.io.IOException;
 
 /**
@@ -32,20 +34,20 @@ final class Scene1 implements Scene {
 
     private static boolean init = true;
 
-    private void init(GLDrawable g) {
-        GL gl = g.getGL();
-        GLU glu = g.getGLU();
-        int width = g.getSize().width;
-        int height = g.getSize().height;
+    private void init(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
+        GLUgl2 glu = new GLUgl2();
+        int width = g.getSurfaceWidth();
+        int height = g.getSurfaceHeight();
 
         random = (float) Math.random();
         checker = 1;
         cnt = 0;
 
-        gl.glMatrixMode(GL.GL_PROJECTION);
+        gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
         glu.gluPerspective(45.0f, (float) width / (float) height, 0.1f, 100.0f);
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
         z_Text = new Texture[numtexs];
         for (int i = 0; i < z_Text.length; i++) {
@@ -73,23 +75,23 @@ final class Scene1 implements Scene {
             throw new RuntimeException(e);
         }
 
-        gl.glShadeModel(GL.GL_SMOOTH);
+        gl.glShadeModel(GL2.GL_SMOOTH);
         gl.glClearColor(0, 0, 0, 0);
         gl.glClearDepth(1.0f);
-        gl.glDisable(GL.GL_DEPTH_TEST);
-        gl.glDepthFunc(GL.GL_LEQUAL);
-        gl.glDisable(GL.GL_CULL_FACE);
-        gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
-        gl.glPolygonMode(GL.GL_FRONT, GL.GL_FILL);
-        gl.glFrontFace(GL.GL_CCW);
-        gl.glEnable(GL.GL_TEXTURE_2D);
-        gl.glDisable(GL.GL_LIGHTING);
-        gl.glEnable(GL.GL_BLEND);
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+        gl.glDisable(GL2.GL_DEPTH_TEST);
+        gl.glDepthFunc(GL2.GL_LEQUAL);
+        gl.glDisable(GL2.GL_CULL_FACE);
+        gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
+        gl.glPolygonMode(GL2.GL_FRONT, GL2.GL_FILL);
+        gl.glFrontFace(GL2.GL_CCW);
+        gl.glEnable(GL2.GL_TEXTURE_2D);
+        gl.glDisable(GL2.GL_LIGHTING);
+        gl.glEnable(GL2.GL_BLEND);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
     }
 
-    public final void clean(GLDrawable g) {
-        GL gl = g.getGL();
+    public final void clean(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
         z_Text[0].kill(gl);
         z_Text[1].kill(gl);
         z_Text[2].kill(gl);
@@ -110,8 +112,8 @@ final class Scene1 implements Scene {
         init = true;
     }
 
-    private static void z_drawrect(GL gl, float b, float h) {
-        gl.glBegin(GL.GL_QUADS);
+    private static void z_drawrect(GL2 gl, float b, float h) {
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex3f(-b / 2, -h / 2, 0.0f);
         gl.glTexCoord2f(1.0f, 0.0f);
@@ -123,8 +125,8 @@ final class Scene1 implements Scene {
         gl.glEnd();
     }
 
-    private static void z_drawrectb(GL gl, float b, float h, float shs, float sht) {
-        gl.glBegin(GL.GL_QUADS);
+    private static void z_drawrectb(GL2 gl, float b, float h, float shs, float sht) {
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(0.0f + shs, 0.0f + sht);
         gl.glVertex3f(-b / 2, -h / 2, 0.0f);
         gl.glTexCoord2f(1.0f + shs, 0.0f + sht);
@@ -136,8 +138,8 @@ final class Scene1 implements Scene {
         gl.glEnd();
     }
 
-    private static void z_drawrectc(GL gl, float b, float h) {
-        gl.glBegin(GL.GL_QUADS);
+    private static void z_drawrectc(GL2 gl, float b, float h) {
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(0.0f, .9f);
         gl.glVertex3f(-b / 2, 0, 0.0f);
         gl.glTexCoord2f(1.0f, 0.9f);
@@ -150,10 +152,10 @@ final class Scene1 implements Scene {
         gl.glEnd();
     }
 
-    private static void z_draw(GL gl, float z_w, float z_h, float z_fact, float z_tlt) {
+    private static void z_draw(GL2 gl, float z_w, float z_h, float z_fact, float z_tlt) {
         gl.glPushMatrix();
         gl.glTranslatef(-z_tlt, -z_tlt * z_h / z_w, 0.0f);
-        gl.glBegin(GL.GL_TRIANGLE_FAN);
+        gl.glBegin(GL2.GL_TRIANGLE_FAN);
 
         gl.glTexCoord2f(1.0f, 1.0f);
         gl.glVertex3f(1.0f * z_w, 1.0f * z_h, 0.0f);
@@ -172,7 +174,7 @@ final class Scene1 implements Scene {
 
         gl.glPushMatrix();
         gl.glTranslatef(z_tlt, z_tlt * z_h / z_w, 0.0f);
-        gl.glBegin(GL.GL_TRIANGLE_FAN);
+        gl.glBegin(GL2.GL_TRIANGLE_FAN);
 
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex3f(-1.0f * z_w, -1.0f * z_h, 0.0f);
@@ -190,24 +192,24 @@ final class Scene1 implements Scene {
         gl.glPopMatrix();
     }
 
-    public final boolean drawScene(GLDrawable g, float time) {
-        GL gl = g.getGL();
+    public final boolean drawScene(GLAutoDrawable g, float time) {
+        GL2 gl = g.getGL().getGL2();
         if (init) {
             init(g);
             init = false;
         }
         z_time = time * .0001f;
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+        gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
 
-        gl.glDisable(GL.GL_BLEND);
+        gl.glDisable(GL2.GL_BLEND);
         gl.glColor4f(1, 1, 1, 1);
         z_Text[12].use(gl);
         gl.glLoadIdentity();
         gl.glTranslatef(0, 0, -1 + .1f * (float) Math.sin(z_time * 10));
         gl.glRotatef(z_time * 50, 0, 0, 1);
         z_drawrect(gl, 1, 1);
-        gl.glEnable(GL.GL_BLEND);
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+        gl.glEnable(GL2.GL_BLEND);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
         gl.glColor4f(1, 1, 1, .25f);
         gl.glRotatef(-z_time * 100, 0, 0, 1);
         z_drawrect(gl, 1, 1);
@@ -220,7 +222,7 @@ final class Scene1 implements Scene {
         if (((z_time - z_offset) > 0.0f) && ((z_time - z_offset) * 25.0f < 6.283f)) {
             gl.glLoadIdentity();
             gl.glTranslatef(.75f - (z_time - z_offset) * 2.0f, -.5f, -3.0f);
-            gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+            gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
             z_Text[1].use(gl);
             float menne = .375f * (1.0f - (float) Math.cos((z_time - z_offset) * 25.0f));
             gl.glColor4f(menne, menne, menne, 1);
@@ -228,7 +230,7 @@ final class Scene1 implements Scene {
             gl.glTranslatef(.05f, 0, 0);
             z_drawrect(gl, 1.3f, .4f);
             gl.glPopMatrix();
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
             z_Text[0].use(gl);
             for (int i = 1; i <= 5; i++) {
                 if (i != 1)
@@ -251,7 +253,7 @@ final class Scene1 implements Scene {
         if (((z_time - z_offset) > 0.0f) && ((z_time - z_offset) * 25.0f < 6.283f)) {
             gl.glLoadIdentity();
             gl.glTranslatef(-.35f, .5f - (z_time - z_offset), -2.0f);
-            gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+            gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
             z_Text[7].use(gl);
             float menne = .5f * (1.0f - (float) Math.cos((z_time - z_offset) * 25.0f));
             gl.glColor4f(menne, menne, menne, 1);
@@ -259,7 +261,7 @@ final class Scene1 implements Scene {
             gl.glTranslatef(-.05f, -.025f, 0);
             z_drawrect(gl, 1.1f, .35f);
             gl.glPopMatrix();
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
             z_Text[6].use(gl);
             gl.glRotatef(180, 1, 0, 0);
             gl.glTranslatef(-(z_time - z_offset) * .5f, 0, 0);
@@ -286,7 +288,7 @@ final class Scene1 implements Scene {
             gl.glLoadIdentity();
             gl.glScalef(1, -1, 1);
             gl.glTranslatef(-.5f + (z_time - z_offset) * 1.5f, 0.25f, -2.5f);
-            gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+            gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
             z_Text[9].use(gl);
             float menne = .5f * (1.0f - (float) Math.cos((z_time - z_offset) * 25.0f));
             gl.glColor4f(menne, menne, menne, 1);
@@ -294,7 +296,7 @@ final class Scene1 implements Scene {
             gl.glTranslatef(.05f, 0, 0);
             z_drawrect(gl, 1.2f, .35f);
             gl.glPopMatrix();
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
             z_Text[8].use(gl);
             gl.glRotatef(180, 1, 0, 0);
             for (int i = 1; i <= 5; i++) {
@@ -319,7 +321,7 @@ final class Scene1 implements Scene {
             gl.glLoadIdentity();
             gl.glScalef(1, -1, 1);
             gl.glTranslatef(.25f - (z_time - z_offset) * 2.0f, -.5f, -3.0f);
-            gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+            gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
             z_Text[11].use(gl);
             float menne = .45f * (1.0f - (float) Math.cos((z_time - z_offset) * 25.0f));
             gl.glColor4f(menne, menne, menne, 1);
@@ -327,7 +329,7 @@ final class Scene1 implements Scene {
             gl.glTranslatef(.05f, .01f, 0);
             z_drawrect(gl, 1.3f, .4f);
             gl.glPopMatrix();
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
             z_Text[10].use(gl);
             for (int i = 1; i <= 5; i++) {
                 if (i != 1)
@@ -351,12 +353,12 @@ final class Scene1 implements Scene {
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -.9f);
             z_Text[3].use(gl);
-            gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+            gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
             float menne = (1.0f - (float) Math.cos((z_time - z_offset) * 25.0f)) * .5f;
             gl.glColor4f(menne, menne, menne, 1);
             z_drawrect(gl, .5f, .25f);
-            //glBlendFunc(GL.GL_SRC_ALPHA,GL.GL_ONE);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_COLOR);
+            //glBlendFunc(GL2.GL_SRC_ALPHA,GL2.GL_ONE);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_COLOR);
             z_Text[2].use(gl);
             //menne=(1.0f-cos((z_time-z_offset)*25.0f))*.5f;
             gl.glColor4f(menne, menne, menne, menne);
@@ -369,7 +371,7 @@ final class Scene1 implements Scene {
         if (((z_time - z_offset) > 0.0f) && ((z_time - z_offset) * 25.0f < 6.283f)) {
             gl.glLoadIdentity();
             gl.glTranslatef(.05f - (z_time - z_offset) / 2.0f, 0.0f, -1.5f);
-            gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+            gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
             z_Text[5].use(gl);
             float menne = .45f * (1.0f - (float) Math.cos((z_time - z_offset) * 25.0f));
             gl.glColor4f(menne, menne, menne, 1);
@@ -377,7 +379,7 @@ final class Scene1 implements Scene {
             //glTranslatef(0,0,0);
             z_drawrect(gl, 1.2f, .6f);
             gl.glPopMatrix();
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
             z_Text[4].use(gl);
             for (int i = 1; i <= 5; i++) {
                 if (i != 1)
@@ -395,23 +397,23 @@ final class Scene1 implements Scene {
         }
 
         if (z_time < .1f) {
-            gl.glDisable(GL.GL_TEXTURE_2D);
-            gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+            gl.glDisable(GL2.GL_TEXTURE_2D);
+            gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -1.0f);
             float fader = .5f + .5f * (float) Math.cos(z_time * 31.415f);
             gl.glColor4f(fader, fader, fader, 1);
             z_drawrect(gl, 1.33f, 1.0f);
-            gl.glEnable(GL.GL_TEXTURE_2D);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
         }
 
         gl.glLoadIdentity();
-        gl.glDisable(GL.GL_DEPTH_TEST);
+        gl.glDisable(GL2.GL_DEPTH_TEST);
         gl.glTranslatef(0, 0, -1.5f);
         z_Text[13].use(gl);
         float ran = (float) Math.random() / 4f;
-        gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+        gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
         float shaderf = .16f + .16f * (float) Math.sin(z_time * 100.0f);
         gl.glColor4f(.33f + shaderf + ran, .33f + shaderf + ran, .33f + shaderf + ran, 1);
         //z_drawrecta(2,2,2.0f*sin(z_time*10.0f),1.0f+.5f*cos(z_time*50.0f));
@@ -424,7 +426,7 @@ final class Scene1 implements Scene {
         gl.glScalef(-1, 1, 1);
         gl.glTranslatef(1, 0, -.75f - .75f * (float) Math.sin(z_time * 40.0f));
         z_drawrectb(gl, 3, 3, 0, -z_time * 100);
-        //glEnable(GL.GL_DEPTH_TEST);
+        //glEnable(GL2.GL_DEPTH_TEST);
         gl.glLoadIdentity();
         if ((int) (z_time * 50) == checker) {
             if (cnt >= 2) {
@@ -438,13 +440,13 @@ final class Scene1 implements Scene {
             gl.glRotatef(360.0f * random * random, 0, 0, 1);
             z_drawrect(gl, .1f + random / 3, .1f + random / 3);
 
-            gl.glDisable(GL.GL_TEXTURE_2D);
+            gl.glDisable(GL2.GL_TEXTURE_2D);
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -1.0f);
             gl.glColor4f(1, 1, 1, (float) Math.random() * .05f);
-            gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_ALPHA);
+            gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_ALPHA);
             z_drawrect(gl, 1.33f, 1.0f);
-            gl.glEnable(GL.GL_TEXTURE_2D);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
         }
 
         if (z_time > .92f) {
@@ -455,22 +457,22 @@ final class Scene1 implements Scene {
                 //z_Clean();
                 return false;
             }
-            gl.glDisable(GL.GL_TEXTURE_2D);
+            gl.glDisable(GL2.GL_TEXTURE_2D);
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -1.0f);
             gl.glColor4f(1, 1, 1, fader);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
             z_drawrect(gl, 1.33f, 1.0f);
-            gl.glEnable(GL.GL_TEXTURE_2D);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
         }
 
         z_offset = .8f;
         if (z_time > z_offset) {
             //if (swi) {FSOUND_PlaySound(FSOUND_FREE, cut);swi=false;}
             gl.glLoadIdentity();
-            gl.glDisable(GL.GL_DEPTH_TEST);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
             z_Text[16].use(gl);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
             gl.glTranslatef(-.05f, -.0175f, -1);
             gl.glRotatef(16, 0, 0, 1);
             gl.glRotatef(85, 1, 0, 0);

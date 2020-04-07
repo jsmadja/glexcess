@@ -1,8 +1,10 @@
 package demos.glexcess;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GLDrawable;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.glu.gl2.GLUgl2;
 import demos.common.ResourceRetriever;
 
 import java.io.IOException;
@@ -31,18 +33,18 @@ final class Scene12 implements Scene {
 
     private float k_timer;
 
-    private void init(GLDrawable g) {
+    private void init(GLAutoDrawable g) {
         k_Text = new Texture[numtexs];
         for (int i = 0; i < k_Text.length; i++) {
             k_Text[i] = new Texture();
         }
 
-        GL gl = g.getGL();
-        GLU glu = g.getGLU();
-        gl.glMatrixMode(GL.GL_PROJECTION);
+        GL2 gl = g.getGL().getGL2();
+        GLUgl2 glu = new GLUgl2();
+        gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
-        glu.gluPerspective(45.0f, (float) g.getSize().width / (float) g.getSize().height, 0.1f, 100.0f);
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        glu.gluPerspective(45.0f, (float) g.getSurfaceWidth() / (float) g.getSurfaceHeight(), 0.1f, 100.0f);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
 
         try {
@@ -55,23 +57,23 @@ final class Scene12 implements Scene {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        gl.glShadeModel(GL.GL_FLAT);
+        gl.glShadeModel(GL2.GL_FLAT);
         gl.glClearColor(.5f, 0.3f, 0.2f, 0.0f);
         gl.glClearColor(.0f, .0f, .0f, 0.0f);
         gl.glClearDepth(1.0f);
-        gl.glDisable(GL.GL_DEPTH_TEST);
-        gl.glDisable(GL.GL_CULL_FACE);
-        gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
-        gl.glPolygonMode(GL.GL_FRONT, GL.GL_FILL);
-        gl.glFrontFace(GL.GL_CCW);
-        gl.glEnable(GL.GL_TEXTURE_2D);
-        gl.glDisable(GL.GL_LIGHTING);
-        gl.glEnable(GL.GL_BLEND);
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+        gl.glDisable(GL2.GL_DEPTH_TEST);
+        gl.glDisable(GL2.GL_CULL_FACE);
+        gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
+        gl.glPolygonMode(GL2.GL_FRONT, GL2.GL_FILL);
+        gl.glFrontFace(GL2.GL_CCW);
+        gl.glEnable(GL2.GL_TEXTURE_2D);
+        gl.glDisable(GL2.GL_LIGHTING);
+        gl.glEnable(GL2.GL_BLEND);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
     }
 
-    public final void clean(GLDrawable g) {
-        GL gl = g.getGL();
+    public final void clean(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
         k_Text[1].kill(gl);
         k_Text[2].kill(gl);
         k_Text[3].kill(gl);
@@ -81,8 +83,8 @@ final class Scene12 implements Scene {
         init = true;
     }
 
-    private static void k_drawrect(GL gl, float b, float h) {
-        gl.glBegin(GL.GL_QUADS);
+    private static void k_drawrect(GL2 gl, float b, float h) {
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex3f(-b / 2, -h / 2, 0.0f);
         gl.glTexCoord2f(1.0f, 0.0f);
@@ -94,8 +96,8 @@ final class Scene12 implements Scene {
         gl.glEnd();
     }
 
-    private static void k_drawrect1(GL gl, float b, float h, float shifta, float shiftb) {
-        gl.glBegin(GL.GL_QUADS);
+    private static void k_drawrect1(GL2 gl, float b, float h, float shifta, float shiftb) {
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(0.0f + shifta, 0.0f + shiftb);
         gl.glVertex3f(-b / 2, -h / 2, 0.0f);
         gl.glTexCoord2f(1.5f + shifta, 0.0f + shiftb);
@@ -107,19 +109,19 @@ final class Scene12 implements Scene {
         gl.glEnd();
     }
 
-    public final boolean drawScene(GLDrawable g, float time) {
+    public final boolean drawScene(GLAutoDrawable g, float time) {
         if (init) {
             init(g);
             init = false;
         }
         k_time = 10 * time;
 
-        GL gl = g.getGL();
+        GL2 gl = g.getGL().getGL2();
 
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+        gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
         k_timer = -1.0f + (k_time) / 5000.0f;
 
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
         k_Text[2].use(gl);
         gl.glLoadIdentity();
         gl.glTranslatef(0, 0, -5.0f);
@@ -143,7 +145,7 @@ final class Scene12 implements Scene {
 
         gl.glPushMatrix();
         //k_Text[6].use(gl);
-        gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+        gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
         //glColor4f(.75,.75,.75,.5);
         gl.glColor4f(1, 1, 1, 1);
         gl.glTranslatef(0, 0, 2.0f * (float)Math.sin(k_timer / 1.0f));
@@ -152,7 +154,7 @@ final class Scene12 implements Scene {
         k_drawrect1(gl, 10, 10, .35f - k_timer / 10.0f, .1f + k_timer / 25.0f);
         gl.glPopMatrix();
         k_timer -= 3;
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
         k_Text[1].use(gl);
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
@@ -171,19 +173,19 @@ final class Scene12 implements Scene {
             if (k_timer <= 1.0f) {
                 k_Text[3].use(gl);
                 gl.glColor4f(k_timer, k_timer, k_timer, 1);
-                gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+                gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
                 k_drawrect(gl, 4.2f, 1.7f);
                 k_Text[1].use(gl);
-                gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+                gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
                 gl.glColor4f(1, 1, 1, k_timer);
                 k_drawrect(gl, 3.5f, 1);
             } else if (k_timer < 1.1f) {
                 k_Text[3].use(gl);
                 gl.glColor4f(1.0f - 10.0f * (k_timer - 1.0f), 1.0f - 10.0f * (k_timer - 1.0f), 1.0f - 10.0f * (k_timer - 1.0f), 1);
-                gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+                gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
                 k_drawrect(gl, 4.2f, 1.7f);
                 k_Text[1].use(gl);
-                gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+                gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
                 gl.glColor4f(1, 1, 1, 20.0f * (k_timer - 1.0f));
                 gl.glTranslatef(0, 0, 15000.0f * (k_timer - 1.0f) * (k_timer - 1.0f) * (k_timer - 1.0f) * (k_timer - 1.0f));
                 k_drawrect(gl, 3.5f, 1);
@@ -205,16 +207,16 @@ final class Scene12 implements Scene {
                 if (k_timer < 2.5f) {
                     float j_tras = -(float)Math.sin((-k_timer + 1.1f) * .5 * 3.1415f / 1.4f);
                     k_Text[1].use(gl);
-                    gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+                    gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
                     gl.glColor4f(1, 1, 1, j_tras);
                     k_drawrect(gl, 3.5f, 1);
                 } else {
                     k_Text[3].use(gl);
                     gl.glColor4f(2.0f * (k_timer - 2.5f), 2.0f * (k_timer - 2.5f), 2.0f * (k_timer - 2.5f), 1);
-                    gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+                    gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
                     k_drawrect(gl, 4.2f, 1.7f);
                     k_Text[1].use(gl);
-                    gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+                    gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
                     gl.glColor4f(1, 1, 1, 1);
                     k_drawrect(gl, 3.5f, 1);
                 }
@@ -223,14 +225,14 @@ final class Scene12 implements Scene {
         }
 
         if (k_timer < 0.0f) {
-            gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_ALPHA);
-            gl.glDisable(GL.GL_TEXTURE_2D);
+            gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_ALPHA);
+            gl.glDisable(GL2.GL_TEXTURE_2D);
             gl.glColor4f(1, 1, 1, -k_timer);
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -1.0f);
             k_drawrect(gl, 1.2f, 1.2f);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-            gl.glEnable(GL.GL_TEXTURE_2D);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
         }
 
 
@@ -240,12 +242,12 @@ final class Scene12 implements Scene {
 //	if (k_timer<2.501f) gl.glTranslatef(0,0,-7.0f+3.0f*(float)Math.sin(k_timer*3.1415f*.5f/2.5f));
 //	else gl.glTranslatef(0,0,-4.0f);
 
-        gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
+        gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
         gl.glColor4f(1, 1, 1, 1);
         k_drawrect(gl, 1.85f, 1.25f);
         //k_drawrect(4.8,2.1);
 
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
         if (k_timer > 2.5f) {
 
             gl.glLoadIdentity();
@@ -260,14 +262,14 @@ final class Scene12 implements Scene {
         }
 
         if (k_timer > 4.0f) {
-            gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_ALPHA);
-            gl.glDisable(GL.GL_TEXTURE_2D);
+            gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_ALPHA);
+            gl.glDisable(GL2.GL_TEXTURE_2D);
             gl.glColor4f(1, 1, 1, (k_timer - 4.0f) / 3.25f);
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -1.0f);
             k_drawrect(gl, 1.2f, 1.2f);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-            gl.glEnable(GL.GL_TEXTURE_2D);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
         }
         if (k_timer > 7.25f) {
             //*************** FINISH

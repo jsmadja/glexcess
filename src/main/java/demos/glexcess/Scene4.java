@@ -1,8 +1,10 @@
 package demos.glexcess;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GLDrawable;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.glu.gl2.GLUgl2;
 import demos.common.ResourceRetriever;
 
 import java.io.IOException;
@@ -73,8 +75,8 @@ final class Scene4 implements Scene {
 
     private final float[] d_off = new float[d_repeat];
 
-    public final void clean(GLDrawable g) {
-        GL gl = g.getGL();
+    public final void clean(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
         d_Text[1].kill(gl);
         d_Text[2].kill(gl);
         d_Text[3].kill(gl);
@@ -86,7 +88,7 @@ final class Scene4 implements Scene {
         init = true;
     }
 
-    private void init(GLDrawable g) {
+    private void init(GLAutoDrawable g) {
         d_time = 0;
         d_timer1 = 0;
         d_timer2 = 0;
@@ -97,13 +99,13 @@ final class Scene4 implements Scene {
 
         d_ct = 0;
 
-        GL gl = g.getGL();
-        GLU glu = g.getGLU();
+        GL2 gl = g.getGL().getGL2();
+        GLUgl2 glu = new GLUgl2();
 
-        gl.glMatrixMode(GL.GL_PROJECTION);
+        gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
-        glu.gluPerspective(45.0f, (float) g.getSize().width / (float) g.getSize().height, 0.1f, 90.0f);
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        glu.gluPerspective(45.0f, (float) g.getSurfaceWidth() / (float) g.getSurfaceHeight(), 0.1f, 90.0f);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
 
         d_Text = new Texture[numtexs];
@@ -123,10 +125,10 @@ final class Scene4 implements Scene {
             throw new RuntimeException(e);
         }
 
-        gl.glShadeModel(GL.GL_FLAT);
+        gl.glShadeModel(GL2.GL_FLAT);
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         gl.glClearDepth(1.0f);
-        gl.glDisable(GL.GL_DEPTH_TEST);
+        gl.glDisable(GL2.GL_DEPTH_TEST);
 
         xp1 = new d_part[d_repeat][d_num1];
         xp2 = new d_part[d_repeat][d_num2];
@@ -150,17 +152,17 @@ final class Scene4 implements Scene {
         }
         d_rstoff();
 
-        gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);	// Really Nice Perspective Calculations
-        gl.glPolygonMode(GL.GL_FRONT, GL.GL_FILL);
-        gl.glEnable(GL.GL_TEXTURE_2D);
-        gl.glEnable(GL.GL_CULL_FACE);
-        gl.glFrontFace(GL.GL_CCW);
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-        gl.glEnable(GL.GL_BLEND);
+        gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);	// Really Nice Perspective Calculations
+        gl.glPolygonMode(GL2.GL_FRONT, GL2.GL_FILL);
+        gl.glEnable(GL2.GL_TEXTURE_2D);
+        gl.glEnable(GL2.GL_CULL_FACE);
+        gl.glFrontFace(GL2.GL_CCW);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+        gl.glEnable(GL2.GL_BLEND);
     }
 
-    private static void d_drawquad(GL gl, float size) {
-        gl.glBegin(GL.GL_QUADS);
+    private static void d_drawquad(GL2 gl, float size) {
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex3f(-0.5f * size, -0.5f * size, 0.0f);
         gl.glTexCoord2f(1.0f, 0.0f);
@@ -172,18 +174,18 @@ final class Scene4 implements Scene {
         gl.glEnd();
     }
 
-    private void d_drawtri(GL gl, int i, int d_y, float size, float xrot, float yrot, float zrot) {
+    private void d_drawtri(GL2 gl, int i, int d_y, float size, float xrot, float yrot, float zrot) {
         gl.glRotatef(xp5[i][d_y].mod * xrot, 1, 0, 0);
         gl.glRotatef(xp5[i][d_y].mod * yrot, 0, 1, 0);
         gl.glRotatef(xp5[i][d_y].mod * zrot, 0, 0, 1);
-        gl.glBegin(GL.GL_TRIANGLES);
+        gl.glBegin(GL2.GL_TRIANGLES);
         gl.glVertex3f(-0.5f * size, -0.5f * size, 0.0f);
         gl.glVertex3f(0.5f * size, -0.5f * size * ((float) d_y / d_num5), 0.0f);
         gl.glVertex3f(0.5f * size * ((float) d_y / d_num5), 0.5f * size, 0.0f);
         gl.glEnd();
     }
 
-    private void d_xpls1(GL gl, int i) {
+    private void d_xpls1(GL2 gl, int i) {
         d_Text[5].use(gl);
         if ((d_timer2 > 10) && (d_timer1 < d_num1)) d_timer1++;
         for (int d_y = 0; d_y < d_timer1; d_y++) {
@@ -217,8 +219,8 @@ final class Scene4 implements Scene {
         }
     }
 
-    private void d_xpls2(GL gl, int i) {
-        //glBindTexture(GL.GL_TEXTURE_2D, d_texture[2]);
+    private void d_xpls2(GL2 gl, int i) {
+        //glBindTexture(GL2.GL_TEXTURE_2D, d_texture[2]);
         d_Text[3].use(gl);
         if (d_timer2 < d_num2) d_timer2++;
         for (d_y = 0; d_y < d_timer2; d_y++) {
@@ -252,8 +254,8 @@ final class Scene4 implements Scene {
         }
     }
 
-    private void d_xpls3(GL gl, int i) {
-        //glBindTexture(GL.GL_TEXTURE_2D, d_texture[1]);
+    private void d_xpls3(GL2 gl, int i) {
+        //glBindTexture(GL2.GL_TEXTURE_2D, d_texture[1]);
         d_Text[2].use(gl);
         if (d_timer3 < d_num3) d_timer3++;
         for (d_y = 0; d_y < d_timer3; d_y++) {
@@ -287,7 +289,7 @@ final class Scene4 implements Scene {
         }
     }
 
-    private void d_xpls4(GL gl, int i) {
+    private void d_xpls4(GL2 gl, int i) {
         d_Text[6].use(gl);
         if (d_timer4 < d_num4) d_timer4++;
         for (d_y = 0; d_y < d_timer4; d_y++) {
@@ -325,17 +327,17 @@ final class Scene4 implements Scene {
         }
     }
 
-    private void d_xpls5(GL gl, int i) {
-        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
-        gl.glEnable(GL.GL_TEXTURE_GEN_S);
-        gl.glEnable(GL.GL_TEXTURE_GEN_T);
-        //glDisable(GL.GL_BLEND);
-        gl.glTexGeni(GL.GL_T, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
-        gl.glTexGeni(GL.GL_S, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
-        //glBindTexture(GL.GL_TEXTURE_2D, d_texture[0]);
+    private void d_xpls5(GL2 gl, int i) {
+        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+        gl.glEnable(GL2.GL_TEXTURE_GEN_S);
+        gl.glEnable(GL2.GL_TEXTURE_GEN_T);
+        //glDisable(GL2.GL_BLEND);
+        gl.glTexGeni(GL2.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
+        gl.glTexGeni(GL2.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
+        //glBindTexture(GL2.GL_TEXTURE_2D, d_texture[0]);
         d_Text[1].use(gl);
-        gl.glDisable(GL.GL_CULL_FACE);
-        //glDisable(GL.GL_TEXTURE_2D);
+        gl.glDisable(GL2.GL_CULL_FACE);
+        //glDisable(GL2.GL_TEXTURE_2D);
         if (d_timer5 < d_num5) d_timer5++;
         for (d_y = 0; d_y < d_timer5; d_y++) {
             if (xp5[i][d_y].a > 0) {
@@ -365,12 +367,12 @@ final class Scene4 implements Scene {
                 gl.glPopMatrix();
             }
         }
-        gl.glDisable(GL.GL_TEXTURE_GEN_S);
-        gl.glDisable(GL.GL_TEXTURE_GEN_T);
-        gl.glEnable(GL.GL_CULL_FACE);
-        gl.glEnable(GL.GL_TEXTURE_2D);
-        gl.glEnable(GL.GL_BLEND);
-        gl.glPolygonMode(GL.GL_FRONT, GL.GL_FILL);
+        gl.glDisable(GL2.GL_TEXTURE_GEN_S);
+        gl.glDisable(GL2.GL_TEXTURE_GEN_T);
+        gl.glEnable(GL2.GL_CULL_FACE);
+        gl.glEnable(GL2.GL_TEXTURE_2D);
+        gl.glEnable(GL2.GL_BLEND);
+        gl.glPolygonMode(GL2.GL_FRONT, GL2.GL_FILL);
     }
 
     private void d_rst1(int i) {
@@ -470,7 +472,7 @@ final class Scene4 implements Scene {
         d_off[10] = 1.2f;
     }
 
-    public final boolean drawScene(GLDrawable g, float time) {
+    public final boolean drawScene(GLAutoDrawable g, float time) {
         if (init) {
             init(g);
             init = false;
@@ -478,9 +480,9 @@ final class Scene4 implements Scene {
         d_time++;
         d_ct++;
 
-        GL gl = g.getGL();
+        GL2 gl = g.getGL().getGL2();
 
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+        gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
         gl.glLoadIdentity();
         gl.glTranslatef(0, 0, -15);
@@ -489,7 +491,7 @@ final class Scene4 implements Scene {
         gl.glTranslatef(0, 0, -15);
         gl.glScalef(2, 1, 1);
         d_Text[7].use(gl);
-        gl.glDisable(GL.GL_BLEND);
+        gl.glDisable(GL2.GL_BLEND);
 
         if (d_ct < 300)
             gl.glColor4ub((byte)255, (byte)255, (byte)255, (byte)255);
@@ -500,7 +502,7 @@ final class Scene4 implements Scene {
                     (byte) (255 - 2.55f * ((float) (d_ct - 300))),
                     (byte)225);
         d_drawquad(gl, 5);
-        gl.glEnable(GL.GL_BLEND);
+        gl.glEnable(GL2.GL_BLEND);
         gl.glPopMatrix();
 //        if (true) {
 //            gl.glPopMatrix();
@@ -511,22 +513,22 @@ final class Scene4 implements Scene {
             d_time = 0;
         }
         for (int i = 0; i < d_offset; i++) {
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
             gl.glPushMatrix();
             if (i != d_repeat - 1)
                 gl.glTranslatef(4f * (float) Math.cos(6.28f * ((float) i / (d_repeat - 1))), 2f * (float) Math.sin(6.28f * ((float) i / (d_repeat - 1))), 0);
             //else MessageBox(NULL,"i vale repeat-1","i vale repeat-1",0);
             gl.glScalef(d_off[i], d_off[i], 1);
             gl.glColor4ub((byte)255, (byte)255, (byte)255, (byte)255);
-            gl.glBlendFunc(GL.GL_ZERO, GL.GL_ONE_MINUS_SRC_COLOR);
-            //glBindTexture(GL.GL_TEXTURE_2D, d_texture[7]);
+            gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
+            //glBindTexture(GL2.GL_TEXTURE_2D, d_texture[7]);
             d_Text[8].use(gl);
             gl.glPushMatrix();
             gl.glRotatef(4f * d_radius[i], 0, 0, 1);
             d_drawquad(gl, d_radius[i] / 4f);
             gl.glPopMatrix();
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-            //glBindTexture(GL.GL_TEXTURE_2D, d_texture[3]);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+            //glBindTexture(GL2.GL_TEXTURE_2D, d_texture[3]);
             d_Text[4].use(gl);
             if ((1.0f - (d_radius[i] / 2.5f)) > 0.0f) {
                 gl.glColor4f(.95f, .9f, .75f, 1.0f - (d_radius[i] / 2.5f));
@@ -569,7 +571,7 @@ final class Scene4 implements Scene {
                 if (i != d_repeat - 1)
                     gl.glTranslatef(4f * (float) Math.cos(6.28f * ((float) i / (d_repeat - 1f))), 2f * (float) Math.sin(6.28f * ((float) i / (d_repeat - 1f))), 0);
                 gl.glScalef(d_off[i], d_off[i], 1);
-                //glDisable(GL.GL_TEXTURE_2D);
+                //glDisable(GL2.GL_TEXTURE_2D);
                 d_xpls1(gl, i);
 
                 d_xpls2(gl, i);

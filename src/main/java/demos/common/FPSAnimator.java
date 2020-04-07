@@ -39,12 +39,11 @@
 
 package demos.common;
 
+import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLDrawable;
-import com.jogamp.opengl.GLException;
 import com.jogamp.opengl.util.Animator;
 
 import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * <P> An Animator can be attached to a GLDrawable to drive its
@@ -73,12 +72,14 @@ public class FPSAnimator extends Animator {
     private Timer renderTimer;
     private ExceptionHandler exceptionHandler;
 
-    public FPSAnimator(GLDrawable drawable, int fps) {
+    public FPSAnimator(GLAutoDrawable drawable, int fps) {
         this(drawable, fps, null);
     }
 
-    /** Creates a new Animator for a particular drawable. */
-    public FPSAnimator(GLDrawable drawable, int fps, ExceptionHandler exceptionHandler) {
+    /**
+     * Creates a new Animator for a particular drawable.
+     */
+    public FPSAnimator(GLAutoDrawable drawable, int fps, ExceptionHandler exceptionHandler) {
         super(drawable);
         this.exceptionHandler = exceptionHandler;
         this.drawable = drawable;
@@ -86,6 +87,8 @@ public class FPSAnimator extends Animator {
     }
 
     /** Starts this animator. */
+    // TODO
+    /*
     public synchronized void start() {
         if (thread != null) {
             throw new GLException("Already started");
@@ -100,9 +103,14 @@ public class FPSAnimator extends Animator {
             }
         }, 0, delay);
     }
+    */
 
-    /** Stops this animator, blocking until the animation thread has
-     finished. */
+    /**
+     * Stops this animator, blocking until the animation thread has
+     * finished.
+     */
+    // TODO
+/*
     public synchronized void stop() {
         shouldStop = true;
         while (shouldStop && thread != null) {
@@ -112,7 +120,7 @@ public class FPSAnimator extends Animator {
             }
             renderTimer.cancel();
         }
-    }
+    }*/
 
     public boolean isFrameRateLimitEnabled() {
         return runnable.isFrameRateLimitEnabled();
@@ -150,7 +158,8 @@ public class FPSAnimator extends Animator {
                 // will be rendering this one drawable continually from
                 // this thread; make the context current once instead of
                 // making it current and freeing it each frame.
-                drawable.setRenderingThread(Thread.currentThread());
+                // TODO
+                // drawable.setRenderingThread(Thread.currentThread());
 
                 // Since setRenderingThread is currently advisory (because
                 // of the poor JAWT implementation in the Motif AWT, which
@@ -161,11 +170,13 @@ public class FPSAnimator extends Animator {
                 // own animation loops which update multiple drawables per
                 // tick then it may be necessary to enforce the order of
                 // updates.
-                drawable.setNoAutoRedrawMode(true);
+                // TODO
+                // drawable.setNoAutoRedrawMode(true);
 
                 while (!shouldStop) {
                     noException = false;
-                    drawable.display();
+                    // TODO
+                    // drawable.display();
                     if (frameRateLimitEnabled) {
                         synchronized (this) {
                             if (frameRateLimitEnabled) {
@@ -183,14 +194,16 @@ public class FPSAnimator extends Animator {
                     exceptionHandler.handleException(e);
             } finally {
                 shouldStop = false;
-                drawable.setNoAutoRedrawMode(false);
+                // TODO
+                // drawable.setNoAutoRedrawMode(false);
                 try {
                     // The surface is already unlocked and rendering
                     // thread is already null if an exception occurred
                     // during display(), so don't disable the rendering
                     // thread again.
                     if (noException) {
-                        drawable.setRenderingThread(null);
+                        // TODO
+                        //drawable.setRenderingThread(null);
                     }
                 } finally {
                     synchronized (FPSAnimator.this) {

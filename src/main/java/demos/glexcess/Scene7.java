@@ -1,12 +1,15 @@
 package demos.glexcess;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GLDrawable;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.glu.gl2.GLUgl2;
 import com.jogamp.opengl.util.gl2.GLUT;
 import demos.common.ResourceRetriever;
 
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.util.Random;
 
 /**
@@ -85,9 +88,9 @@ final class Scene7 implements Scene {
         accs[naccs].arad = .05f + .00035f * (float) (Math.abs(random.nextInt()) % 1000);
     }
 
-    private void init(GLDrawable g) {
-        GL gl = g.getGL();
-        GLU glu = g.getGLU();
+    private void init(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
+        GLUgl2 glu = new GLUgl2();
         f_Text = new Texture[numtexs];
         f_density = 0.025f;
         f_cycle = 0;
@@ -109,10 +112,10 @@ final class Scene7 implements Scene {
         f_end = 1.0f;
 
         f_frames = 0;
-        gl.glMatrixMode(GL.GL_PROJECTION);
+        gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
-        glu.gluPerspective(45.0f, (float) g.getSize().width / (float) g.getSize().height, 0.1f, 100.0f);
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        glu.gluPerspective(45.0f, (float) g.getSurfaceWidth() / (float) g.getSurfaceHeight(), 0.1f, 100.0f);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
 
 //	FILE* f_in=NULL;
@@ -131,14 +134,14 @@ final class Scene7 implements Scene {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        gl.glShadeModel(GL.GL_FLAT);
+        gl.glShadeModel(GL2.GL_FLAT);
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         gl.glClearDepth(1.0f);
-        gl.glEnable(GL.GL_DEPTH_TEST);
-        gl.glDepthFunc(GL.GL_LEQUAL);
-        gl.glEnable(GL.GL_CULL_FACE);
-        gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
-        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
+        gl.glEnable(GL2.GL_DEPTH_TEST);
+        gl.glDepthFunc(GL2.GL_LEQUAL);
+        gl.glEnable(GL2.GL_CULL_FACE);
+        gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
+        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
         for (int f_x = 0; f_x < 64; f_x++) {
             for (int f_y = 0; f_y < 63; f_y++) {
@@ -151,18 +154,18 @@ final class Scene7 implements Scene {
             f_speed[f_x][63] = f_speed[f_x][0];
         }
 
-        gl.glEnable(GL.GL_TEXTURE_GEN_S);
-        gl.glEnable(GL.GL_TEXTURE_GEN_T);
-        gl.glTexGeni(GL.GL_T, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
-        gl.glTexGeni(GL.GL_S, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
-        gl.glFogf(GL.GL_FOG_MODE, GL.GL_EXP2);
-        gl.glFogf(GL.GL_FOG_DENSITY, .025f);
+        gl.glEnable(GL2.GL_TEXTURE_GEN_S);
+        gl.glEnable(GL2.GL_TEXTURE_GEN_T);
+        gl.glTexGeni(GL2.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
+        gl.glTexGeni(GL2.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
+        gl.glFogf(GL2.GL_FOG_MODE, GL2.GL_EXP2);
+        gl.glFogf(GL2.GL_FOG_DENSITY, .025f);
         f_FogColor[0] = 0.0f;
         f_FogColor[1] = 0.0f;
         f_FogColor[2] = 0.0f;
-        gl.glFogfv(GL.GL_FOG_COLOR, f_FogColor);
-        gl.glEnable(GL.GL_FOG);
-        gl.glEnable(GL.GL_TEXTURE_2D);
+        gl.glFogfv(GL2.GL_FOG_COLOR, FloatBuffer.wrap(f_FogColor));
+        gl.glEnable(GL2.GL_FOG);
+        gl.glEnable(GL2.GL_TEXTURE_2D);
 
         for (int i = 0; i < 10; i++)
             for (int j = 0; j < 10; j++)
@@ -186,12 +189,12 @@ final class Scene7 implements Scene {
             particles[f_cycle].f_speed = .00000075f * (float) (Math.abs(random.nextInt()) % 10000);
         }
 
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
         for (f_cycle = 0; f_cycle < f_acn; f_cycle++) f_initacc(f_cycle);
     }
 
-    public final void clean(GLDrawable g) {
-        GL gl = g.getGL();
+    public final void clean(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
         f_Text[1].kill(gl);
         f_Text[2].kill(gl);
         f_Text[3].kill(gl);
@@ -201,8 +204,8 @@ final class Scene7 implements Scene {
         init = true;
     }
 
-    private static void f_drawquad(GL gl, float size) {
-        gl.glBegin(GL.GL_QUADS);
+    private static void f_drawquad(GL2 gl, float size) {
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex3f(-.5f * size, -.5f * size, 0);
         gl.glTexCoord2f(1.0f, 0.0f);
@@ -214,14 +217,14 @@ final class Scene7 implements Scene {
         gl.glEnd();
     }
 
-    public final boolean drawScene(GLDrawable g, float globtime) {
+    public final boolean drawScene(GLAutoDrawable g, float globtime) {
         if (init) {
             init(g);
             init = false;
         }
 
-        GL gl = g.getGL();
-        GLU glu = g.getGLU();
+        GL2 gl = g.getGL().getGL2();
+        GLUgl2 glu = new GLUgl2();
 
         f_time = 10 * globtime;
         if (f_zeta < 32.5f) {
@@ -229,31 +232,31 @@ final class Scene7 implements Scene {
                 f_frames++;
             else
                 f_factor = 20.0f / (float) f_frames;
-            gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+            gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
-            gl.glEnable(GL.GL_TEXTURE_GEN_S);
-            gl.glEnable(GL.GL_TEXTURE_GEN_T);
+            gl.glEnable(GL2.GL_TEXTURE_GEN_S);
+            gl.glEnable(GL2.GL_TEXTURE_GEN_T);
             gl.glLoadIdentity();
             glu.gluLookAt(5, 5, -3f + f_zeta, 10, 10, 10, 0, 1, 0);
 
             gl.glPushMatrix();
             gl.glTranslatef(10, 10, 10);
             f_Text[1].use(gl);
-            gl.glTexGeni(GL.GL_S, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
-            gl.glTexGeni(GL.GL_T, GL.GL_TEXTURE_GEN_MODE, GL.GL_OBJECT_LINEAR);
+            gl.glTexGeni(GL2.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
+            gl.glTexGeni(GL2.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_OBJECT_LINEAR);
             gl.glScalef(30, 30, 30);
-            gl.glFrontFace(GL.GL_CW);
+            gl.glFrontFace(GL2.GL_CW);
             gl.glColor3ub((byte) 128, (byte) 160, (byte) 192);
             gl.glPushMatrix();
             gl.glRotatef(f_rot, 1, 0, 0);
-            glut.glutSolidSphere(glu, 1, 50, 50);
+            glut.glutSolidSphere( 1, 50, 50);
             gl.glPopMatrix();
             gl.glPopMatrix();
 
-            gl.glFrontFace(GL.GL_CCW);
+            gl.glFrontFace(GL2.GL_CCW);
             f_Text[1].use(gl);
-            gl.glTexGeni(GL.GL_T, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
-            gl.glTexGeni(GL.GL_S, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
+            gl.glTexGeni(GL2.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
+            gl.glTexGeni(GL2.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
             gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 128);
             for (int f_x = 9; f_x >= 0; f_x--)
                 for (int f_y = 9; f_y >= 0; f_y--)
@@ -270,18 +273,18 @@ final class Scene7 implements Scene {
 
                         if ((f_timer > 12.75) && (f_x == 3) && (f_y == 3) && (f_z == 4) && (f_timer < 17)) {
                             gl.glColor4f(1, .65f, .35f, .75f);
-                            gl.glDisable(GL.GL_DEPTH_TEST);
-                            gl.glDisable(GL.GL_CULL_FACE);
-                            gl.glEnable(GL.GL_BLEND);
+                            gl.glDisable(GL2.GL_DEPTH_TEST);
+                            gl.glDisable(GL2.GL_CULL_FACE);
+                            gl.glEnable(GL2.GL_BLEND);
                             float value = (f_angle[f_x][f_y][f_z] / (360f * 2f));
                             float tot = 5;
                             for (float times = 0; times < tot; times++) {
                                 if (times == 0) gl.glColor4f(1, .65f, .35f, 1.0f);
                                 gl.glColor4f(1, .65f, .35f, .5f - .5f * times / tot);
-                                glut.glutSolidCube(gl, value + .035f * times / tot);
+                                glut.glutSolidCube( value + .035f * times / tot);
                             }
-                            gl.glDisable(GL.GL_TEXTURE_GEN_S);
-                            gl.glDisable(GL.GL_TEXTURE_GEN_T);
+                            gl.glDisable(GL2.GL_TEXTURE_GEN_S);
+                            gl.glDisable(GL2.GL_TEXTURE_GEN_T);
                             if (true) {
                                 f_Text[5].use(gl);
                                 gl.glColor4f(1, 1, 1, 1);
@@ -302,25 +305,25 @@ final class Scene7 implements Scene {
                                 gl.glColor4f(1, 1, 1, 1);
                                 f_drawquad(gl, .2f + .1f * (float) Math.sin(f_timer));
                             }
-                            gl.glEnable(GL.GL_DEPTH_TEST);
-                            gl.glEnable(GL.GL_CULL_FACE);
-                            gl.glDisable(GL.GL_BLEND);
+                            gl.glEnable(GL2.GL_DEPTH_TEST);
+                            gl.glEnable(GL2.GL_CULL_FACE);
+                            gl.glDisable(GL2.GL_BLEND);
                             gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 128);
                         } else {
                             float value = (f_angle[f_x][f_y][f_z] / (360f * 2f));
-                            glut.glutSolidCube(gl, value);
+                            glut.glutSolidCube(value);
                         }
                         gl.glPopMatrix();
                     }
 
-            gl.glFrontFace(GL.GL_CW);
+            gl.glFrontFace(GL2.GL_CW);
 
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -15);
-            gl.glEnable(GL.GL_BLEND);
-            gl.glDisable(GL.GL_TEXTURE_GEN_S);
-            gl.glDisable(GL.GL_TEXTURE_GEN_T);
-            gl.glDisable(GL.GL_DEPTH_TEST);
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glDisable(GL2.GL_TEXTURE_GEN_S);
+            gl.glDisable(GL2.GL_TEXTURE_GEN_T);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
             if (f_zeta > 0.0f) f_shadetop = (int) (255 * ((float) Math.sin((f_zeta / 40) * 1.5f * 3.1415f)));
             gl.glRotatef(-100 * (float) Math.sqrt(Math.sqrt(f_zeta * f_zeta)), 0, 0, 1);
             if (((f_zeta > 0) && (f_zeta < .9)) ||
@@ -438,66 +441,66 @@ final class Scene7 implements Scene {
 		}
 */
                 f_density = .025f * (1.0f + (f_zeta - 29.5f) / 10.0f);
-                gl.glFogf(GL.GL_FOG_DENSITY, f_density);
+                gl.glFogf(GL2.GL_FOG_DENSITY, f_density);
                 gl.glLoadIdentity();
                 gl.glTranslatef(0, 0, -1);
                 gl.glColor4f(1.0f, 1.0f, 1.0f, (f_zeta - 29.5f) / 3.0f);
 
-                gl.glDisable(GL.GL_TEXTURE_2D);
+                gl.glDisable(GL2.GL_TEXTURE_2D);
                 f_drawquad(gl, 1.5f);
-                gl.glEnable(GL.GL_TEXTURE_2D);
+                gl.glEnable(GL2.GL_TEXTURE_2D);
 
             }
         } else {
             gl.glClearColor(1.0f - 2.0f * (f_zeta - 32.5f), 1.0f - 2.0f * (f_zeta - 32.5f), 1.0f - 2.0f * (f_zeta - 32.5f), 1);
-            gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+            gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
         }
         if (f_timer < 1.0f) {
-            gl.glDisable(GL.GL_DEPTH_TEST);
-            gl.glEnable(GL.GL_BLEND);
-            gl.glDisable(GL.GL_TEXTURE_2D);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glDisable(GL2.GL_TEXTURE_2D);
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -.35f);
             gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f - f_timer * 2.0f);
             f_drawquad(gl, .5f);
-            gl.glEnable(GL.GL_TEXTURE_2D);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
         }
 
         if ((f_timer > 2.1f) && (f_timer < 3.1f)) {
-            gl.glDisable(GL.GL_DEPTH_TEST);
-            gl.glEnable(GL.GL_BLEND);
-            gl.glDisable(GL.GL_TEXTURE_2D);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glDisable(GL2.GL_TEXTURE_2D);
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -.35f);
             gl.glColor4f(1.0f, 1.0f, 1.0f, .45f * (1.0f - (float) Math.cos((f_timer - 2.1f) * 3.1415f * 2.0f)));
             f_drawquad(gl, .5f);
-            gl.glEnable(GL.GL_TEXTURE_2D);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
         }
 
         if ((f_timer > 12.25f) && (f_timer < 13.25f)) {
-            gl.glDisable(GL.GL_DEPTH_TEST);
-            gl.glEnable(GL.GL_BLEND);
-            gl.glDisable(GL.GL_TEXTURE_2D);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glDisable(GL2.GL_TEXTURE_2D);
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -.35f);
             gl.glColor4f(1.0f, 1.0f, 1.0f, .45f * (1.0f - (float) Math.cos((f_timer - 12.25f) * 3.1415f * 2.0f)));
             f_drawquad(gl, .5f);
-            gl.glEnable(GL.GL_TEXTURE_2D);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
         }
 
         if ((f_timer > 22.3f) && (f_timer < 28.3)) {
-            gl.glMatrixMode(GL.GL_PROJECTION);
+            gl.glMatrixMode(GL2.GL_PROJECTION);
             gl.glLoadIdentity();
             if (f_timer < 23.3f)
-                glu.gluPerspective(45.0f + 25 * (1.0 - (float) Math.cos((f_timer - 22.3) * 3.1415)), (float) g.getSize().width / (float) g.getSize().height, 0.1f, 100.0f);
+                glu.gluPerspective(45.0f + 25 * (1.0 - (float) Math.cos((f_timer - 22.3) * 3.1415)), (float) g.getSurfaceWidth() / (float) g.getSurfaceHeight(), 0.1f, 100.0f);
             else
-                glu.gluPerspective(45.0f + 25 * (1.0 + (float) Math.cos((f_timer - 23.3) * 3.1415 / 5.0)), (float) g.getSize().width / (float) g.getSize().height, 0.1f, 100.0f);
-            gl.glMatrixMode(GL.GL_MODELVIEW);
+                glu.gluPerspective(45.0f + 25 * (1.0 + (float) Math.cos((f_timer - 23.3) * 3.1415 / 5.0)), (float) g.getSurfaceWidth() / (float) g.getSurfaceHeight(), 0.1f, 100.0f);
+            gl.glMatrixMode(GL2.GL_MODELVIEW);
         }
 
-        gl.glDisable(GL.GL_BLEND);
-        gl.glEnable(GL.GL_DEPTH_TEST);
-        gl.glFrontFace(GL.GL_CCW);
+        gl.glDisable(GL2.GL_BLEND);
+        gl.glEnable(GL2.GL_DEPTH_TEST);
+        gl.glFrontFace(GL2.GL_CCW);
 
 /*	if ((f_timer>12.2)&&(f_play2))
 	{

@@ -1,8 +1,8 @@
 package demos.glexcess;
 
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GLDrawable;
-import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.glu.gl2.GLUgl2;
 import com.jogamp.opengl.util.gl2.GLUT;
 import demos.common.ResourceRetriever;
 
@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.FloatBuffer;
 import java.util.StringTokenizer;
 
 /**
@@ -57,7 +58,7 @@ final class Scene6 implements Scene {
 
     private final GLUT glut = new GLUT();
 
-    private static int genship(GL gl) {
+    private static int genship(GL2 gl) {
         int[][] face_indicies = null;
         float[][] vertices = null;
         float[][] normals = null;
@@ -104,9 +105,9 @@ final class Scene6 implements Scene {
 
         int i,j;
         int lid = gl.glGenLists(1);
-        gl.glNewList(lid, GL.GL_COMPILE);
+        gl.glNewList(lid, GL2.GL_COMPILE);
 
-        gl.glBegin(GL.GL_TRIANGLES);
+        gl.glBegin(GL2.GL_TRIANGLES);
         for (i = 0; i < face_indicies.length; i++) {
             if ((i % 1) == 0) {
                 for (j = 0; j < 3; j++) {
@@ -122,9 +123,9 @@ final class Scene6 implements Scene {
         return lid;
     };
 
-    private void init(GLDrawable g) {
-        GL gl = g.getGL();
-        GLU glu = g.getGLU();
+    private void init(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
+        GLUgl2 glu = new GLUgl2();
 
         e_Text = new Texture[numtexs];
         shiplist = genship(gl);
@@ -141,10 +142,10 @@ final class Scene6 implements Scene {
         e_rocca = 1.0f;
         e_depth = 60.0f;
         e_radius = 0.0f;
-        gl.glMatrixMode(GL.GL_PROJECTION);
+        gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
-        glu.gluPerspective(45.0f, (float) g.getSize().width / (float) g.getSize().height, 0.1f, 90.0f);
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        glu.gluPerspective(45.0f, (float) g.getSurfaceWidth() / (float) g.getSurfaceHeight(), 0.1f, 90.0f);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
 
         for (int i = 0; i < e_Text.length; i++) {
@@ -164,37 +165,37 @@ final class Scene6 implements Scene {
             throw new RuntimeException(e);
         }
 
-        gl.glShadeModel(GL.GL_SMOOTH);
+        gl.glShadeModel(GL2.GL_SMOOTH);
         gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         gl.glClearDepth(1.0f);
-        gl.glEnable(GL.GL_DEPTH_TEST);
-        gl.glDepthFunc(GL.GL_LEQUAL);
-        gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
-        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
-        gl.glEnable(GL.GL_TEXTURE_2D);
-        //glFogf(GL.GL_FOG_MODE,GL.GL_LINEAR);
-        gl.glFogf(GL.GL_FOG_MODE, GL.GL_EXP2);
-        gl.glFogf(GL.GL_FOG_START, 15.0f);
-        gl.glFogf(GL.GL_FOG_END, 25.0f);
-        //glFogf(GL.GL_FOG_DENSITY,0.175f);
-        gl.glFogf(GL.GL_FOG_DENSITY, 0.075f);
+        gl.glEnable(GL2.GL_DEPTH_TEST);
+        gl.glDepthFunc(GL2.GL_LEQUAL);
+        gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
+        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+        gl.glEnable(GL2.GL_TEXTURE_2D);
+        //glFogf(GL2.GL_FOG_MODE,GL2.GL_LINEAR);
+        gl.glFogf(GL2.GL_FOG_MODE, GL2.GL_EXP2);
+        gl.glFogf(GL2.GL_FOG_START, 15.0f);
+        gl.glFogf(GL2.GL_FOG_END, 25.0f);
+        //glFogf(GL2.GL_FOG_DENSITY,0.175f);
+        gl.glFogf(GL2.GL_FOG_DENSITY, 0.075f);
         e_FogColor[0] = 0.0f;
         e_FogColor[1] = 0.0f;
         e_FogColor[2] = 0.0f;
-        gl.glFogfv(GL.GL_FOG_COLOR, e_FogColor);
-        gl.glEnable(GL.GL_FOG);
-        gl.glDisable(GL.GL_CULL_FACE);
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-        gl.glEnable(GL.GL_FOG);
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+        gl.glFogfv(GL2.GL_FOG_COLOR, FloatBuffer.wrap(e_FogColor));
+        gl.glEnable(GL2.GL_FOG);
+        gl.glDisable(GL2.GL_CULL_FACE);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+        gl.glEnable(GL2.GL_FOG);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
         e_Text[1].use(gl);
-        gl.glTexGeni(GL.GL_T, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
-        gl.glTexGeni(GL.GL_S, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
+        gl.glTexGeni(GL2.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
+        gl.glTexGeni(GL2.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
     }
 
-    public final void clean(GLDrawable g) {
-        GL gl = g.getGL();
+    public final void clean(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
         e_Text[1].kill(gl);
         e_Text[2].kill(gl);
         e_Text[3].kill(gl);
@@ -207,8 +208,8 @@ final class Scene6 implements Scene {
         init = true;
     }
 
-    private static void e_drawquad(GL gl, float size) {
-        gl.glBegin(GL.GL_QUADS);
+    private static void e_drawquad(GL2 gl, float size) {
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex3f(-0.5f * size, -0.5f * size, 0.0f);
         gl.glTexCoord2f(1.0f, 0.0f);
@@ -220,8 +221,8 @@ final class Scene6 implements Scene {
         gl.glEnd();
     }
 
-    private void e_drawmquad(GL gl, float size, float mtex) {
-        gl.glBegin(GL.GL_QUADS);
+    private void e_drawmquad(GL2 gl, float size, float mtex) {
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(0.0f, 0.0f - .1f * e_zeta * e_rocca);
         gl.glVertex3f(-0.5f * size, -0.5f * size, 0.0f);
         gl.glTexCoord2f(1.0f, 0.0f - .1f * e_zeta * e_rocca);
@@ -233,8 +234,8 @@ final class Scene6 implements Scene {
         gl.glEnd();
     }
 
-    private void e_drawmquad1(GL gl, float size, float mtex) {
-        gl.glBegin(GL.GL_QUADS);
+    private void e_drawmquad1(GL2 gl, float size, float mtex) {
+        gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(0.0f + .1f * e_zeta * e_rocca, 0.0f);
         gl.glVertex3f(-0.5f * size, -0.5f * size, 0.0f);
         gl.glTexCoord2f(1.0f * mtex + .1f * e_zeta * e_rocca, 0.0f);
@@ -246,8 +247,8 @@ final class Scene6 implements Scene {
         gl.glEnd();
     }
 
-    private void e_drawtrail(GL gl, float tsz) {
-        //glBindTexture(GL.GL_TEXTURE_2D, e_texture[0]);
+    private void e_drawtrail(GL2 gl, float tsz) {
+        //glBindTexture(GL2.GL_TEXTURE_2D, e_texture[0]);
         e_Text[1].use(gl);
         gl.glScalef(1 / .75f, 1 / .25f, 1 / .05f);
 
@@ -262,8 +263,8 @@ final class Scene6 implements Scene {
         }
     }
 
-    private void e_drawtrailup(GL gl, float tsz) {
-        //glBindTexture(GL.GL_TEXTURE_2D, e_texture[0]);
+    private void e_drawtrailup(GL2 gl, float tsz) {
+        //glBindTexture(GL2.GL_TEXTURE_2D, e_texture[0]);
         e_Text[1].use(gl);
         gl.glScalef(1 / .25f, 1 / .75f, 1 / .05f);
 
@@ -278,46 +279,46 @@ final class Scene6 implements Scene {
         }
     }
 
-    private static void e_Clear(GL gl, float quad) {
-        gl.glDisable(GL.GL_TEXTURE_2D);
-        gl.glDisable(GL.GL_DEPTH_TEST);
-        gl.glEnable(GL.GL_BLEND);
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+    private static void e_Clear(GL2 gl, float quad) {
+        gl.glDisable(GL2.GL_TEXTURE_2D);
+        gl.glDisable(GL2.GL_DEPTH_TEST);
+        gl.glEnable(GL2.GL_BLEND);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
         gl.glLoadIdentity();
         gl.glTranslatef(0, 0, -1.0f);
         gl.glColor4f(0, 0, 0, 1 - quad);
         e_drawquad(gl, 1.2f);
-        gl.glDisable(GL.GL_BLEND);
-        gl.glEnable(GL.GL_DEPTH_TEST);
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-        gl.glEnable(GL.GL_TEXTURE_2D);
+        gl.glDisable(GL2.GL_BLEND);
+        gl.glEnable(GL2.GL_DEPTH_TEST);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+        gl.glEnable(GL2.GL_TEXTURE_2D);
     }
 
-    public final boolean drawScene(GLDrawable g, float globtime) {
+    public final boolean drawScene(GLAutoDrawable g, float globtime) {
         if (init) {
             init(g);
             init = false;
         }
 
-        GL gl = g.getGL();
-        GLU glu = g.getGLU();
+        GL2 gl = g.getGL().getGL2();
+        GLUgl2 glu = new GLUgl2();
         e_time = 3 * globtime;
         float eoffset = 4.75f;
         //glClearColor(e_FogColor[0]+.005,e_FogColor[0]+.005,e_FogColor[0]+.005,1);
         if ((e_timer < eoffset) || (e_timer > eoffset + 2.0))
-            gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+            gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
         else {
-            gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
+            gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
             e_Clear(gl, .5f - .5f * (float) Math.cos((e_timer - eoffset) * 3.1415f));
         }
 
 
         e_timer = -2.0f + (e_time) / 3300.0f;
         if (e_scene) {
-            gl.glDisable(GL.GL_DEPTH_TEST);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
             gl.glLoadIdentity();
-            gl.glDisable(GL.GL_FOG);
-            gl.glDisable(GL.GL_TEXTURE_2D);
+            gl.glDisable(GL2.GL_FOG);
+            gl.glDisable(GL2.GL_TEXTURE_2D);
             gl.glRotatef(5 * e_zrot, 0, 0, 1);
             gl.glRotatef(5 * e_yrot, 0, 1, 0);
             gl.glRotatef(5 * e_xrot, 1, 0, 0);
@@ -325,15 +326,15 @@ final class Scene6 implements Scene {
             gl.glColor4f(e_FogColor[0], e_FogColor[0], e_FogColor[0], 1);
             //glColor4f(1,1,1,1);
             if ((e_timer < 1) || (e_timer > 13)) e_drawquad(gl, 10);
-            gl.glEnable(GL.GL_DEPTH_TEST);
-            gl.glEnable(GL.GL_TEXTURE_2D);
-            gl.glEnable(GL.GL_FOG);
+            gl.glEnable(GL2.GL_DEPTH_TEST);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
+            gl.glEnable(GL2.GL_FOG);
 
 
             e_depth = 30 + 30 * e_radius;
 
             if (e_timer > -1.0f) {
-                if ((e_timer < eoffset) || (e_timer > eoffset + 2)) gl.glDisable(GL.GL_BLEND); else gl.glEnable(GL.GL_BLEND);
+                if ((e_timer < eoffset) || (e_timer > eoffset + 2)) gl.glDisable(GL2.GL_BLEND); else gl.glEnable(GL2.GL_BLEND);
                 gl.glLoadIdentity();
 
                 gl.glTranslatef(.75f * (float) Math.sin(e_timer), .35f * (float) Math.cos(e_timer), 0);
@@ -372,7 +373,7 @@ final class Scene6 implements Scene {
                     gl.glTranslatef(0, 0, e_fade - e_depth / 2 + fb * 3 * e_depth / 2);
 
                     gl.glPushMatrix();
-                    //glBindTexture(GL.GL_TEXTURE_2D, e_Text[ure[2]);
+                    //glBindTexture(GL2.GL_TEXTURE_2D, e_Text[ure[2]);
                     e_Text[3].use(gl);
                     gl.glScalef(1.122f, 1, e_depth);
                     gl.glTranslatef(0, 2.591f, 0);
@@ -385,7 +386,7 @@ final class Scene6 implements Scene {
                     gl.glPopMatrix();
 
                     gl.glPushMatrix();
-                    //glBindTexture(GL.GL_TEXTURE_2D, e_Text[ure[12]);
+                    //glBindTexture(GL2.GL_TEXTURE_2D, e_Text[ure[12]);
                     e_Text[7].use(gl);
                     gl.glScalef(2, 1, e_depth);
                     gl.glTranslatef(0, -1, 0);
@@ -400,7 +401,7 @@ final class Scene6 implements Scene {
                     for (int pp = 0; pp < 2; pp++) {
                         gl.glPushMatrix();
                         if (pp == 1) gl.glScalef(-1, 1, 1);
-                        //glBindTexture(GL.GL_TEXTURE_2D, e_Text[ure[11]);
+                        //glBindTexture(GL2.GL_TEXTURE_2D, e_Text[ure[11]);
                         e_Text[6].use(gl);
                         gl.glScalef(1, 1, e_depth);
                         gl.glTranslatef(-1.35f, -.65f, 0);
@@ -411,7 +412,7 @@ final class Scene6 implements Scene {
 
                         gl.glPushMatrix();
                         if (pp == 1) gl.glScalef(-1, 1, 1);
-                        //glBindTexture(GL.GL_TEXTURE_2D, e_Text[ure[9]);
+                        //glBindTexture(GL2.GL_TEXTURE_2D, e_Text[ure[9]);
                         e_Text[5].use(gl);
                         gl.glScalef(1, 3, e_depth);
                         gl.glTranslatef(-1.13f, .383f, 0);
@@ -425,12 +426,12 @@ final class Scene6 implements Scene {
 
                 gl.glTranslatef(0, 0, e_zeta / 1.75f);
                 //glColor4ub(255,255,255,255);
-                gl.glEnable(GL.GL_BLEND);
-                gl.glDisable(GL.GL_DEPTH_TEST);
-                gl.glEnable(GL.GL_TEXTURE_GEN_S);
-                gl.glEnable(GL.GL_TEXTURE_GEN_T);
-                //glTexGeni(GL.GL_S, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
-                gl.glTexGeni(GL.GL_T, GL.GL_TEXTURE_GEN_MODE, GL.GL_EYE_LINEAR);
+                gl.glEnable(GL2.GL_BLEND);
+                gl.glDisable(GL2.GL_DEPTH_TEST);
+                gl.glEnable(GL2.GL_TEXTURE_GEN_S);
+                gl.glEnable(GL2.GL_TEXTURE_GEN_T);
+                //glTexGeni(GL2.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
+                gl.glTexGeni(GL2.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_EYE_LINEAR);
 
                 if ((e_timer > 1.0f) && (e_timer < 15.0f)) {
                     float var = 0;
@@ -438,7 +439,7 @@ final class Scene6 implements Scene {
                     for (int pp = 0; pp < 2; pp++) {
                         gl.glPushMatrix();
                         //if (pp) gl.glScalef(-1,1,1);
-                        //glBindTexture(GL.GL_TEXTURE_2D, e_Text[ure[5]);
+                        //glBindTexture(GL2.GL_TEXTURE_2D, e_Text[ure[5]);
                         e_Text[4].use(gl);
                         gl.glScalef(1, 1, 3);
                         gl.glTranslatef(-1.75f + pp * 3.5f, -.65f, 0);
@@ -452,16 +453,16 @@ final class Scene6 implements Scene {
 
                             gl.glPushMatrix();
                             gl.glTranslatef(20.0f + zx * 2.9f, 0, 0);
-                            gl.glEnable(GL.GL_TEXTURE_GEN_S);
-                            gl.glEnable(GL.GL_TEXTURE_GEN_T);
-                            //glBindTexture(GL.GL_TEXTURE_2D, e_Text[ure[5]);
+                            gl.glEnable(GL2.GL_TEXTURE_GEN_S);
+                            gl.glEnable(GL2.GL_TEXTURE_GEN_T);
+                            //glBindTexture(GL2.GL_TEXTURE_2D, e_Text[ure[5]);
                             e_Text[4].use(gl);
 
 
                             gl.glColor4f(1.0f, 1.0f, 1.0f, .25f + .75f * var);
-                            glut.glutSolidCube(gl, 1);
-                            gl.glDisable(GL.GL_TEXTURE_GEN_S);
-                            gl.glDisable(GL.GL_TEXTURE_GEN_T);
+                            glut.glutSolidCube(1);
+                            gl.glDisable(GL2.GL_TEXTURE_GEN_S);
+                            gl.glDisable(GL2.GL_TEXTURE_GEN_T);
                             gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
                             if (e_timer > 3)
                                 e_drawtrail(gl, .75f + 1.5f * var);
@@ -472,7 +473,7 @@ final class Scene6 implements Scene {
                     }
 
                     gl.glPushMatrix();
-                    //glBindTexture(GL.GL_TEXTURE_2D, e_Text[ure[5]);
+                    //glBindTexture(GL2.GL_TEXTURE_2D, e_Text[ure[5]);
                     e_Text[4].use(gl);
                     gl.glScalef(1.122f, 1, 3);
                     gl.glTranslatef(0, 2.591f, 0);
@@ -484,15 +485,15 @@ final class Scene6 implements Scene {
 
                         gl.glPushMatrix();
                         gl.glTranslatef(0, -20.0f - zx * 3.0f, 0);
-                        gl.glEnable(GL.GL_TEXTURE_GEN_S);
-                        gl.glEnable(GL.GL_TEXTURE_GEN_T);
-                        //glBindTexture(GL.GL_TEXTURE_2D, e_Text[ure[5]);
+                        gl.glEnable(GL2.GL_TEXTURE_GEN_S);
+                        gl.glEnable(GL2.GL_TEXTURE_GEN_T);
+                        //glBindTexture(GL2.GL_TEXTURE_2D, e_Text[ure[5]);
                         e_Text[4].use(gl);
 
                         gl.glColor4f(1.0f, 1.0f, 1.0f, .25f + .75f * var);
-                        glut.glutSolidCube(gl, 1);
-                        gl.glDisable(GL.GL_TEXTURE_GEN_S);
-                        gl.glDisable(GL.GL_TEXTURE_GEN_T);
+                        glut.glutSolidCube(1);
+                        gl.glDisable(GL2.GL_TEXTURE_GEN_S);
+                        gl.glDisable(GL2.GL_TEXTURE_GEN_T);
                         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
                         if (e_timer > 3)
                             e_drawtrailup(gl, .75f + 1.5f * var);
@@ -501,13 +502,13 @@ final class Scene6 implements Scene {
                     }
                     gl.glPopMatrix();
                 }
-                gl.glDisable(GL.GL_TEXTURE_GEN_S);
-                gl.glDisable(GL.GL_TEXTURE_GEN_T);
+                gl.glDisable(GL2.GL_TEXTURE_GEN_S);
+                gl.glDisable(GL2.GL_TEXTURE_GEN_T);
 
                 gl.glTranslatef(0, 0, 1.9f - e_zeta / 1.75f);
 
-                //glDisable(GL.GL_BLEND);
-                gl.glEnable(GL.GL_DEPTH_TEST);
+                //glDisable(GL2.GL_BLEND);
+                gl.glEnable(GL2.GL_DEPTH_TEST);
                 if (e_timer < 0.0f)
                     e_radius = (float) Math.cos(e_timer * 3.1415 / 2.0f - 3.1415 / 2.0f) + 1.0f;//+3.1415/2.0f)+1.0f;
                 else if (e_timer < 1.0f) e_radius = (float) Math.cos(e_timer * 3.1415 / 2.0f + 3.1415 / 2.0f) + 1.0f;
@@ -516,36 +517,36 @@ final class Scene6 implements Scene {
                 e_FogColor[0] = e_radius;
                 e_FogColor[1] = e_radius;
                 e_FogColor[2] = e_radius;
-                gl.glFogfv(GL.GL_FOG_COLOR, e_FogColor);
-                //glFogf(GL.GL_FOG_DENSITY,e_radius*20);
-                if (e_timer > 16.5) gl.glFogf(GL.GL_FOG_DENSITY, .075f + (e_timer - 16.5f) * (e_timer - 16.5f) * 3.0f);
-                gl.glFogf(GL.GL_FOG_START, 10 - 11 * e_radius);
+                gl.glFogfv(GL2.GL_FOG_COLOR, FloatBuffer.wrap(e_FogColor));
+                //glFogf(GL2.GL_FOG_DENSITY,e_radius*20);
+                if (e_timer > 16.5) gl.glFogf(GL2.GL_FOG_DENSITY, .075f + (e_timer - 16.5f) * (e_timer - 16.5f) * 3.0f);
+                gl.glFogf(GL2.GL_FOG_START, 10 - 11 * e_radius);
 
                 if (e_timer < 1.0f) {
                     gl.glLoadIdentity();		// LIGHT MASK
                     gl.glTranslatef(0, 0, -.1f);
                     gl.glRotatef(e_timer * 200, 0, 0, 1);
                     gl.glRotatef(180, 1, 0, 0);
-                    gl.glEnable(GL.GL_TEXTURE_GEN_S);
-                    gl.glEnable(GL.GL_TEXTURE_GEN_T);
-                    //glTexGeni(GL.GL_S, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
-                    gl.glTexGeni(GL.GL_T, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
-                    //glEnable(GL.GL_BLEND);
+                    gl.glEnable(GL2.GL_TEXTURE_GEN_S);
+                    gl.glEnable(GL2.GL_TEXTURE_GEN_T);
+                    //glTexGeni(GL2.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
+                    gl.glTexGeni(GL2.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
+                    //glEnable(GL2.GL_BLEND);
                     gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f - e_timer / 1.0f);
-                    //glBindTexture(GL.GL_TEXTURE_2D, e_Text[ure[0]);
+                    //glBindTexture(GL2.GL_TEXTURE_2D, e_Text[ure[0]);
                     e_Text[1].use(gl);
-                    glut.glutSolidCone(glu, .2f, e_timer / 3.5f, 20, 20);
-                    gl.glDisable(GL.GL_TEXTURE_GEN_S);
-                    gl.glDisable(GL.GL_TEXTURE_GEN_T);
+                    glut.glutSolidCone( .2f, e_timer / 3.5f, 20, 20);
+                    gl.glDisable(GL2.GL_TEXTURE_GEN_S);
+                    gl.glDisable(GL2.GL_TEXTURE_GEN_T);
                 }
 
                 if (e_lasers)				// e_lasers
                 {
-                    gl.glEnable(GL.GL_TEXTURE_GEN_S);
-                    gl.glEnable(GL.GL_TEXTURE_GEN_T);
-                    //glBindTexture(GL.GL_TEXTURE_2D, e_Text[ure[13]);
+                    gl.glEnable(GL2.GL_TEXTURE_GEN_S);
+                    gl.glEnable(GL2.GL_TEXTURE_GEN_T);
+                    //glBindTexture(GL2.GL_TEXTURE_2D, e_Text[ure[13]);
                     e_Text[4].use(gl);
-                    gl.glDisable(GL.GL_DEPTH_TEST);
+                    gl.glDisable(GL2.GL_DEPTH_TEST);
                     gl.glLoadIdentity();
                     gl.glTranslatef(0, 0, -.1f);
 
@@ -558,10 +559,10 @@ final class Scene6 implements Scene {
                     gl.glRotatef(179.5f, 1, 0, 0);
 
                     gl.glColor4f(1.0f, 1.0f, 1.0f, .25f + (e_timer - 16.0f) / 8.0f);
-                    glut.glutSolidCone(glu, .25f, 100 - (e_zeta / 10.0f - 100) / 2.0f, 10, 5);
+                    glut.glutSolidCone(.25f, 100 - (e_zeta / 10.0f - 100) / 2.0f, 10, 5);
                     gl.glPopMatrix();
 
-                    //glBindTexture(GL.GL_TEXTURE_2D, e_Text[ure[1]);
+                    //glBindTexture(GL2.GL_TEXTURE_2D, e_Text[ure[1]);
 
                     e_Text[2].use(gl);
 
@@ -571,42 +572,42 @@ final class Scene6 implements Scene {
                     gl.glColor4ub((byte) 128, (byte) 255, (byte) 128, (byte) 64);
                     gl.glColor4f(0.25f, 0.5f, 1.0f, .5f);
                     //	glColor4f(1.0f,1.0f,1.0f,.5f);
-                    glut.glutSolidCone(glu, .25f, 200 - (e_zeta / 1.5f - 200), 10, 3);
+                    glut.glutSolidCone( .25f, 200 - (e_zeta / 1.5f - 200), 10, 3);
                     gl.glPopMatrix();
 
-                    gl.glDisable(GL.GL_TEXTURE_GEN_S);
-                    gl.glDisable(GL.GL_TEXTURE_GEN_T);
-                    gl.glEnable(GL.GL_TEXTURE_2D);
+                    gl.glDisable(GL2.GL_TEXTURE_GEN_S);
+                    gl.glDisable(GL2.GL_TEXTURE_GEN_T);
+                    gl.glEnable(GL2.GL_TEXTURE_2D);
                 }
             }
         } else {
             if (e_timer < -1.25f) {
-                gl.glEnable(GL.GL_BLEND);
-                gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-                gl.glDisable(GL.GL_TEXTURE_2D);
+                gl.glEnable(GL2.GL_BLEND);
+                gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+                gl.glDisable(GL2.GL_TEXTURE_2D);
                 gl.glLoadIdentity();
                 gl.glTranslatef(0, 0, -1.0f);
                 gl.glColor4f(1, 1, 1, -2.0f * (e_timer + 1.25f));
                 e_drawquad(gl, 1.2f);
-                gl.glEnable(GL.GL_TEXTURE_2D);
-                gl.glDisable(GL.GL_BLEND);
+                gl.glEnable(GL2.GL_TEXTURE_2D);
+                gl.glDisable(GL2.GL_BLEND);
             } else
                 e_scene = true;
         }
 
 
         if ((e_timer > 6.5) && (e_timer < 9.5)) {
-            gl.glMatrixMode(GL.GL_PROJECTION);
+            gl.glMatrixMode(GL2.GL_PROJECTION);
             gl.glLoadIdentity();
-            glu.gluPerspective(45.0f + 50 * (.5f - .5f * (float) Math.cos((e_timer - 6.5f) * 3.1415f * 2.0f / 3.0f)), (float) g.getSize().width / (float) g.getSize().height, 0.1f, 90.0f);
-            gl.glMatrixMode(GL.GL_MODELVIEW);
+            glu.gluPerspective(45.0f + 50 * (.5f - .5f * (float) Math.cos((e_timer - 6.5f) * 3.1415f * 2.0f / 3.0f)), (float) g.getSurfaceWidth() / (float) g.getSurfaceHeight(), 0.1f, 90.0f);
+            gl.glMatrixMode(GL2.GL_MODELVIEW);
         }
 
         if ((e_timer > 13) && (e_timer < 15)) {
-            gl.glMatrixMode(GL.GL_PROJECTION);
+            gl.glMatrixMode(GL2.GL_PROJECTION);
             gl.glLoadIdentity();
-            glu.gluPerspective(45.0f + 15 * (.5f - .5f * (float) Math.cos((e_timer - 13) * 3.1415f / 2.0f)), (float) g.getSize().width / (float) g.getSize().height, 0.1f, 90.0f);
-            gl.glMatrixMode(GL.GL_MODELVIEW);
+            glu.gluPerspective(45.0f + 15 * (.5f - .5f * (float) Math.cos((e_timer - 13) * 3.1415f / 2.0f)), (float) g.getSurfaceWidth() / (float) g.getSurfaceHeight(), 0.1f, 90.0f);
+            gl.glMatrixMode(GL2.GL_MODELVIEW);
         }
 
         if (((e_timer > 5) && (e_timer < 9.75)) || ((e_timer > 12) && (e_timer < 14.1))) {
@@ -637,27 +638,27 @@ final class Scene6 implements Scene {
                 gl.glRotatef(60 * (float) Math.sin(e_timer * 2.5) * (float) Math.sin(e_timer * 1.5), 0, 0, 1);
             else
                 gl.glRotatef(-70 - 120 * (float) Math.sin((e_timer - 11.7) * 4.0), 0, 0, 1);
-            gl.glDisable(GL.GL_BLEND);
-            gl.glTexGeni(GL.GL_T, GL.GL_TEXTURE_GEN_MODE, GL.GL_SPHERE_MAP);
-            gl.glEnable(GL.GL_TEXTURE_GEN_S);
-            gl.glEnable(GL.GL_TEXTURE_GEN_T);
+            gl.glDisable(GL2.GL_BLEND);
+            gl.glTexGeni(GL2.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
+            gl.glEnable(GL2.GL_TEXTURE_GEN_S);
+            gl.glEnable(GL2.GL_TEXTURE_GEN_T);
             e_Text[8].use(gl);
-            gl.glEnable(GL.GL_DEPTH_TEST);
-            gl.glEnable(GL.GL_CULL_FACE);
-            //glDisable(GL.GL_TEXTURE_2D);
+            gl.glEnable(GL2.GL_DEPTH_TEST);
+            gl.glEnable(GL2.GL_CULL_FACE);
+            //glDisable(GL2.GL_TEXTURE_2D);
             gl.glColor4f(1, 1, 1, 1);
             //glPushMatrix();
             gl.glScalef(1.5f, 1.5f, 1.5f);
             gl.glCallList(shiplist);
             gl.glPopMatrix();
-            gl.glDisable(GL.GL_TEXTURE_GEN_S);
-            gl.glDisable(GL.GL_TEXTURE_GEN_T);
-            gl.glDisable(GL.GL_DEPTH_TEST);
-            gl.glDisable(GL.GL_CULL_FACE);
-            gl.glEnable(GL.GL_BLEND);
+            gl.glDisable(GL2.GL_TEXTURE_GEN_S);
+            gl.glDisable(GL2.GL_TEXTURE_GEN_T);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
+            gl.glDisable(GL2.GL_CULL_FACE);
+            gl.glEnable(GL2.GL_BLEND);
             e_Text[1].use(gl);
             gl.glTranslatef(0, 0, .5f);
-            if (e_timer < 7.7) gl.glEnable(GL.GL_DEPTH_TEST);
+            if (e_timer < 7.7) gl.glEnable(GL2.GL_DEPTH_TEST);
             gl.glRotatef(-5 * e_yrot, 0, 1, 0);
             if (e_timer > 8.6) {
                 if (dum[2]) {
@@ -696,15 +697,15 @@ final class Scene6 implements Scene {
 //	e_timer=-1.75f+((float)(FSOUND_Stream_GetTime(stream)-limit))/3500.0f;
 
         if (e_timer > 16.75f) {
-            gl.glEnable(GL.GL_BLEND);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-            gl.glDisable(GL.GL_TEXTURE_2D);
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+            gl.glDisable(GL2.GL_TEXTURE_2D);
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -1.0f);
             gl.glColor4f(1, 1, 1, 4.0f * (e_timer - 16.75f));
             e_drawquad(gl, 1.8f);
-            gl.glEnable(GL.GL_TEXTURE_2D);
-            gl.glDisable(GL.GL_BLEND);
+            gl.glEnable(GL2.GL_TEXTURE_2D);
+            gl.glDisable(GL2.GL_BLEND);
             //glClearColor(-4.0f*(e_timer+1.0f),-4.0f*(e_timer+1.0f),-4.0f*(e_timer+1.0f),-4.0f*(e_timer+1.0f));
         }
 
