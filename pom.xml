@@ -24,11 +24,25 @@
             <systemPath>${project.basedir}/lib/jogl-all.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>org.jogamp.jogl</groupId>
+            <artifactId>jogl-all-noawt-natives-macosx-universal</artifactId>
+            <version>2.4</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/jogl-all-noawt-natives-macosx-universal.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>org.jogamp.gluegen</groupId>
             <artifactId>gluegen-rt-main</artifactId>
             <version>2.4</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/gluegen-rt.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.gluegen</groupId>
+            <artifactId>gluegen-rt-natives-macosx-universal</artifactId>
+            <version>2.4</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/gluegen-rt-natives-macosx-universal.jar</systemPath>
         </dependency>
     </dependencies>
 
@@ -47,6 +61,7 @@
                             <mainClass>
                                 demos.glexcess.GLXS
                             </mainClass>
+                            <includeSystemScope>true</includeSystemScope>
                         </configuration>
                     </execution>
                 </executions>

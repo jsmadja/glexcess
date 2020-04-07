@@ -31,8 +31,8 @@ import java.util.ArrayList;
  * @author Pepijn Van Eeckhoudt
  */
 public class GLDisplay {
-    private static final int DEFAULT_WIDTH = 640;
-    private static final int DEFAULT_HEIGHT = 480;
+    private static final int DEFAULT_WIDTH = 640*3;
+    private static final int DEFAULT_HEIGHT = 480*3;
 
     private static final int DONT_CARE = -1;
 
