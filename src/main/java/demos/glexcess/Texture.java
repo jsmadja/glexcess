@@ -30,6 +30,15 @@ import java.nio.IntBuffer;
 final class Texture {
     private final IntBuffer tID = IntBuffer.allocate(1);
 
+    private static int pow2(int exp) {
+        int result = 1;
+        if (exp == 0) return result;
+        for (int a = 0; a < exp; a++) {
+            result *= 2;
+        }
+        return result;
+    }
+
     private boolean create(GL gl) {
         kill(gl);
         gl.glGenTextures(1, tID);
@@ -46,15 +55,6 @@ final class Texture {
             gl.glDeleteTextures(1, tID);
             tID.put(0, 0);
         }
-    }
-
-    private static int pow2(int exp) {
-        int result = 1;
-        if (exp == 0) return result;
-        for (int a = 0; a < exp; a++) {
-            result *= 2;
-        }
-        return result;
     }
 
     public final void use(GL gl) {

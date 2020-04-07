@@ -1,9 +1,7 @@
 package demos.glexcess;
 
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.gl2.GLUgl2;
 import com.jogamp.opengl.util.gl2.GLUT;
 import demos.common.ResourceRetriever;
@@ -14,98 +12,53 @@ import java.util.Random;
 /**
  * GLExcess v1.0 Demo
  * Copyright (C) 2001-2003 Paolo Martella
- *
+ * <p>
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
  * @author Paolo "Bustard" Martella
  * @author Pepijn Van Eeckhoudt
  */
 final class Scene8 implements Scene {
-    private final Random random = new Random();
-    private Texture[] g_Text;
     private static final int numtexs = 18;
     private static boolean init = true;
-    private float g_time = 0;
-
-    private long limit = 0;
-    private int g_check = 2;
-
+    private final Random random = new Random();
     private final float[][] g_points = new float[64][64];
-    private boolean playjet = true;
     private final int g_num = 50;
     private final int g_num1 = 250;
-    private long g_gettime = 0;
-    private float g_ext = 10.0f;
-    private static final class g_part {
-        float size,
-                spd,
-                z,
-                fact,
-                r,
-                g_a;
-    }
-
-    private static final class g_part1 {
-        float size,
-                spd,
-                h,
-                r,
-                g_a;
-        long init;
-    }
-
-    private int g_scene = 0;
     private final g_part[] parts = new g_part[g_num];
     private final g_part1[] parts1 = new g_part1[g_num1];
-
+    private final int[][] g_phase = new int[64][64];
+    private final int[][] g_speed = new int[64][64];
+    private final float[] g_FogColor = {1.0f, 1.0f, 1.0f, 1.0f};
+    private final GLUT glut = new GLUT();
+    private Texture[] g_Text;
+    private float g_time = 0;
+    private long limit = 0;
+    private int g_check = 2;
+    private boolean playjet = true;
+    private long g_gettime = 0;
+    private float g_ext = 10.0f;
+    private int g_scene = 0;
     private float g_litetop = 1.0f;
     private float g_liteleft = 0.5f;
     private float g_literite = 0.25f;
-
     private float g_rot = 1.5f;
     private float g_rota = 0.0f;
     private float g_zeta = 1;
-    private final int[][] g_phase = new int[64][64];
-    private final int[][] g_speed = new int[64][64];
     private int g_gx;
     private int g_gy;
     private int g_a = 0;
     private int g_b = 0;
     private int g_c = 1;
     private float g_radius = -6.0f;
-
-    private final float[] g_FogColor = {1.0f, 1.0f, 1.0f, 1.0f};
-
-    private final GLUT glut = new GLUT();
-
-    public final void clean(GLAutoDrawable g) {
-        GL2 gl = g.getGL().getGL2();
-        g_Text[0].kill(gl);
-        g_Text[1].kill(gl);
-        g_Text[2].kill(gl);
-        g_Text[3].kill(gl);
-        g_Text[4].kill(gl);
-        g_Text[5].kill(gl);
-        g_Text[6].kill(gl);
-        g_Text[7].kill(gl);
-        g_Text[8].kill(gl);
-        g_Text[9].kill(gl);
-        g_Text[10].kill(gl);
-        g_Text[11].kill(gl);
-        g_Text[12].kill(gl);
-        g_Text[13].kill(gl);
-        g_Text[14].kill(gl);
-        g_Text[15].kill(gl);
-        g_Text[16].kill(gl);
-        init = true;
-    }
 
     private static void g_drawquad(GL2 gl, float size) {
         gl.glBegin(GL2.GL_QUADS);
@@ -133,6 +86,28 @@ final class Scene8 implements Scene {
         gl.glEnd();
     }
 
+    public final void clean(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
+        g_Text[0].kill(gl);
+        g_Text[1].kill(gl);
+        g_Text[2].kill(gl);
+        g_Text[3].kill(gl);
+        g_Text[4].kill(gl);
+        g_Text[5].kill(gl);
+        g_Text[6].kill(gl);
+        g_Text[7].kill(gl);
+        g_Text[8].kill(gl);
+        g_Text[9].kill(gl);
+        g_Text[10].kill(gl);
+        g_Text[11].kill(gl);
+        g_Text[12].kill(gl);
+        g_Text[13].kill(gl);
+        g_Text[14].kill(gl);
+        g_Text[15].kill(gl);
+        g_Text[16].kill(gl);
+        init = true;
+    }
+
     private void g_rst(int x) {
         parts[x].size = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
         parts[x].spd = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
@@ -151,7 +126,6 @@ final class Scene8 implements Scene {
         parts1[x].r = .5f + .0005f * ((float) (Math.abs(random.nextInt()) % 1000));
         parts1[x].g_a = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
     }
-
 
     private void init(GLAutoDrawable g) {
         GL2 gl = g.getGL().getGL2();
@@ -189,7 +163,7 @@ final class Scene8 implements Scene {
         try {
             g_Text[0].load(gl, glu, ResourceRetriever.getResourceAsStream("data/esaflr.raw"));
             g_Text[1].load(gl, glu, ResourceRetriever.getResourceAsStream("data/senv36.raw"));  //MOON
-            g_Text[2].load(gl, glu, ResourceRetriever.getResourceAsStream("data/sky7.raw"));	  //MOON
+            g_Text[2].load(gl, glu, ResourceRetriever.getResourceAsStream("data/sky7.raw"));      //MOON
             g_Text[11].load(gl, glu, ResourceRetriever.getResourceAsStream("data/env26.raw")); //DUSK
             g_Text[12].load(gl, glu, ResourceRetriever.getResourceAsStream("data/sky27.raw")); //DUSK
             g_Text[13].load(gl, glu, ResourceRetriever.getResourceAsStream("data/env17.raw")); //DAY
@@ -225,8 +199,8 @@ final class Scene8 implements Scene {
 
         for (int x = 0; x < 64; x++) {
             for (int y = 0; y < 63; y++) {
-                g_phase[x][y] = (int)(.001f * (Math.abs(random.nextInt()) % 5000));
-                g_speed[x][y] = (int)(.1f + .001f * (Math.abs(random.nextInt()) % 10000));
+                g_phase[x][y] = (int) (.001f * (Math.abs(random.nextInt()) % 5000));
+                g_speed[x][y] = (int) (.1f + .001f * (Math.abs(random.nextInt()) % 10000));
             }
         }
         for (int x = 0; x < 64; x++) {
@@ -300,7 +274,8 @@ final class Scene8 implements Scene {
         gl.glEnable(GL2.GL_TEXTURE_GEN_S);
         gl.glEnable(GL2.GL_TEXTURE_GEN_T);
         if (((int) g_zeta) / 64 == g_c) {
-            if ((g_c % 2) == 0) g_b++; else g_a++;
+            if ((g_c % 2) == 0) g_b++;
+            else g_a++;
             g_c++;
         }
         gl.glPushMatrix();
@@ -308,10 +283,10 @@ final class Scene8 implements Scene {
         gl.glBegin(GL2.GL_QUADS);
         for (g_gx = 0; g_gx < 63; g_gx++) {
             for (g_gy = 0; g_gy < 63; g_gy++) {
-                gl.glVertex3f( (float)(g_gx) / 1.5f, (float)(g_gy), g_points[g_gx][g_gy]);
-                gl.glVertex3f( (float)(g_gx + 1) / 1.5f, (float)(g_gy), g_points[g_gx + 1][g_gy]);
-                gl.glVertex3f( (float)(g_gx + 1) / 1.5f, (float)(g_gy + 1), g_points[g_gx + 1][g_gy + 1]);
-                gl.glVertex3f( (float)(g_gx) / 1.5f, (float)(g_gy + 1), g_points[g_gx][g_gy + 1]);
+                gl.glVertex3f((float) (g_gx) / 1.5f, (float) (g_gy), g_points[g_gx][g_gy]);
+                gl.glVertex3f((float) (g_gx + 1) / 1.5f, (float) (g_gy), g_points[g_gx + 1][g_gy]);
+                gl.glVertex3f((float) (g_gx + 1) / 1.5f, (float) (g_gy + 1), g_points[g_gx + 1][g_gy + 1]);
+                gl.glVertex3f((float) (g_gx) / 1.5f, (float) (g_gy + 1), g_points[g_gx][g_gy + 1]);
             }
         }
         gl.glEnd();
@@ -320,10 +295,10 @@ final class Scene8 implements Scene {
         gl.glBegin(GL2.GL_QUADS);
         for (g_gx = 0; g_gx < 63; g_gx++) {
             for (g_gy = 0; g_gy < 63; g_gy++) {
-                gl.glVertex3f( (float)(g_gx) / 1.5f, (float)(g_gy), g_points[g_gx][g_gy]);
-                gl.glVertex3f( (float)(g_gx + 1) / 1.5f, (float)(g_gy), g_points[g_gx + 1][g_gy]);
-                gl.glVertex3f( (float)(g_gx + 1) / 1.5f, (float)(g_gy + 1), g_points[g_gx + 1][g_gy + 1]);
-                gl.glVertex3f( (float)(g_gx) / 1.5f, (float)(g_gy + 1), g_points[g_gx][g_gy + 1]);
+                gl.glVertex3f((float) (g_gx) / 1.5f, (float) (g_gy), g_points[g_gx][g_gy]);
+                gl.glVertex3f((float) (g_gx + 1) / 1.5f, (float) (g_gy), g_points[g_gx + 1][g_gy]);
+                gl.glVertex3f((float) (g_gx + 1) / 1.5f, (float) (g_gy + 1), g_points[g_gx + 1][g_gy + 1]);
+                gl.glVertex3f((float) (g_gx) / 1.5f, (float) (g_gy + 1), g_points[g_gx][g_gy + 1]);
             }
         }
         gl.glEnd();
@@ -358,7 +333,9 @@ final class Scene8 implements Scene {
         gl.glTexCoord2d(0, 0);
         gl.glVertex3f(-1.0f, 1.0f, 0.0f);
         gl.glEnd();
-        for (g_gy = 0; g_gy < 64; g_gy++) for (g_gx = 0; g_gx < 64; g_gx++) g_points[g_gx][g_gy] = .025f * (float)Math.sin(g_speed[g_gx][g_gy] * g_rota + g_phase[g_gx][g_gy]);
+        for (g_gy = 0; g_gy < 64; g_gy++)
+            for (g_gx = 0; g_gx < 64; g_gx++)
+                g_points[g_gx][g_gy] = .025f * (float) Math.sin(g_speed[g_gx][g_gy] * g_rota + g_phase[g_gx][g_gy]);
 
         gl.glEnable(GL2.GL_BLEND);
         gl.glDisable(GL2.GL_DEPTH_TEST);
@@ -400,7 +377,7 @@ final class Scene8 implements Scene {
             gl.glScalef(2, 1.25f, 1);
             gl.glRotatef(-45, 0, 0, 1);
 
-            gl.glTranslatef(2 * (float)Math.cos(g_radius), .5f * (float)Math.sin(g_radius), -g_radius * 1.5f);
+            gl.glTranslatef(2 * (float) Math.cos(g_radius), .5f * (float) Math.sin(g_radius), -g_radius * 1.5f);
 
             gl.glRotatef(45 + g_radius * 15, 0, 0, 1);
             gl.glEnable(GL2.GL_BLEND);
@@ -440,7 +417,7 @@ final class Scene8 implements Scene {
             gl.glTranslatef(-4, 1, -5);
             gl.glScalef(2, 1.25f, 1);
             gl.glRotatef(-45, 0, 0, 1);
-            gl.glTranslatef(2 * (float)Math.cos(g_radius), .5f * (float)Math.sin(g_radius), -g_radius * 1.5f);
+            gl.glTranslatef(2 * (float) Math.cos(g_radius), .5f * (float) Math.sin(g_radius), -g_radius * 1.5f);
 
             gl.glRotatef(-45, 0, 0, 1);
 
@@ -458,7 +435,7 @@ final class Scene8 implements Scene {
                 gl.glTranslatef(-4.075f + g_radius / 11, .8f, -5);
             gl.glScalef(2, 1.25f, 1);
             gl.glRotatef(-45, 0, 0, 1);
-            gl.glTranslatef(2 * (float)Math.cos(g_radius), .5f * (float)Math.sin(g_radius), -g_radius * 1.5f);
+            gl.glTranslatef(2 * (float) Math.cos(g_radius), .5f * (float) Math.sin(g_radius), -g_radius * 1.5f);
 
             gl.glRotatef(45, 0, 0, 1);
             gl.glRotatef(20 + g_radius * 20, 1, 0, 0);
@@ -482,7 +459,7 @@ final class Scene8 implements Scene {
                     g_Text[6].use(gl);
                     gl.glScalef(.35f, .7f, 1);
                     gl.glRotatef(-g_radius * 50, 0, 0, 1);
-                    g_drawquad(gl, 1 + (float)Math.cos(g_radius) * (float)Math.cos(g_radius));
+                    g_drawquad(gl, 1 + (float) Math.cos(g_radius) * (float) Math.cos(g_radius));
                 } else {
                     gl.glTranslatef(0, 0, parts[i].z / 25);
                     gl.glColor4f(parts[i].r, parts[i].r / 2, parts[i].r / 4, parts[i].g_a);
@@ -498,7 +475,7 @@ final class Scene8 implements Scene {
             }
 
             gl.glLoadIdentity();
-            gl.glTranslatef(-3 + 2 * (float)Math.cos(g_radius * 1.25), -1, -2 - 2 * g_radius);
+            gl.glTranslatef(-3 + 2 * (float) Math.cos(g_radius * 1.25), -1, -2 - 2 * g_radius);
             gl.glColor4f(.2f, .2f, .2f, .5f);
             gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
             gl.glRotatef(-90, 1, 0, 0);
@@ -518,7 +495,7 @@ final class Scene8 implements Scene {
         else if (g_rota < 3.0f)
             g_zeta = 15.0f + 25.0f * (((float) g_gettime - limit) / 1500.0f);
         else
-            g_zeta = 15.0f + 25.0f * (((float) g_gettime - limit) / 1500.0f) - 30.0f * (1.0f - (float)Math.cos((g_rota - 3.0f) / 5.0f * 3.1415f));
+            g_zeta = 15.0f + 25.0f * (((float) g_gettime - limit) / 1500.0f) - 30.0f * (1.0f - (float) Math.cos((g_rota - 3.0f) / 5.0f * 3.1415f));
 
         if ((g_scene == 2) && (g_radius < 3)) g_radius = -6.0f + (g_zeta - 20.0f) * (g_zeta - 20.0f) / 2000.0f;
 
@@ -536,7 +513,8 @@ final class Scene8 implements Scene {
         else
             gl.glTranslatef(.325f, -.08f, -1.0f); // SKY
 
-        if (g_scene == 1) g_ext = 10.0f; else g_ext = 10.0f;
+        if (g_scene == 1) g_ext = 10.0f;
+        else g_ext = 10.0f;
 
         for (int l = 0; l < g_num1; l++) {
             float time;
@@ -546,11 +524,11 @@ final class Scene8 implements Scene {
             else {
                 gl.glPushMatrix();
                 if (g_scene == 0)
-                    gl.glColor4f(parts1[l].r / 4, parts1[l].r / 2, parts1[l].r, .5f * parts1[l].h * parts1[l].g_a * (1.0f - (float)Math.cos(50.0f * parts1[l].spd * time))); // MOON
+                    gl.glColor4f(parts1[l].r / 4, parts1[l].r / 2, parts1[l].r, .5f * parts1[l].h * parts1[l].g_a * (1.0f - (float) Math.cos(50.0f * parts1[l].spd * time))); // MOON
                 else if (g_scene == 1)
-                    gl.glColor4f(parts1[l].r, parts1[l].r, parts1[l].r / 2, .5f * parts1[l].h * parts1[l].g_a * (1.0f - (float)Math.cos(50.0f * parts1[l].spd * time)));   // DUSK
+                    gl.glColor4f(parts1[l].r, parts1[l].r, parts1[l].r / 2, .5f * parts1[l].h * parts1[l].g_a * (1.0f - (float) Math.cos(50.0f * parts1[l].spd * time)));   // DUSK
                 else
-                    gl.glColor4f(parts1[l].r / 4, parts1[l].r / 2, parts1[l].r, 1.0f * parts1[l].h * parts1[l].g_a * (1.0f - (float)Math.cos(50.0f * parts1[l].spd * time)));   // DUSK
+                    gl.glColor4f(parts1[l].r / 4, parts1[l].r / 2, parts1[l].r, 1.0f * parts1[l].h * parts1[l].g_a * (1.0f - (float) Math.cos(50.0f * parts1[l].spd * time)));   // DUSK
 
                 if ((l % 2) == 0)
                     gl.glTranslatef(parts1[l + 1].h * parts1[l].h / g_ext, 0, 0);
@@ -566,7 +544,7 @@ final class Scene8 implements Scene {
                 else
                     gl.glTranslatef(0, -parts1[l].h / 6.0f, 0);
                 gl.glRotatef(500.0f * time * parts1[l].spd, 0, 0, 1);
-                g_drawquad(gl, .015f + ((1.0f - (float)Math.cos(50.0f * parts1[l].spd * time))) * parts1[l].size * parts1[l].h / 30.0f);
+                g_drawquad(gl, .015f + ((1.0f - (float) Math.cos(50.0f * parts1[l].spd * time))) * parts1[l].size * parts1[l].h / 30.0f);
                 if (l < g_num1 / 10) {
                     gl.glLoadIdentity();
                     if (g_scene == 0)
@@ -586,7 +564,7 @@ final class Scene8 implements Scene {
                         gl.glTranslatef(((float) l / (g_num1 / 10)) / 10.0f + parts1[l].h / 30.0f, 0, 0);
                     else
                         gl.glTranslatef(((float) l / (g_num1 / 10)) / 10.0f - parts1[l].h / 30.0f, 0, 0);
-                    g_drawquad(gl, .015f + ((1.0f - (float)Math.cos(50.0f * parts1[l].spd * time))) * parts1[l].size * parts1[l].h / 1.5f);
+                    g_drawquad(gl, .015f + ((1.0f - (float) Math.cos(50.0f * parts1[l].spd * time))) * parts1[l].size * parts1[l].h / 1.5f);
                 }
                 gl.glPopMatrix();
             }
@@ -598,7 +576,7 @@ final class Scene8 implements Scene {
             g_Text[15].use(gl);
             gl.glTranslatef(.2f + g_rota / 1000.0f, .185f + g_rota / 1100.0f, -1.0f);
             gl.glColor4f(1, 1, 1, .5f);
-            g_drawquad(gl, .2f + .05f * (float)Math.sin(cips));
+            g_drawquad(gl, .2f + .05f * (float) Math.sin(cips));
             gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_COLOR);
             gl.glColor4f(1, 1, 1, 1);
             g_Text[17].use(gl);
@@ -609,22 +587,22 @@ final class Scene8 implements Scene {
             //else gl.glTranslatef(.3,.5,-1.0f);
             gl.glColor4f(1, 1, 1, .35f);
             //glColor4f(0,0,0,0);
-            gl.glRotatef((float)Math.sin(cips / 2.0f) * 50, 0, 0, 1);
-            g_drawquad(gl, .4f + .75f * (float)Math.sin(cips / 1.5f) * (float)Math.sin(cips / 1.5f));
-            gl.glRotatef((float)Math.sin(cips / 4.0f) * 100, 0, 0, 1);
+            gl.glRotatef((float) Math.sin(cips / 2.0f) * 50, 0, 0, 1);
+            g_drawquad(gl, .4f + .75f * (float) Math.sin(cips / 1.5f) * (float) Math.sin(cips / 1.5f));
+            gl.glRotatef((float) Math.sin(cips / 4.0f) * 100, 0, 0, 1);
             g_Text[0].use(gl);
-            g_drawquad(gl, .2f + .3f * (float)Math.cos(cips) * (float)Math.cos(cips));
+            g_drawquad(gl, .2f + .3f * (float) Math.cos(cips) * (float) Math.cos(cips));
         } else {
             g_Text[16].use(gl);
             //if (g_scene==1) gl.glTranslatef(.068,.04,-1.0f);
             //else
             gl.glTranslatef(.3f, .3f, -1.0f);
             gl.glColor4f(1, 1, 1, .3f);
-            gl.glRotatef((float)Math.sin(cips / 2.0f) * 50, 0, 0, 1);
-            g_drawquad(gl, .3f + .5f * (float)Math.sin(cips / 1.5f) * (float)Math.sin(cips / 1.5f));
-            gl.glRotatef((float)Math.sin(cips / 4.0f) * 100, 0, 0, 1);
+            gl.glRotatef((float) Math.sin(cips / 2.0f) * 50, 0, 0, 1);
+            g_drawquad(gl, .3f + .5f * (float) Math.sin(cips / 1.5f) * (float) Math.sin(cips / 1.5f));
+            gl.glRotatef((float) Math.sin(cips / 4.0f) * 100, 0, 0, 1);
             g_Text[0].use(gl);
-            g_drawquad(gl, .2f + .3f * (float)Math.cos(cips) * (float)Math.cos(cips));
+            g_drawquad(gl, .2f + .3f * (float) Math.cos(cips) * (float) Math.cos(cips));
             g_Text[15].use(gl);
             g_drawquad(gl, .3f);//+.1*(float)Math.cos(cips)*(float)Math.cos(cips));
         }
@@ -644,10 +622,13 @@ final class Scene8 implements Scene {
             gl.glTranslatef(0, 0, -.9f);
             if (g_rota < 0)
                 gl.glColor4f(1, 1, 1, 1);
-            else if (g_rota < 1.0f) gl.glColor4f(1, 1, 1, .5f * (1.0f + (float)Math.cos(g_rota * 3.1415f)));
-            if (g_rota > 9.2) gl.glColor4f(1, 1, 1, .5f * (1.0f + (float)Math.cos(-3.1415f + (g_rota - 9.2f) * 4.0f * 3.1415f)));
-            if ((g_scene == 1) && (g_rota > 5.7f)) gl.glColor4f(1, 1, 1, .5f * (1.0f + (float)Math.cos(-3.1415f + (g_rota - 5.7f) * 4.0f * 3.1415f)));
-            if ((g_scene == 2) && (g_rota > 4.0f)) gl.glColor4f(1, 1, 1, .5f * (1.0f + (float)Math.cos(-3.1415f + (g_rota - 4.0f) * 3.1415f)));
+            else if (g_rota < 1.0f) gl.glColor4f(1, 1, 1, .5f * (1.0f + (float) Math.cos(g_rota * 3.1415f)));
+            if (g_rota > 9.2)
+                gl.glColor4f(1, 1, 1, .5f * (1.0f + (float) Math.cos(-3.1415f + (g_rota - 9.2f) * 4.0f * 3.1415f)));
+            if ((g_scene == 1) && (g_rota > 5.7f))
+                gl.glColor4f(1, 1, 1, .5f * (1.0f + (float) Math.cos(-3.1415f + (g_rota - 5.7f) * 4.0f * 3.1415f)));
+            if ((g_scene == 2) && (g_rota > 4.0f))
+                gl.glColor4f(1, 1, 1, .5f * (1.0f + (float) Math.cos(-3.1415f + (g_rota - 4.0f) * 3.1415f)));
             gl.glDisable(GL2.GL_TEXTURE_2D);
             gl.glScalef(1.1f, .8f, 1);
             g_drawquad(gl, 1);
@@ -672,7 +653,25 @@ final class Scene8 implements Scene {
             return false;
         }
         //MessageBox(NULL,"","",0);
-        g_gettime = (long)g_time;
+        g_gettime = (long) g_time;
         return true;
+    }
+
+    private static final class g_part {
+        float size,
+                spd,
+                z,
+                fact,
+                r,
+                g_a;
+    }
+
+    private static final class g_part1 {
+        float size,
+                spd,
+                h,
+                r,
+                g_a;
+        long init;
     }
 }

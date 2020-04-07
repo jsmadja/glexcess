@@ -121,7 +121,6 @@ public class FPSAnimator extends Animator {
             renderTimer.cancel();
         }
     }*/
-
     public boolean isFrameRateLimitEnabled() {
         return runnable.isFrameRateLimitEnabled();
     }

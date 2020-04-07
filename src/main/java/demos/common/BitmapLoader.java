@@ -8,6 +8,7 @@ import java.io.InputStream;
 
 /**
  * Windows bitmap file loader.
+ *
  * @author Abdul Bezrati
  * @author Pepijn Van Eeckhoudt
  */
@@ -21,8 +22,8 @@ public class BitmapLoader {
             int bitmapFileHeaderLength = 14;
             int bitmapInfoHeaderLength = 40;
 
-            byte bitmapFileHeader[] = new byte[bitmapFileHeaderLength];
-            byte bitmapInfoHeader[] = new byte[bitmapInfoHeaderLength];
+            byte[] bitmapFileHeader = new byte[bitmapFileHeaderLength];
+            byte[] bitmapInfoHeader = new byte[bitmapInfoHeaderLength];
 
             input.read(bitmapFileHeader, 0, bitmapFileHeaderLength);
             input.read(bitmapInfoHeader, 0, bitmapInfoHeaderLength);
@@ -66,8 +67,8 @@ public class BitmapLoader {
             nSizeImage *= nHeight;
         }
 
-        int npalette[] = new int[nNumColors];
-        byte bpalette[] = new byte[nNumColors * 4];
+        int[] npalette = new int[nNumColors];
+        byte[] bpalette = new byte[nNumColors * 4];
         readBuffer(input, bpalette);
         int nindex8 = 0;
 
@@ -84,7 +85,7 @@ public class BitmapLoader {
         BufferedImage bufferedImage = new BufferedImage(nWidth, nHeight, BufferedImage.TYPE_INT_ARGB);
         DataBufferInt dataBufferByte = ((DataBufferInt) bufferedImage.getRaster().getDataBuffer());
         int[][] bankData = dataBufferByte.getBankData();
-        byte bdata[] = new byte[(nWidth + npad8) * nHeight];
+        byte[] bdata = new byte[(nWidth + npad8) * nHeight];
 
         readBuffer(input, bdata);
         nindex8 = 0;
@@ -108,7 +109,7 @@ public class BitmapLoader {
         BufferedImage bufferedImage = new BufferedImage(nWidth, nHeight, BufferedImage.TYPE_4BYTE_ABGR);
         DataBufferByte dataBufferByte = ((DataBufferByte) bufferedImage.getRaster().getDataBuffer());
         byte[][] bankData = dataBufferByte.getBankData();
-        byte brgb[] = new byte[(nWidth + npad) * 3 * nHeight];
+        byte[] brgb = new byte[(nWidth + npad) * 3 * nHeight];
 
         readBuffer(input, brgb);
 

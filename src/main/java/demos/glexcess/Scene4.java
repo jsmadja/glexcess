@@ -1,9 +1,7 @@
 package demos.glexcess;
 
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.gl2.GLUgl2;
 import demos.common.ResourceRetriever;
 
@@ -13,26 +11,35 @@ import java.util.Random;
 /**
  * GLExcess v1.0 Demo
  * Copyright (C) 2001-2003 Paolo Martella
- *
+ * <p>
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
  * @author Paolo "Bustard" Martella
  * @author Pepijn Van Eeckhoudt
  */
 final class Scene4 implements Scene {
-    private final Random random = new Random();
-    private Texture[] d_Text;
     private static final int numtexs = 9;
     private static boolean init = true;
+    private final Random random = new Random();
+    private final int d_num1 = 20;
+    private final int d_num2 = 20;
+    private final int d_num3 = 20;
+    private final int d_num4 = 20;
+    private final int d_num5 = 75;
+    private final int d_repeat = 11;
+    private final float[] d_radius = new float[d_repeat];
+    private final boolean[] d_sound = new boolean[d_repeat];
+    private final float[] d_off = new float[d_repeat];
+    private Texture[] d_Text;
     private int d_time = 0;
-
     private int d_y;
     private int d_timer1 = 0;
     private int d_timer2 = 0;
@@ -40,40 +47,25 @@ final class Scene4 implements Scene {
     private int d_timer4 = 0;
     private int d_timer5 = 0;
     private int d_offset = 0;
-
     private int d_ct = 0;
-
-    private final int d_num1 = 20;
-    private final int d_num2 = 20;
-    private final int d_num3 = 20;
-    private final int d_num4 = 20;
-    private final int d_num5 = 75;
-
-    private final int d_repeat = 11;
-
-    private static final class d_part {
-        float size;
-        float phase;
-        float mod;
-        float axrot;
-        float spd;
-        float x,d_y;
-        float fct;
-        int r;
-        int g;
-        int b;
-        int a;
-    }
-
     private d_part[][] xp1;
     private d_part[][] xp2;
     private d_part[][] xp3;
     private d_part[][] xp4;
     private d_part[][] xp5;
-    private final float[] d_radius = new float[d_repeat];
-    private final boolean[] d_sound = new boolean[d_repeat];
 
-    private final float[] d_off = new float[d_repeat];
+    private static void d_drawquad(GL2 gl, float size) {
+        gl.glBegin(GL2.GL_QUADS);
+        gl.glTexCoord2f(0.0f, 0.0f);
+        gl.glVertex3f(-0.5f * size, -0.5f * size, 0.0f);
+        gl.glTexCoord2f(1.0f, 0.0f);
+        gl.glVertex3f(0.5f * size, -0.5f * size, 0.0f);
+        gl.glTexCoord2f(1.0f, 1.0f);
+        gl.glVertex3f(0.5f * size, 0.5f * size, 0.0f);
+        gl.glTexCoord2f(0.0f, 1.0f);
+        gl.glVertex3f(-0.5f * size, 0.5f * size, 0.0f);
+        gl.glEnd();
+    }
 
     public final void clean(GLAutoDrawable g) {
         GL2 gl = g.getGL().getGL2();
@@ -152,26 +144,13 @@ final class Scene4 implements Scene {
         }
         d_rstoff();
 
-        gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);	// Really Nice Perspective Calculations
+        gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);    // Really Nice Perspective Calculations
         gl.glPolygonMode(GL2.GL_FRONT, GL2.GL_FILL);
         gl.glEnable(GL2.GL_TEXTURE_2D);
         gl.glEnable(GL2.GL_CULL_FACE);
         gl.glFrontFace(GL2.GL_CCW);
         gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
         gl.glEnable(GL2.GL_BLEND);
-    }
-
-    private static void d_drawquad(GL2 gl, float size) {
-        gl.glBegin(GL2.GL_QUADS);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-0.5f * size, -0.5f * size, 0.0f);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(0.5f * size, -0.5f * size, 0.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(0.5f * size, 0.5f * size, 0.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(-0.5f * size, 0.5f * size, 0.0f);
-        gl.glEnd();
     }
 
     private void d_drawtri(GL2 gl, int i, int d_y, float size, float xrot, float yrot, float zrot) {
@@ -194,7 +173,7 @@ final class Scene4 implements Scene {
             // DRAW PART
             if (xp1[i][d_y].a > 0) {
                 gl.glPushMatrix();
-                gl.glColor4ub((byte)xp1[i][d_y].r, (byte)xp1[i][d_y].g, (byte)xp1[i][d_y].b, (byte)xp1[i][d_y].a);
+                gl.glColor4ub((byte) xp1[i][d_y].r, (byte) xp1[i][d_y].g, (byte) xp1[i][d_y].b, (byte) xp1[i][d_y].a);
                 gl.glRotatef(xp1[i][d_y].phase, 0, 0, 1);
                 gl.glTranslatef(xp1[i][d_y].mod, 0, 0);
                 gl.glRotatef(xp1[i][d_y].axrot, 0, 0, 1);
@@ -205,7 +184,8 @@ final class Scene4 implements Scene {
                 xp1[i][d_y].mod += xp1[i][d_y].spd / 3.0f;
                 xp1[i][d_y].size += xp1[i][d_y].spd / 2.0f;
                 xp1[i][d_y].axrot = xp1[i][d_y].axrot + .125f;
-                if (xp1[i][d_y].size > 1.5f * xp1[i][d_y].fct) xp1[i][d_y].spd = xp1[i][d_y].fct * xp1[i][d_y].spd / 1.1f;
+                if (xp1[i][d_y].size > 1.5f * xp1[i][d_y].fct)
+                    xp1[i][d_y].spd = xp1[i][d_y].fct * xp1[i][d_y].spd / 1.1f;
                 if (xp1[i][d_y].spd < 0.0125f) xp1[i][d_y].spd = 0.0125f;
                 if (xp1[i][d_y].r >= 130) xp1[i][d_y].r -= 1 + (int) (xp1[i][d_y].mod);
                 if (xp1[i][d_y].g >= 90) xp1[i][d_y].g -= 2 + 2 * (int) (xp1[i][d_y].mod);
@@ -229,7 +209,7 @@ final class Scene4 implements Scene {
 
                 // DRAW PART
 
-                gl.glColor4ub((byte)xp2[i][d_y].r, (byte)xp2[i][d_y].g, (byte)xp2[i][d_y].b, (byte)xp2[i][d_y].a);
+                gl.glColor4ub((byte) xp2[i][d_y].r, (byte) xp2[i][d_y].g, (byte) xp2[i][d_y].b, (byte) xp2[i][d_y].a);
                 gl.glRotatef(xp2[i][d_y].phase + 2.0f * ((float) d_y / d_num2), 0, 0, 1);
                 gl.glTranslatef(xp2[i][d_y].mod, 0, 0);
                 gl.glRotatef(xp2[i][d_y].axrot * 3f, 0, 0, 1);
@@ -240,7 +220,8 @@ final class Scene4 implements Scene {
                 xp2[i][d_y].mod += xp2[i][d_y].spd / 5.0f;
                 xp2[i][d_y].size += xp2[i][d_y].spd * 1.25;
                 xp2[i][d_y].axrot = xp2[i][d_y].axrot + .125f;
-                if (xp2[i][d_y].size > .75f * xp2[i][d_y].fct) xp2[i][d_y].spd = xp2[i][d_y].fct * xp2[i][d_y].spd / 1.1f;
+                if (xp2[i][d_y].size > .75f * xp2[i][d_y].fct)
+                    xp2[i][d_y].spd = xp2[i][d_y].fct * xp2[i][d_y].spd / 1.1f;
                 if (xp2[i][d_y].spd < 0.0125f) xp2[i][d_y].spd = 0.0125f;
                 if (xp2[i][d_y].r >= 130) xp2[i][d_y].r -= 1 + (int) (xp2[i][d_y].mod);
                 if (xp2[i][d_y].g >= 90) xp2[i][d_y].g -= 2 + 2 * (int) (xp2[i][d_y].mod);
@@ -264,7 +245,7 @@ final class Scene4 implements Scene {
 
                 // DRAW PART
 
-                gl.glColor4ub((byte)xp3[i][d_y].r, (byte)xp3[i][d_y].g, (byte)xp3[i][d_y].b, (byte)xp3[i][d_y].a);
+                gl.glColor4ub((byte) xp3[i][d_y].r, (byte) xp3[i][d_y].g, (byte) xp3[i][d_y].b, (byte) xp3[i][d_y].a);
                 gl.glRotatef(xp3[i][d_y].phase, 0, 0, 1);
                 gl.glTranslatef(xp3[i][d_y].mod, 0, 0);
                 gl.glRotatef(xp3[i][d_y].axrot * 5f, 0, 0, 1);
@@ -275,12 +256,15 @@ final class Scene4 implements Scene {
                 xp3[i][d_y].mod += xp3[i][d_y].spd / 5.0f;
                 xp3[i][d_y].size += xp3[i][d_y].spd * 1.2;
                 xp3[i][d_y].axrot = xp3[i][d_y].axrot + .125f;
-                if (xp3[i][d_y].size > .75f * xp3[i][d_y].fct) xp3[i][d_y].spd = xp3[i][d_y].fct * xp3[i][d_y].spd / 1.1f;
+                if (xp3[i][d_y].size > .75f * xp3[i][d_y].fct)
+                    xp3[i][d_y].spd = xp3[i][d_y].fct * xp3[i][d_y].spd / 1.1f;
                 if (xp3[i][d_y].spd < 0.0125f) xp3[i][d_y].spd = 0.0125f;
                 if (xp3[i][d_y].r >= 96) xp3[i][d_y].r -= 1 + (int) (xp3[i][d_y].mod);
                 if (xp3[i][d_y].g >= 64) xp3[i][d_y].g -= 2 + 2 * (int) (xp3[i][d_y].mod);
                 if (xp3[i][d_y].b >= 16) xp3[i][d_y].b -= 4 + 4 * (int) (xp3[i][d_y].mod);
-                if ((d_y % 3) == 0) xp3[i][d_y].a -= (int) (2.0f); else if ((d_y % 3) == 1) xp3[i][d_y].a -= (int) (3.0f); else xp3[i][d_y].a -= (int) (4.0f);
+                if ((d_y % 3) == 0) xp3[i][d_y].a -= (int) (2.0f);
+                else if ((d_y % 3) == 1) xp3[i][d_y].a -= (int) (3.0f);
+                else xp3[i][d_y].a -= (int) (4.0f);
 
                 if (xp3[i][d_y].a < 1) xp3[i][d_y].a = 0;
 
@@ -298,7 +282,7 @@ final class Scene4 implements Scene {
 
                 // DRAW PART
 
-                gl.glColor4ub((byte)xp4[i][d_y].r, (byte)xp4[i][d_y].g, (byte)xp4[i][d_y].b, (byte)xp4[i][d_y].a);
+                gl.glColor4ub((byte) xp4[i][d_y].r, (byte) xp4[i][d_y].g, (byte) xp4[i][d_y].b, (byte) xp4[i][d_y].a);
                 gl.glRotatef(xp4[i][d_y].phase, 0, 0, 1);
                 gl.glTranslatef(xp4[i][d_y].mod, 0, 0);
                 if ((xp4[i][d_y].phase < 270.0f) && (xp4[i][d_y].phase > 90.0f))
@@ -312,7 +296,8 @@ final class Scene4 implements Scene {
                 xp4[i][d_y].mod += xp4[i][d_y].spd / .9f;
                 xp4[i][d_y].size += xp4[i][d_y].spd * 1.5;
                 xp4[i][d_y].axrot = xp4[i][d_y].axrot + .125f;
-                if (xp4[i][d_y].size > .75f * xp4[i][d_y].fct) xp4[i][d_y].spd = xp4[i][d_y].fct * xp4[i][d_y].spd / 1.5f;
+                if (xp4[i][d_y].size > .75f * xp4[i][d_y].fct)
+                    xp4[i][d_y].spd = xp4[i][d_y].fct * xp4[i][d_y].spd / 1.5f;
                 if (xp4[i][d_y].spd < 0.0125f) xp4[i][d_y].spd = 0.0125f;
                 xp4[i][d_y].r = (int) (255 * (float) Math.sin(1.5 * xp4[i][d_y].phase) * (float) Math.sin(1.5 * xp4[i][d_y].phase));
                 xp4[i][d_y].g = xp4[i][d_y].r;
@@ -345,7 +330,7 @@ final class Scene4 implements Scene {
 
                 // DRAW PART
 
-                gl.glColor4ub((byte)255, (byte)224, (byte)208, (byte)xp5[i][d_y].a);//xp4[i][d_y].a);
+                gl.glColor4ub((byte) 255, (byte) 224, (byte) 208, (byte) xp5[i][d_y].a);//xp4[i][d_y].a);
                 gl.glRotatef(xp5[i][d_y].phase, 0, 0, 1);
                 gl.glTranslatef(xp5[i][d_y].mod / 2.0f, 0, xp5[i][d_y].mod);
                 if ((d_y % 2) == 0)
@@ -494,13 +479,13 @@ final class Scene4 implements Scene {
         gl.glDisable(GL2.GL_BLEND);
 
         if (d_ct < 300)
-            gl.glColor4ub((byte)255, (byte)255, (byte)255, (byte)255);
+            gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 255);
         else
             gl.glColor4ub(
                     (byte) (255 - 2.55f * ((float) (d_ct - 300))),
                     (byte) (255 - 2.55f * ((float) (d_ct - 300))),
                     (byte) (255 - 2.55f * ((float) (d_ct - 300))),
-                    (byte)225);
+                    (byte) 225);
         d_drawquad(gl, 5);
         gl.glEnable(GL2.GL_BLEND);
         gl.glPopMatrix();
@@ -519,7 +504,7 @@ final class Scene4 implements Scene {
                 gl.glTranslatef(4f * (float) Math.cos(6.28f * ((float) i / (d_repeat - 1))), 2f * (float) Math.sin(6.28f * ((float) i / (d_repeat - 1))), 0);
             //else MessageBox(NULL,"i vale repeat-1","i vale repeat-1",0);
             gl.glScalef(d_off[i], d_off[i], 1);
-            gl.glColor4ub((byte)255, (byte)255, (byte)255, (byte)255);
+            gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 255);
             gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
             //glBindTexture(GL2.GL_TEXTURE_2D, d_texture[7]);
             d_Text[8].use(gl);
@@ -586,11 +571,22 @@ final class Scene4 implements Scene {
             }
             d_radius[i] += .25f;
         }
-        if (d_ct > 400) {
-            //****************************************** FINISH
-            //	d_Clean();
-            return false;
-        }
-        return true;
+        //****************************************** FINISH
+        //	d_Clean();
+        return d_ct <= 400;
+    }
+
+    private static final class d_part {
+        float size;
+        float phase;
+        float mod;
+        float axrot;
+        float spd;
+        float x, d_y;
+        float fct;
+        int r;
+        int g;
+        int b;
+        int a;
     }
 }

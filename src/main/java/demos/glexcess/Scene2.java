@@ -2,7 +2,6 @@ package demos.glexcess;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.gl2.GLUgl2;
 import demos.common.ResourceRetriever;
 
@@ -13,40 +12,49 @@ import java.util.Random;
 /**
  * GLExcess v1.0 Demo
  * Copyright (C) 2001-2003 Paolo Martella
- *
+ * <p>
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
  * @author Paolo "Bustard" Martella
  * @author Pepijn Van Eeckhoudt
  */
 final class Scene2 implements Scene {
-    private final Random random = new Random();
+    private static final int numtexs = 5;
+    private static final int size = 64;
+    private static final int a_num = 200;
     private static boolean init = true;
     private static boolean first = true;
-    private float a_time = 0.0f;
-
-    private Texture[] a_Text;
-    private static final int numtexs = 5;
-
-    private long a_gets = 0;
-
-    private float gendep = 1.55f;
-    private static final int size = 64;
+    private final Random random = new Random();
     private final float[][][] norm = new float[size][size][3];
     private final float[][][] a_points = new float[size][size][3];
     private final float[] camera = new float[]{
-        -12.8f, 12.8f, 5
+            -12.8f, 12.8f, 5
     };
     private final float[] cameraray = new float[3];
     private final float[] rray = new float[3];
     private final float[][][] newcoord = new float[size][size][2];
+    private final a_part[] parts = new a_part[a_num];
+    private final float[] a_diffuse = {0.2f, 0.2f, 0.2f, 1.0f};
+    private final float[] a_ambient = {0.1f, 0.1f, 0.1f, 1.0f};
+    private final float[] a_specular = {.750f, .750f, .750f, 1.0f};
+    private final float[] a_emission = {0.2f, 0.2f, 0.2f, 1.0f};
+    private final float[] a_LightAmbient = {0.5f, 0.5f, 0.5f, 1.0f};
+    private final float[] a_LightDiffuse = {0.5f, 0.5f, 0.5f, 1.0f};
+    private final float[] a_LightSpecular = {.5f, .5f, .5f, 1.0f};
+    private final float[] a_LightPosition = {0.0f, 8.0f, -20.0f, 1.0f};
+    private final float[] a_Sinus = new float[3];
+    private float a_time = 0.0f;
+    private Texture[] a_Text;
+    private long a_gets = 0;
+    private float gendep = 1.55f;
     private float coeff = 7.1f;
     private int a_x, a_y;
     private float a_xrot;
@@ -54,33 +62,8 @@ final class Scene2 implements Scene {
     private float a_zrot;
     private float quantos = -1.0f;
     private float a_zeta = -1.0f;
-
-    private static final int a_num = 200;
-
-    private static final class a_part {
-        float a_x,a_y,z;
-        float a_mod;
-        float speed,speedlim;
-        int r,g,b,a;
-        int angle;
-        int time;
-    }
-
-    private final a_part[] parts = new a_part[a_num];
-
     private float a_counter = 0;
     private float a_mod;
-
-    private final float[] a_diffuse = {0.2f, 0.2f, 0.2f, 1.0f};
-    private final float[] a_ambient = {0.1f, 0.1f, 0.1f, 1.0f};
-    private final float[] a_specular = {.750f, .750f, .750f, 1.0f};
-    private final float[] a_emission = {0.2f, 0.2f, 0.2f, 1.0f};
-
-    private final float[] a_LightAmbient = {0.5f, 0.5f, 0.5f, 1.0f};
-    private final float[] a_LightDiffuse = {0.5f, 0.5f, 0.5f, 1.0f};
-    private final float[] a_LightSpecular = {.5f, .5f, .5f, 1.0f};
-    private final float[] a_LightPosition = {0.0f, 8.0f, -20.0f, 1.0f};
-    private final float[] a_Sinus = new float[3];
 
     private static void copy(float[] vec0, float[] vec1) {
         vec0[0] = vec1[0];
@@ -109,6 +92,19 @@ final class Scene2 implements Scene {
     private static void normz(float[] vec) {
         float c = (float) Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
         scalDiv(vec, c);
+    }
+
+    private static void a_drawquad(GL2 gl, float size) {
+        gl.glBegin(GL2.GL_QUADS);
+        gl.glTexCoord2f(0.0f, 0.0f);
+        gl.glVertex3f(-.5f * size, -.5f * size, 0);
+        gl.glTexCoord2f(1.0f, 0.0f);
+        gl.glVertex3f(-.5f * size, .5f * size, 0);
+        gl.glTexCoord2f(1.0f, 1.0f);
+        gl.glVertex3f(.5f * size, .5f * size, 0);
+        gl.glTexCoord2f(0.0f, 1.0f);
+        gl.glVertex3f(.5f * size, -.5f * size, 0);
+        gl.glEnd();
     }
 
     private void MakeNorm() {
@@ -314,19 +310,6 @@ final class Scene2 implements Scene {
             parts[a].time = time;
     }
 
-    private static void a_drawquad(GL2 gl, float size) {
-        gl.glBegin(GL2.GL_QUADS);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-.5f * size, -.5f * size, 0);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(-.5f * size, .5f * size, 0);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(.5f * size, .5f * size, 0);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(.5f * size, -.5f * size, 0);
-        gl.glEnd();
-    }
-
     private void calcul(int xx, int yy) {
         if ((xx == 0) && (yy == 0)) MakeNorm();
         sub(cameraray, camera, a_points[xx][yy]);
@@ -370,7 +353,8 @@ final class Scene2 implements Scene {
 
         if (a_zeta > -2.5f) a_zeta = -2.5f;
 
-        if (a_mod > 0.5f) a_mod = 1.0f - .03f * (a_time - a_gets); else a_mod = .5f - 0.015f * (a_time - a_gets);
+        if (a_mod > 0.5f) a_mod = 1.0f - .03f * (a_time - a_gets);
+        else a_mod = .5f - 0.015f * (a_time - a_gets);
         if (a_mod < 0.0f) a_mod = 0.0f;
         gl.glDisable(GL2.GL_TEXTURE_2D);
         gl.glLoadIdentity();
@@ -386,7 +370,7 @@ final class Scene2 implements Scene {
         if (first)//a_time<3.01f)
         {
             gl.glDisable(GL2.GL_BLEND);
-            gl.glColor4ub((byte)255, (byte)255, (byte)255, (byte)255);
+            gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 255);
             a_drawquad(gl, 6);
             gl.glEnable(GL2.GL_BLEND);
             first = false;
@@ -415,8 +399,8 @@ final class Scene2 implements Scene {
                 double arg;
 
                 if (quantos > 0.0f) {
-                    raggio = .5 * Math.sqrt((double) ((a_points[a_xx][a_yy][0] - a_points[size / 2][size / 2][0]) * (a_points[a_xx][a_yy][0] - a_points[size / 2][size / 2][0])
-                            + (a_points[a_xx][a_yy][1] - a_points[size / 2][size / 2][1]) * (a_points[a_xx][a_yy][1] - a_points[size / 2][size / 2][1])));
+                    raggio = .5 * Math.sqrt((a_points[a_xx][a_yy][0] - a_points[size / 2][size / 2][0]) * (a_points[a_xx][a_yy][0] - a_points[size / 2][size / 2][0])
+                            + (a_points[a_xx][a_yy][1] - a_points[size / 2][size / 2][1]) * (a_points[a_xx][a_yy][1] - a_points[size / 2][size / 2][1]));
                     arg = 2.5 * raggio - quantos * 2 + 30;
                     if ((arg < -2 * 6.28) || (arg > 4 * 6.28))
                         value = 0;
@@ -425,8 +409,8 @@ final class Scene2 implements Scene {
                     a_points[a_xx][a_yy][2] = (float) value;
                 }
                 if (quantos > 10) {
-                    raggio = .5 * Math.sqrt((double) ((a_points[a_xx][a_yy][0] - a_points[48][48][0]) * (a_points[a_xx][a_yy][0] - a_points[48][48][0])
-                            + (a_points[a_xx][a_yy][1] - a_points[48][48][1]) * (a_points[a_xx][a_yy][1] - a_points[48][48][1])));
+                    raggio = .5 * Math.sqrt((a_points[a_xx][a_yy][0] - a_points[48][48][0]) * (a_points[a_xx][a_yy][0] - a_points[48][48][0])
+                            + (a_points[a_xx][a_yy][1] - a_points[48][48][1]) * (a_points[a_xx][a_yy][1] - a_points[48][48][1]));
                     arg = 2.5 * raggio - (quantos - 10) * 3 + 30;
                     if ((arg < -2 * 6.28) || (arg > 4 * 6.28))
                         value = 0;
@@ -435,8 +419,8 @@ final class Scene2 implements Scene {
                     a_points[a_xx][a_yy][2] += value;
                 }
                 if (quantos > 24) {
-                    raggio = .5 * Math.sqrt((double) ((a_points[a_xx][a_yy][0] - a_points[50][22][0]) * (a_points[a_xx][a_yy][0] - a_points[50][22][0])
-                            + (a_points[a_xx][a_yy][1] - a_points[50][22][1]) * (a_points[a_xx][a_yy][1] - a_points[50][22][1])));
+                    raggio = .5 * Math.sqrt((a_points[a_xx][a_yy][0] - a_points[50][22][0]) * (a_points[a_xx][a_yy][0] - a_points[50][22][0])
+                            + (a_points[a_xx][a_yy][1] - a_points[50][22][1]) * (a_points[a_xx][a_yy][1] - a_points[50][22][1]));
                     arg = 3.0 * raggio - (quantos - 24) * 4 + 30;
                     if ((arg < -2 * 6.28) || (arg > 4 * 6.28))
                         value = 0;
@@ -445,8 +429,8 @@ final class Scene2 implements Scene {
                     a_points[a_xx][a_yy][2] += value;
                 }
                 if (quantos > 32) {
-                    raggio = .5 * Math.sqrt((double) ((a_points[a_xx][a_yy][0] - a_points[32][32][0]) * (a_points[a_xx][a_yy][0] - a_points[32][32][0])
-                            + (a_points[a_xx][a_yy][1] - a_points[32][32][1]) * (a_points[a_xx][a_yy][1] - a_points[32][32][1])));
+                    raggio = .5 * Math.sqrt((a_points[a_xx][a_yy][0] - a_points[32][32][0]) * (a_points[a_xx][a_yy][0] - a_points[32][32][0])
+                            + (a_points[a_xx][a_yy][1] - a_points[32][32][1]) * (a_points[a_xx][a_yy][1] - a_points[32][32][1]));
                     arg = 2.5 * raggio - (quantos - 32) * 3 + 30;
                     if ((arg < 0 * 6.28) || (arg > 4 * 6.28))
                         value = 0;
@@ -539,9 +523,9 @@ final class Scene2 implements Scene {
             gl.glTranslatef(parts[p].a_mod, 0, 0);
 
             if (a_time < 20.0f)
-                gl.glColor4ub((byte)parts[p].r, (byte)parts[p].g, (byte)parts[p].b, (byte)((int) ((parts[p].a - (int) (time / 8.0f)) * (a_time - 6.0f) / 14.0)));
+                gl.glColor4ub((byte) parts[p].r, (byte) parts[p].g, (byte) parts[p].b, (byte) ((int) ((parts[p].a - (int) (time / 8.0f)) * (a_time - 6.0f) / 14.0)));
             else
-                gl.glColor4ub((byte)parts[p].r, (byte)parts[p].g, (byte)parts[p].b, (byte)(parts[p].a - (int) (time / 8.0f)));
+                gl.glColor4ub((byte) parts[p].r, (byte) parts[p].g, (byte) parts[p].b, (byte) (parts[p].a - (int) (time / 8.0f)));
 
             if (a_time > 6.0) a_drawquad(gl, 1.125f - .75f * p / a_num);
             parts[p].a_mod = parts[p].speed * time / 35.0f;
@@ -571,8 +555,8 @@ final class Scene2 implements Scene {
 
         gl.glRotatef(-a_zrot, 0, 0, 1);
         gl.glRotatef(90 - 2 * a_xrot, 1, 0, 0);
-        gl.glColor4ub((byte)255, (byte)128, (byte)255, (byte)255);
-        gl.glColor4ub((byte)128, (byte)192, (byte)255, (byte)255);
+        gl.glColor4ub((byte) 255, (byte) 128, (byte) 255, (byte) 255);
+        gl.glColor4ub((byte) 128, (byte) 192, (byte) 255, (byte) 255);
         gl.glRotatef(2 * a_counter, 0, 0, 1);
 
         a_LightPosition[0] = 0;//a_Sinus[0];//10.0f*(float)Math.sin(a_counter*4.0f*3.14f/360.0f);
@@ -599,11 +583,17 @@ final class Scene2 implements Scene {
 //	a_time=2.0f+(1)/500.0f;//************************************
 
 
-        if (a_time > 96.0f) {
-            //****************************** FINISH
-            //a_Clean();
-            return false;
-        }
-        return true;
+        //****************************** FINISH
+        //a_Clean();
+        return !(a_time > 96.0f);
+    }
+
+    private static final class a_part {
+        float a_x, a_y, z;
+        float a_mod;
+        float speed, speedlim;
+        int r, g, b, a;
+        int angle;
+        int time;
     }
 }

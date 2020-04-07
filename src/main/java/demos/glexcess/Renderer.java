@@ -1,42 +1,45 @@
 package demos.glexcess;
 
-import com.jogamp.opengl.*;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.glu.GLU;
 
 /**
  * GLExcess v1.0 Demo
  * Copyright (C) 2001-2003 Paolo Martella
- *
+ * <p>
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
  * @author Paolo "Bustard" Martella
  * @author Pepijn Van Eeckhoudt
  */
 final class Renderer implements GLEventListener {
     private static final boolean loop = false;
+    private final Scene[] scenes = new Scene[]{
+            new Scene1(),
+            new Scene2(),
+            new Scene3(),
+            new Scene4(),
+            new Scene5(),
+            new Scene6(),
+            new Scene7(),
+            new Scene8(),
+            new Scene9(),
+            new Scene10(),
+            new Scene11(),
+            new Scene12()
+    };
     private float timing = 0;
     private float step = 1;
-    private final Scene[] scenes = new Scene[]{
-        new Scene1(),
-        new Scene2(),
-        new Scene3(),
-        new Scene4(),
-        new Scene5(),
-        new Scene6(),
-        new Scene7(),
-        new Scene8(),
-        new Scene9(),
-        new Scene10(),
-        new Scene11(),
-        new Scene12()
-    };
     private int currentScene = 0;
     private boolean switchScene;
 
@@ -73,8 +76,8 @@ final class Renderer implements GLEventListener {
     }
 
     public final void displayChanged(GLAutoDrawable drawable,
-                               boolean modeChanged,
-                               boolean deviceChanged) {
+                                     boolean modeChanged,
+                                     boolean deviceChanged) {
     }
 
     private void drawscene(GLAutoDrawable g) {

@@ -15,15 +15,15 @@ import java.util.List;
  * @author Pepijn Van Eeckhoudt
  */
 public class HelpOverlay implements GLEventListener {
-    private List keyboardEntries = new ArrayList();
-    private List mouseEntries = new ArrayList();
-    private boolean visible = false;
-    private GLUT glut = new GLUT();
     private static final int CHAR_HEIGHT = 12;
     private static final int OFFSET = 15;
     private static final int INDENT = 3;
     private static final String KEYBOARD_CONTROLS = "Keyboard controls";
     private static final String MOUSE_CONTROLS = "Mouse controls";
+    private List keyboardEntries = new ArrayList();
+    private List mouseEntries = new ArrayList();
+    private boolean visible = false;
+    private GLUT glut = new GLUT();
 
     public boolean isVisible() {
         return visible;
@@ -69,16 +69,16 @@ public class HelpOverlay implements GLEventListener {
 
         if (keyboardEntries.size() > 0) {
             gl.glRasterPos2i(x, y);
-            glut.glutBitmapString(glut.BITMAP_HELVETICA_12, KEYBOARD_CONTROLS);
-            maxx = Math.max(maxx, OFFSET + glut.glutBitmapLength(glut.BITMAP_HELVETICA_12, KEYBOARD_CONTROLS));
+            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_12, KEYBOARD_CONTROLS);
+            maxx = Math.max(maxx, OFFSET + glut.glutBitmapLength(GLUT.BITMAP_HELVETICA_12, KEYBOARD_CONTROLS));
 
             y += OFFSET;
             x += INDENT;
             for (int i = 0; i < keyboardEntries.size(); i++) {
                 gl.glRasterPos2f(x, y);
                 String text = (String) keyboardEntries.get(i);
-                glut.glutBitmapString(glut.BITMAP_HELVETICA_12, text);
-                maxx = Math.max(maxx, OFFSET + glut.glutBitmapLength(glut.BITMAP_HELVETICA_12, text));
+                glut.glutBitmapString(GLUT.BITMAP_HELVETICA_12, text);
+                maxx = Math.max(maxx, OFFSET + glut.glutBitmapLength(GLUT.BITMAP_HELVETICA_12, text));
                 y += OFFSET;
             }
         }
@@ -87,13 +87,13 @@ public class HelpOverlay implements GLEventListener {
             x = maxx + OFFSET;
             y = OFFSET + CHAR_HEIGHT;
             gl.glRasterPos2i(x, y);
-            glut.glutBitmapString(glut.BITMAP_HELVETICA_12, MOUSE_CONTROLS);
+            glut.glutBitmapString(GLUT.BITMAP_HELVETICA_12, MOUSE_CONTROLS);
 
             y += OFFSET;
             x += INDENT;
             for (int i = 0; i < mouseEntries.size(); i++) {
                 gl.glRasterPos2f(x, y);
-                glut.glutBitmapString(glut.BITMAP_HELVETICA_12, (String) mouseEntries.get(i));
+                glut.glutBitmapString(GLUT.BITMAP_HELVETICA_12, (String) mouseEntries.get(i));
                 y += OFFSET;
             }
         }
@@ -128,8 +128,8 @@ public class HelpOverlay implements GLEventListener {
         String keyText = KeyEvent.getKeyText(keyStroke.getKeyCode());
         keyboardEntries.add(
                 (modifiersText.length() != 0 ? modifiersText + " " : "") +
-                keyText + ": " +
-                description
+                        keyText + ": " +
+                        description
         );
     }
 

@@ -2,7 +2,6 @@ package demos.glexcess;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.gl2.GLUgl2;
 import demos.common.ResourceRetriever;
 
@@ -11,106 +10,28 @@ import java.io.IOException;
 /**
  * GLExcess v1.0 Demo
  * Copyright (C) 2001-2003 Paolo Martella
- *
+ * <p>
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
  * @author Paolo "Bustard" Martella
  * @author Pepijn Van Eeckhoudt
  */
 final class Scene1 implements Scene {
+    private static final int numtexs = 17;
+    private static boolean init = true;
     private int cnt = 0;
     private int checker = 1;
     private float random;
     private Texture[] z_Text;
-    private static final int numtexs = 17;
     private float z_time = 0;
-
-    private static boolean init = true;
-
-    private void init(GLAutoDrawable g) {
-        GL2 gl = g.getGL().getGL2();
-        GLUgl2 glu = new GLUgl2();
-        int width = g.getSurfaceWidth();
-        int height = g.getSurfaceHeight();
-
-        random = (float) Math.random();
-        checker = 1;
-        cnt = 0;
-
-        gl.glMatrixMode(GL2.GL_PROJECTION);
-        gl.glLoadIdentity();
-        glu.gluPerspective(45.0f, (float) width / (float) height, 0.1f, 100.0f);
-        gl.glMatrixMode(GL2.GL_MODELVIEW);
-        gl.glLoadIdentity();
-        z_Text = new Texture[numtexs];
-        for (int i = 0; i < z_Text.length; i++) {
-            z_Text[i] = new Texture();
-        }
-        try {
-            z_Text[0].load(gl, glu, ResourceRetriever.getResourceAsStream("data/introducing.raw"));
-            z_Text[1].load(gl, glu, ResourceRetriever.getResourceAsStream("data/introducings.raw"));
-            z_Text[2].load(gl, glu, ResourceRetriever.getResourceAsStream("data/opengl.raw"));
-            z_Text[3].load(gl, glu, ResourceRetriever.getResourceAsStream("data/openglb.raw"));
-            z_Text[4].load(gl, glu, ResourceRetriever.getResourceAsStream("data/glxcess.raw"));
-            z_Text[5].load(gl, glu, ResourceRetriever.getResourceAsStream("data/glxcesss.raw"));
-            z_Text[6].load(gl, glu, ResourceRetriever.getResourceAsStream("data/wholenew.raw"));
-            z_Text[7].load(gl, glu, ResourceRetriever.getResourceAsStream("data/wholenews.raw"));
-            z_Text[8].load(gl, glu, ResourceRetriever.getResourceAsStream("data/experience.raw"));
-            z_Text[9].load(gl, glu, ResourceRetriever.getResourceAsStream("data/experiences.raw"));
-            z_Text[10].load(gl, glu, ResourceRetriever.getResourceAsStream("data/featuring.raw"));
-            z_Text[11].load(gl, glu, ResourceRetriever.getResourceAsStream("data/featurings.raw"));
-            z_Text[12].load(gl, glu, ResourceRetriever.getResourceAsStream("data/back.raw"));
-            z_Text[13].load(gl, glu, ResourceRetriever.getResourceAsStream("data/linenoise.raw"));
-            z_Text[14].load(gl, glu, ResourceRetriever.getResourceAsStream("data/dust1.raw"));
-            z_Text[15].load(gl, glu, ResourceRetriever.getResourceAsStream("data/dust2.raw"));
-            z_Text[16].load(gl, glu, ResourceRetriever.getResourceAsStream("data/sh1.raw"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        gl.glShadeModel(GL2.GL_SMOOTH);
-        gl.glClearColor(0, 0, 0, 0);
-        gl.glClearDepth(1.0f);
-        gl.glDisable(GL2.GL_DEPTH_TEST);
-        gl.glDepthFunc(GL2.GL_LEQUAL);
-        gl.glDisable(GL2.GL_CULL_FACE);
-        gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
-        gl.glPolygonMode(GL2.GL_FRONT, GL2.GL_FILL);
-        gl.glFrontFace(GL2.GL_CCW);
-        gl.glEnable(GL2.GL_TEXTURE_2D);
-        gl.glDisable(GL2.GL_LIGHTING);
-        gl.glEnable(GL2.GL_BLEND);
-        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
-    }
-
-    public final void clean(GLAutoDrawable g) {
-        GL2 gl = g.getGL().getGL2();
-        z_Text[0].kill(gl);
-        z_Text[1].kill(gl);
-        z_Text[2].kill(gl);
-        z_Text[3].kill(gl);
-        z_Text[4].kill(gl);
-        z_Text[5].kill(gl);
-        z_Text[6].kill(gl);
-        z_Text[7].kill(gl);
-        z_Text[8].kill(gl);
-        z_Text[9].kill(gl);
-        z_Text[10].kill(gl);
-        z_Text[11].kill(gl);
-        z_Text[12].kill(gl);
-        z_Text[13].kill(gl);
-        z_Text[14].kill(gl);
-        z_Text[15].kill(gl);
-        z_Text[16].kill(gl);
-        init = true;
-    }
 
     private static void z_drawrect(GL2 gl, float b, float h) {
         gl.glBegin(GL2.GL_QUADS);
@@ -190,6 +111,84 @@ final class Scene1 implements Scene {
 
         gl.glEnd();
         gl.glPopMatrix();
+    }
+
+    private void init(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
+        GLUgl2 glu = new GLUgl2();
+        int width = g.getSurfaceWidth();
+        int height = g.getSurfaceHeight();
+
+        random = (float) Math.random();
+        checker = 1;
+        cnt = 0;
+
+        gl.glMatrixMode(GL2.GL_PROJECTION);
+        gl.glLoadIdentity();
+        glu.gluPerspective(45.0f, (float) width / (float) height, 0.1f, 100.0f);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
+        gl.glLoadIdentity();
+        z_Text = new Texture[numtexs];
+        for (int i = 0; i < z_Text.length; i++) {
+            z_Text[i] = new Texture();
+        }
+        try {
+            z_Text[0].load(gl, glu, ResourceRetriever.getResourceAsStream("data/introducing.raw"));
+            z_Text[1].load(gl, glu, ResourceRetriever.getResourceAsStream("data/introducings.raw"));
+            z_Text[2].load(gl, glu, ResourceRetriever.getResourceAsStream("data/opengl.raw"));
+            z_Text[3].load(gl, glu, ResourceRetriever.getResourceAsStream("data/openglb.raw"));
+            z_Text[4].load(gl, glu, ResourceRetriever.getResourceAsStream("data/glxcess.raw"));
+            z_Text[5].load(gl, glu, ResourceRetriever.getResourceAsStream("data/glxcesss.raw"));
+            z_Text[6].load(gl, glu, ResourceRetriever.getResourceAsStream("data/wholenew.raw"));
+            z_Text[7].load(gl, glu, ResourceRetriever.getResourceAsStream("data/wholenews.raw"));
+            z_Text[8].load(gl, glu, ResourceRetriever.getResourceAsStream("data/experience.raw"));
+            z_Text[9].load(gl, glu, ResourceRetriever.getResourceAsStream("data/experiences.raw"));
+            z_Text[10].load(gl, glu, ResourceRetriever.getResourceAsStream("data/featuring.raw"));
+            z_Text[11].load(gl, glu, ResourceRetriever.getResourceAsStream("data/featurings.raw"));
+            z_Text[12].load(gl, glu, ResourceRetriever.getResourceAsStream("data/back.raw"));
+            z_Text[13].load(gl, glu, ResourceRetriever.getResourceAsStream("data/linenoise.raw"));
+            z_Text[14].load(gl, glu, ResourceRetriever.getResourceAsStream("data/dust1.raw"));
+            z_Text[15].load(gl, glu, ResourceRetriever.getResourceAsStream("data/dust2.raw"));
+            z_Text[16].load(gl, glu, ResourceRetriever.getResourceAsStream("data/sh1.raw"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        gl.glShadeModel(GL2.GL_SMOOTH);
+        gl.glClearColor(0, 0, 0, 0);
+        gl.glClearDepth(1.0f);
+        gl.glDisable(GL2.GL_DEPTH_TEST);
+        gl.glDepthFunc(GL2.GL_LEQUAL);
+        gl.glDisable(GL2.GL_CULL_FACE);
+        gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
+        gl.glPolygonMode(GL2.GL_FRONT, GL2.GL_FILL);
+        gl.glFrontFace(GL2.GL_CCW);
+        gl.glEnable(GL2.GL_TEXTURE_2D);
+        gl.glDisable(GL2.GL_LIGHTING);
+        gl.glEnable(GL2.GL_BLEND);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+    }
+
+    public final void clean(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
+        z_Text[0].kill(gl);
+        z_Text[1].kill(gl);
+        z_Text[2].kill(gl);
+        z_Text[3].kill(gl);
+        z_Text[4].kill(gl);
+        z_Text[5].kill(gl);
+        z_Text[6].kill(gl);
+        z_Text[7].kill(gl);
+        z_Text[8].kill(gl);
+        z_Text[9].kill(gl);
+        z_Text[10].kill(gl);
+        z_Text[11].kill(gl);
+        z_Text[12].kill(gl);
+        z_Text[13].kill(gl);
+        z_Text[14].kill(gl);
+        z_Text[15].kill(gl);
+        z_Text[16].kill(gl);
+        init = true;
     }
 
     public final boolean drawScene(GLAutoDrawable g, float time) {
@@ -433,10 +432,12 @@ final class Scene1 implements Scene {
                 checker++;
                 cnt = 0;
                 random = (float) Math.random();
-            } else if (random > .2) cnt++; else cnt += 2;
+            } else if (random > .2) cnt++;
+            else cnt += 2;
             gl.glRotatef(360.0f * random, 0, 0, 1);
             gl.glTranslatef(.25f * random, 0, -1);
-            if (random > .5) z_Text[14].use(gl); else z_Text[15].use(gl);
+            if (random > .5) z_Text[14].use(gl);
+            else z_Text[15].use(gl);
             gl.glRotatef(360.0f * random * random, 0, 0, 1);
             z_drawrect(gl, .1f + random / 3, .1f + random / 3);
 

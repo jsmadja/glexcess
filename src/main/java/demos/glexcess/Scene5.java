@@ -1,6 +1,5 @@
 package demos.glexcess;
 
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.glu.GLU;
@@ -16,224 +15,69 @@ import java.util.Random;
 /**
  * GLExcess v1.0 Demo
  * Copyright (C) 2001-2003 Paolo Martella
- *
+ * <p>
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
  * @author Paolo "Bustard" Martella
  * @author Pepijn Van Eeckhoudt
  */
 final class Scene5 implements Scene {
     private static final float MAX_EMBOSS = 0.01f;
-    private final Random random = new Random();
-
-    private Texture[] c_Text;
     private static final int numtexs = 15;
+    private static final int c_num = 50;
+    private static final int c_numpart = 10;
     private static boolean init = true;
     private static boolean c_first = true;
-
-    private float c_time = 0;
-    private GLUquadric c_quadratic;
-
+    private final Random random = new Random();
     private final boolean c_emboss = false;
-    private boolean c_fader = false;
-
-    private final float[] c_FogColor = new float[] {1.0f, 1.0f, 1.0f, 1.0f};
-    private int c_x;
-    private int c_y;
-
-    private int c_count = 0;
-    private float c_xrot;				// X Rotation ( NEW )
-    private float c_yrot;				// Y Rotation ( NEW )
-    private float c_zrot;				// Z Rotation ( NEW )
-    private float c_zeta = 0.0f;
-    private float c_factor = 1.0f;
-    private float c_maxshd = 1.0f;
-
-    private int c_maxnum = 0;
-
-    private float c_shad = 1.0f;
+    private final float[] c_FogColor = new float[]{1.0f, 1.0f, 1.0f, 1.0f};
     private final float[] c_data = new float[]{
-        // FRONT FACE
-        0.0f, 0.0f, -1.0f, -1.0f, +1.0f,
-        1.0f, 0.0f, +1.0f, -1.0f, +1.0f,
-        1.0f, 1.0f, +1.0f, +1.0f, +1.0f,
-        0.0f, 1.0f, -1.0f, +1.0f, +1.0f,
+            // FRONT FACE
+            0.0f, 0.0f, -1.0f, -1.0f, +1.0f,
+            1.0f, 0.0f, +1.0f, -1.0f, +1.0f,
+            1.0f, 1.0f, +1.0f, +1.0f, +1.0f,
+            0.0f, 1.0f, -1.0f, +1.0f, +1.0f,
     };
-
     private final int[] c_text = new int[1];
     private final int[] c_bump = new int[1];
     private final int[] c_invbump = new int[1];
-    private float c_radius = 0.0f;
-
-    private static final int c_num = 50;
-    private static final int c_numpart = 10;
     private final int[] c_ci = new int[c_numpart];
     private final GLUT glut = new GLUT();
-
     private final float[] c_cf = new float[]{0.0f, 0.0f, 0.0f, 1.0f};
     private final float[] n = new float[]{0.0f, 0.0f, 0.0f, 1.0f};
     private final float[] s = new float[]{0.0f, 0.0f, 0.0f, 1.0f};
     private final float[] t = new float[]{0.0f, 0.0f, 0.0f, 1.0f};
     private final float[] l = new float[4];
     private final float[] Minv = new float[16];
-
-    private static final class c_part {
-        float size;
-        float phase;
-        float freq;
-        float amp;
-        float spd;
-        float c_y;
-        boolean twice;
-        int r;
-        int g;
-        int b;
-        int a;
-    }
-
     private final c_part[] c_parts = new c_part[2 * c_num];
     private final c_part[][] c_fire = new c_part[c_numpart][c_num];
-
     private final float[] c_LightAmbient = {0.5f, 0.5f, 0.5f, 1.0f};
     private final float[] c_LightDiffuse = {0.5f, 0.5f, 0.5f, 1.0f};
     private final float[] c_LightPosition = {0.0f, 8.0f, -20.0f, 1.0f};
-
-    private void c_initLights(GL2 gl) {
-        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_AMBIENT, FloatBuffer.wrap(c_LightAmbient));		// Load Light-Parameters into GL2.GL_LIGHT1
-        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_DIFFUSE, FloatBuffer.wrap(c_LightDiffuse));
-        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, FloatBuffer.wrap(c_LightPosition));
-        gl.glEnable(GL2.GL_LIGHT1);
-    }
-
-    private void init(GLAutoDrawable g) {
-        GL2 gl = g.getGL().getGL2();
-        GLUgl2 glu = new GLUgl2();
-
-        c_Text = new Texture[numtexs];
-        c_maxnum = 0;
-        c_zeta = 0.0f;
-        c_factor = 1.0f;
-        c_maxshd = 1.0f;
-        c_radius = 0.0f;
-
-        gl.glMatrixMode(GL2.GL_PROJECTION);
-        gl.glLoadIdentity();
-        glu.gluPerspective(45.0f, (float) g.getSurfaceWidth() / (float) g.getSurfaceHeight(), 0.1f, 30.0f);
-        gl.glMatrixMode(GL2.GL_MODELVIEW);
-        gl.glLoadIdentity();
-
-        for (int i = 0; i < c_Text.length; i++) {
-            c_Text[i] = new Texture();
-        }
-        try {
-            c_Text[1].load(gl, glu, ResourceRetriever.getResourceAsStream("data/star.raw"));
-            c_Text[2].load(gl, glu, ResourceRetriever.getResourceAsStream("data/esaflr.raw"));
-            c_Text[3].load(gl, glu, ResourceRetriever.getResourceAsStream("data/rusty3.raw"));
-            c_Text[4].load(gl, glu, ResourceRetriever.getResourceAsStream("data/noise1.raw"));
-            c_Text[5].load(gl, glu, ResourceRetriever.getResourceAsStream("data/lightmask.raw"));
-            c_Text[6].load(gl, glu, ResourceRetriever.getResourceAsStream("data/text.raw"));
-            c_Text[7].load(gl, glu, ResourceRetriever.getResourceAsStream("data/spot.raw"));
-            c_Text[8].load(gl, glu, ResourceRetriever.getResourceAsStream("data/envmap.raw"));
-            c_Text[9].load(gl, glu, ResourceRetriever.getResourceAsStream("data/sh1.raw"));
-            c_Text[10].load(gl, glu, ResourceRetriever.getResourceAsStream("data/bump5.raw"));
-            c_Text[11].load(gl, glu, ResourceRetriever.getResourceAsStream("data/floor1.raw"));
-            c_Text[12].load(gl, glu, ResourceRetriever.getResourceAsStream("data/bumphalf.raw"));
-            c_Text[13].load(gl, glu, ResourceRetriever.getResourceAsStream("data/mamor.raw"));
-            c_Text[14].load(gl, glu, ResourceRetriever.getResourceAsStream("data/bumpinvhalf.raw"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        gl.glShadeModel(GL2.GL_SMOOTH);
-        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        gl.glClearDepth(1.0f);
-        gl.glEnable(GL2.GL_DEPTH_TEST);
-        gl.glDepthFunc(GL2.GL_LEQUAL);
-        gl.glEnable(GL2.GL_LIGHTING);
-        gl.glEnable(GL2.GL_LIGHT1);
-        for (int i = 0; i < c_numpart; i++) {
-            for (int j = 0; j < c_fire[i].length; j++) {
-                c_fire[i][j] = new c_part();
-            }
-        }
-
-        gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);	// Really Nice Perspective Calculations
-        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
-        gl.glEnable(GL2.GL_TEXTURE_2D);
-
-
-        gl.glFogf(GL2.GL_FOG_MODE, GL2.GL_LINEAR);
-        gl.glFogf(GL2.GL_FOG_START, 9.0f);
-        gl.glFogf(GL2.GL_FOG_END, 28.0f);
-        gl.glFogf(GL2.GL_FOG_DENSITY, 0.075f);
-        c_FogColor[0] = 0.0f;
-        c_FogColor[1] = 0.0f;
-        c_FogColor[2] = 0.0f;
-        gl.glFogfv(GL2.GL_FOG_COLOR, FloatBuffer.wrap(c_FogColor));
-        gl.glEnable(GL2.GL_FOG);
-
-        gl.glDisable(GL2.GL_CULL_FACE);
-        gl.glEnable(GL2.GL_DEPTH_TEST);
-        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
-        gl.glDisable(GL2.GL_LIGHTING);
-        gl.glEnable(GL2.GL_BLEND);
-
-        for (c_x = 0; c_x < c_numpart; c_x++) {
-            for (c_y = 0; c_y < c_num; c_y++) {
-                if ((c_x == 0) || (c_x == 1)) {
-                    c_parts[c_y + 50 * c_x] = new c_part();
-                    c_parts[c_y + 50 * c_x].size = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
-                    c_parts[c_y + 50 * c_x].phase = 3.1415f + .002f * ((float) (Math.abs(random.nextInt()) % 1000));
-                    c_parts[c_y + 50 * c_x].freq = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
-                    c_parts[c_y + 50 * c_x].spd = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
-                    c_parts[c_y + 50 * c_x].amp = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
-                    c_parts[c_y + 50 * c_x].c_y = 0.0f;
-                    c_parts[c_y + 50 * c_x].r = 192 + Math.abs(random.nextInt()) % 15;
-                    c_parts[c_y + 50 * c_x].g = 192 + Math.abs(random.nextInt()) % 15;
-                    c_parts[c_y + 50 * c_x].b = 224 + Math.abs(random.nextInt()) % 31;
-                    c_parts[c_y + 50 * c_x].a = 192 + Math.abs(random.nextInt()) % 63;
-                }
-
-                c_fire[c_x][c_y] = new c_part();
-                c_fire[c_x][c_y].size = .0005f * ((float) (Math.abs(random.nextInt()) % 1000));
-                c_fire[c_x][c_y].freq = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
-                c_fire[c_x][c_y].spd = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
-                c_fire[c_x][c_y].amp = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
-                c_fire[c_x][c_y].c_y = 0.0f;
-                c_fire[c_x][c_y].r = 128 + Math.abs(random.nextInt()) % 128;
-                c_fire[c_x][c_y].g = 64 + Math.abs(random.nextInt()) % 64;
-                c_fire[c_x][c_y].b = 32 + Math.abs(random.nextInt()) % 32;
-                c_fire[c_x][c_y].a = Math.abs(random.nextInt()) % 128;
-                c_fire[c_x][c_y].twice = true;
-            }
-            c_ci[c_x] = 0;
-        }
-
-        c_Text[1].use(gl);
-        c_quadratic = glu.gluNewQuadric();
-        glu.gluQuadricNormals(c_quadratic, GLU.GLU_SMOOTH);
-        glu.gluQuadricTexture(c_quadratic, true);
-        c_initLights(gl);
-
-        c_parts[0].size = 1.75f;
-        c_parts[0].phase = 3.1415f / .9f;
-        c_parts[0].freq = -.5f;
-        c_parts[0].a = 255;
-        c_parts[0].spd = .25f;
-
-        c_parts[1].size = 1.75f;
-        c_parts[1].phase = -3.1415f / .8f;
-        c_parts[1].freq = -.5f;
-        c_parts[1].a = 255;
-        c_parts[1].spd = .25f;
-    }
+    private Texture[] c_Text;
+    private float c_time = 0;
+    private GLUquadric c_quadratic;
+    private boolean c_fader = false;
+    private int c_x;
+    private int c_y;
+    private int c_count = 0;
+    private float c_xrot;                // X Rotation ( NEW )
+    private float c_yrot;                // Y Rotation ( NEW )
+    private float c_zrot;                // Z Rotation ( NEW )
+    private float c_zeta = 0.0f;
+    private float c_factor = 1.0f;
+    private float c_maxshd = 1.0f;
+    private int c_maxnum = 0;
+    private float c_shad = 1.0f;
+    private float c_radius = 0.0f;
 
     private static void c_VMatMult(float[] M, float[] v) {
         float rx, ry, rz;
@@ -244,12 +88,12 @@ final class Scene5 implements Scene {
         v[0] = rx;
         v[1] = ry;
         v[2] = rz;
-        v[3] = M[15];			// homogenous coordinate
+        v[3] = M[15];            // homogenous coordinate
     }
 
     private static void c_SetUpBumps(float[] n, float[] c_ci, float[] l, float[] s, float[] t) {
-        float vx, vy, vz;							// vertex from current position to light
-        float lenQ;							// used to normalize
+        float vx, vy, vz;                            // vertex from current position to light
+        float lenQ;                            // used to normalize
 
         // calculate v from current vector c_ci to lightposition and normalize v
         vx = l[0] - c_ci[0];
@@ -347,21 +191,6 @@ final class Scene5 implements Scene {
         gl.glEnd();
     }
 
-    private void c_drawquada(GL2 gl, float size, float tex) {
-        gl.glBegin(GL2.GL_QUADS);
-        gl.glColor4f(0.25f, 0.25f, 0.25f, 1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f - c_zeta);
-        gl.glVertex3f(-0.5f * size, -0.5f * size, 0);
-        gl.glTexCoord2f(1.0f, 0.0f - c_zeta);
-        gl.glVertex3f(0.5f * size, -0.5f * size, 0);
-        gl.glTexCoord2f(1.0f, 1.0f * tex - c_zeta);
-        gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        gl.glVertex3f(0.5f * size, 0.5f * size, 0);
-        gl.glTexCoord2f(0.0f, 1.0f * tex - c_zeta);
-        gl.glVertex3f(-0.5f * size, 0.5f * size, 0);
-        gl.glEnd();
-    }
-
     private static void c_drawquad0(GL2 gl, int subdiv, float fact, float ratio) {
         float a = 3.0f;
         float b = 1.75f;
@@ -379,6 +208,151 @@ final class Scene5 implements Scene {
         gl.glEnd();
     }
 
+    private void c_initLights(GL2 gl) {
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_AMBIENT, FloatBuffer.wrap(c_LightAmbient));        // Load Light-Parameters into GL2.GL_LIGHT1
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_DIFFUSE, FloatBuffer.wrap(c_LightDiffuse));
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, FloatBuffer.wrap(c_LightPosition));
+        gl.glEnable(GL2.GL_LIGHT1);
+    }
+
+    private void init(GLAutoDrawable g) {
+        GL2 gl = g.getGL().getGL2();
+        GLUgl2 glu = new GLUgl2();
+
+        c_Text = new Texture[numtexs];
+        c_maxnum = 0;
+        c_zeta = 0.0f;
+        c_factor = 1.0f;
+        c_maxshd = 1.0f;
+        c_radius = 0.0f;
+
+        gl.glMatrixMode(GL2.GL_PROJECTION);
+        gl.glLoadIdentity();
+        glu.gluPerspective(45.0f, (float) g.getSurfaceWidth() / (float) g.getSurfaceHeight(), 0.1f, 30.0f);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
+        gl.glLoadIdentity();
+
+        for (int i = 0; i < c_Text.length; i++) {
+            c_Text[i] = new Texture();
+        }
+        try {
+            c_Text[1].load(gl, glu, ResourceRetriever.getResourceAsStream("data/star.raw"));
+            c_Text[2].load(gl, glu, ResourceRetriever.getResourceAsStream("data/esaflr.raw"));
+            c_Text[3].load(gl, glu, ResourceRetriever.getResourceAsStream("data/rusty3.raw"));
+            c_Text[4].load(gl, glu, ResourceRetriever.getResourceAsStream("data/noise1.raw"));
+            c_Text[5].load(gl, glu, ResourceRetriever.getResourceAsStream("data/lightmask.raw"));
+            c_Text[6].load(gl, glu, ResourceRetriever.getResourceAsStream("data/text.raw"));
+            c_Text[7].load(gl, glu, ResourceRetriever.getResourceAsStream("data/spot.raw"));
+            c_Text[8].load(gl, glu, ResourceRetriever.getResourceAsStream("data/envmap.raw"));
+            c_Text[9].load(gl, glu, ResourceRetriever.getResourceAsStream("data/sh1.raw"));
+            c_Text[10].load(gl, glu, ResourceRetriever.getResourceAsStream("data/bump5.raw"));
+            c_Text[11].load(gl, glu, ResourceRetriever.getResourceAsStream("data/floor1.raw"));
+            c_Text[12].load(gl, glu, ResourceRetriever.getResourceAsStream("data/bumphalf.raw"));
+            c_Text[13].load(gl, glu, ResourceRetriever.getResourceAsStream("data/mamor.raw"));
+            c_Text[14].load(gl, glu, ResourceRetriever.getResourceAsStream("data/bumpinvhalf.raw"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        gl.glShadeModel(GL2.GL_SMOOTH);
+        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        gl.glClearDepth(1.0f);
+        gl.glEnable(GL2.GL_DEPTH_TEST);
+        gl.glDepthFunc(GL2.GL_LEQUAL);
+        gl.glEnable(GL2.GL_LIGHTING);
+        gl.glEnable(GL2.GL_LIGHT1);
+        for (int i = 0; i < c_numpart; i++) {
+            for (int j = 0; j < c_fire[i].length; j++) {
+                c_fire[i][j] = new c_part();
+            }
+        }
+
+        gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);    // Really Nice Perspective Calculations
+        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+        gl.glEnable(GL2.GL_TEXTURE_2D);
+
+
+        gl.glFogf(GL2.GL_FOG_MODE, GL2.GL_LINEAR);
+        gl.glFogf(GL2.GL_FOG_START, 9.0f);
+        gl.glFogf(GL2.GL_FOG_END, 28.0f);
+        gl.glFogf(GL2.GL_FOG_DENSITY, 0.075f);
+        c_FogColor[0] = 0.0f;
+        c_FogColor[1] = 0.0f;
+        c_FogColor[2] = 0.0f;
+        gl.glFogfv(GL2.GL_FOG_COLOR, FloatBuffer.wrap(c_FogColor));
+        gl.glEnable(GL2.GL_FOG);
+
+        gl.glDisable(GL2.GL_CULL_FACE);
+        gl.glEnable(GL2.GL_DEPTH_TEST);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+        gl.glDisable(GL2.GL_LIGHTING);
+        gl.glEnable(GL2.GL_BLEND);
+
+        for (c_x = 0; c_x < c_numpart; c_x++) {
+            for (c_y = 0; c_y < c_num; c_y++) {
+                if ((c_x == 0) || (c_x == 1)) {
+                    c_parts[c_y + 50 * c_x] = new c_part();
+                    c_parts[c_y + 50 * c_x].size = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
+                    c_parts[c_y + 50 * c_x].phase = 3.1415f + .002f * ((float) (Math.abs(random.nextInt()) % 1000));
+                    c_parts[c_y + 50 * c_x].freq = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
+                    c_parts[c_y + 50 * c_x].spd = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
+                    c_parts[c_y + 50 * c_x].amp = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
+                    c_parts[c_y + 50 * c_x].c_y = 0.0f;
+                    c_parts[c_y + 50 * c_x].r = 192 + Math.abs(random.nextInt()) % 15;
+                    c_parts[c_y + 50 * c_x].g = 192 + Math.abs(random.nextInt()) % 15;
+                    c_parts[c_y + 50 * c_x].b = 224 + Math.abs(random.nextInt()) % 31;
+                    c_parts[c_y + 50 * c_x].a = 192 + Math.abs(random.nextInt()) % 63;
+                }
+
+                c_fire[c_x][c_y] = new c_part();
+                c_fire[c_x][c_y].size = .0005f * ((float) (Math.abs(random.nextInt()) % 1000));
+                c_fire[c_x][c_y].freq = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
+                c_fire[c_x][c_y].spd = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
+                c_fire[c_x][c_y].amp = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
+                c_fire[c_x][c_y].c_y = 0.0f;
+                c_fire[c_x][c_y].r = 128 + Math.abs(random.nextInt()) % 128;
+                c_fire[c_x][c_y].g = 64 + Math.abs(random.nextInt()) % 64;
+                c_fire[c_x][c_y].b = 32 + Math.abs(random.nextInt()) % 32;
+                c_fire[c_x][c_y].a = Math.abs(random.nextInt()) % 128;
+                c_fire[c_x][c_y].twice = true;
+            }
+            c_ci[c_x] = 0;
+        }
+
+        c_Text[1].use(gl);
+        c_quadratic = glu.gluNewQuadric();
+        glu.gluQuadricNormals(c_quadratic, GLU.GLU_SMOOTH);
+        glu.gluQuadricTexture(c_quadratic, true);
+        c_initLights(gl);
+
+        c_parts[0].size = 1.75f;
+        c_parts[0].phase = 3.1415f / .9f;
+        c_parts[0].freq = -.5f;
+        c_parts[0].a = 255;
+        c_parts[0].spd = .25f;
+
+        c_parts[1].size = 1.75f;
+        c_parts[1].phase = -3.1415f / .8f;
+        c_parts[1].freq = -.5f;
+        c_parts[1].a = 255;
+        c_parts[1].spd = .25f;
+    }
+
+    private void c_drawquada(GL2 gl, float size, float tex) {
+        gl.glBegin(GL2.GL_QUADS);
+        gl.glColor4f(0.25f, 0.25f, 0.25f, 1.0f);
+        gl.glTexCoord2f(0.0f, 0.0f - c_zeta);
+        gl.glVertex3f(-0.5f * size, -0.5f * size, 0);
+        gl.glTexCoord2f(1.0f, 0.0f - c_zeta);
+        gl.glVertex3f(0.5f * size, -0.5f * size, 0);
+        gl.glTexCoord2f(1.0f, 1.0f * tex - c_zeta);
+        gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        gl.glVertex3f(0.5f * size, 0.5f * size, 0);
+        gl.glTexCoord2f(0.0f, 1.0f * tex - c_zeta);
+        gl.glVertex3f(-0.5f * size, 0.5f * size, 0);
+        gl.glEnd();
+    }
+
     private void c_drawcone(GL2 gl, GLUgl2 glu, int sgn, float val) {
         gl.glEnable(GL2.GL_DEPTH_TEST);
         gl.glColor4f(.2f + val, .2f + val, .2f + val, 1.0f);
@@ -392,7 +366,7 @@ final class Scene5 implements Scene {
         gl.glTexGeni(GL2.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
         gl.glTexGeni(GL2.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
         gl.glRotatef(c_radius * 8, 0, 0, 1);
-        glut.glutSolidTorus( .1, .05, 4, 20);
+        glut.glutSolidTorus(.1, .05, 4, 20);
         gl.glPopMatrix();
         gl.glColor4f(.5f + val / 2, .5f + val / 2, .5f + val / 2, 1.0f);
         gl.glPushMatrix();
@@ -411,7 +385,7 @@ final class Scene5 implements Scene {
         gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 255);
         //glBindTexture(GL2.GL_TEXTURE_2D, c_texture[3]);
         c_Text[4].use(gl);
-        glut.glutSolidCone( .05f, .5f, 4, 4);
+        glut.glutSolidCone(.05f, .5f, 4, 4);
         gl.glTranslatef(0, 0, .07f);
         glu.gluCylinder(c_quadratic, .06, .05, .1, 10, 1);
         gl.glDisable(GL2.GL_TEXTURE_GEN_S);
@@ -458,7 +432,8 @@ final class Scene5 implements Scene {
 
         if (-c_radius < 108.15f)
             c_zeta = .095f * (-c_radius - 20.0f) + 1.5f;
-        else if (-c_radius < 113.15f) c_zeta = 9.575f + 0.3f * (-(float) Math.cos(((-c_radius - 108.15f) / 5.0f) * 3.1415f / 2.0f + 3.1415f / 2.0f) + 1.0f);
+        else if (-c_radius < 113.15f)
+            c_zeta = 9.575f + 0.3f * (-(float) Math.cos(((-c_radius - 108.15f) / 5.0f) * 3.1415f / 2.0f + 3.1415f / 2.0f) + 1.0f);
 
         if (-c_radius < 10.0f) {
             c_xrot = -2.0f - 7.0f * ((float) Math.cos((-c_radius / 10.0f) * 3.1415f) + 1.0f);
@@ -499,7 +474,7 @@ final class Scene5 implements Scene {
         if (c_ci[9] >= 2) {
             float[] c_ci = c_cf;
 
-             // Build inverse Modelview Matrix c_first. This substitutes one Push/Pop with one gl.glLoadIdentity();
+            // Build inverse Modelview Matrix c_first. This substitutes one Push/Pop with one gl.glLoadIdentity();
             // Simply build it by doing all transformations negated and in reverse order.
             gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 255);
             gl.glLoadIdentity();
@@ -520,7 +495,7 @@ final class Scene5 implements Scene {
             l[0] = c_LightPosition[0];
             l[1] = c_LightPosition[1];
             l[2] = c_LightPosition[2];
-            l[3] = 1.0f;					// homogenous coordinate
+            l[3] = 1.0f;                    // homogenous coordinate
             c_VMatMult(Minv, l);
             gl.glEnable(GL2.GL_DEPTH_TEST);
             //	PASS#1: Use c_texture "c_bump"				No Blend				No Lighting				No offset c_texture-coordinates
@@ -739,12 +714,14 @@ final class Scene5 implements Scene {
                     if (c_LightPosition[1] < -1.7) {
                         if (c_shad < ((float) 220) / 255) c_shad += ((float) 30 * c_factor) / 255;
                     } else {
-                        if (c_shad > ((float) 50) / 255) c_shad -= ((float) 50 * c_factor) / 255; else c_shad = 0.0f;
+                        if (c_shad > ((float) 50) / 255) c_shad -= ((float) 50 * c_factor) / 255;
+                        else c_shad = 0.0f;
                     }
                 } else if (c_LightPosition[1] < .1) {
                     if (c_shad < ((float) 220) / 255) c_shad += ((float) 30 * c_factor) / 255;
                 } else {
-                    if (c_shad > ((float) 30) / 255) c_shad -= ((float) 30 * c_factor) / 255; else c_shad = 0.0f;
+                    if (c_shad > ((float) 30) / 255) c_shad -= ((float) 30 * c_factor) / 255;
+                    else c_shad = 0.0f;
                 }
                 gl.glColor4f(1.0f, 1.0f, 1.0f, (c_zeta - 9.5f) * c_shad);
                 c_drawquad(gl, .35f);
@@ -798,7 +775,7 @@ final class Scene5 implements Scene {
         gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
 
 
-        for (int i = 0; i < c_numpart; i++)			// GROUND
+        for (int i = 0; i < c_numpart; i++)            // GROUND
         {
             int sign1 = 1;
             for (int k = 0; k < i; k++) sign1 = -sign1;
@@ -819,7 +796,7 @@ final class Scene5 implements Scene {
             gl.glEnable(GL2.GL_BLEND);
             gl.glDisable(GL2.GL_DEPTH_TEST);
             if (c_ci[i] < 2) {
-                gl.glPushMatrix();				// TOP
+                gl.glPushMatrix();                // TOP
                 gl.glScalef(-sign1, 1, 1);
                 gl.glTranslatef(2.6f, .25f, 0);
                 gl.glRotatef(90, 0, 1, 0);
@@ -832,7 +809,7 @@ final class Scene5 implements Scene {
                 c_drawquad0(gl, 10, 2.75f, 2.6f);
                 gl.glPopMatrix();
 
-                gl.glPushMatrix();				// SIDE
+                gl.glPushMatrix();                // SIDE
                 gl.glPushMatrix();
                 gl.glTranslatef(sign1 * .4f, -.1f, 0);
                 gl.glRotatef(90, 0, 1, 0);
@@ -854,7 +831,7 @@ final class Scene5 implements Scene {
                 gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
 
                 gl.glDisable(GL2.GL_BLEND);
-                c_drawcone(gl, glu, sign1, ((float) shade) / ((float) c_num));			// CONE
+                c_drawcone(gl, glu, sign1, ((float) shade) / ((float) c_num));            // CONE
 
 
                 gl.glRotatef(-5 * c_zrot, 0, 0, 1);
@@ -941,7 +918,7 @@ final class Scene5 implements Scene {
                 gl.glScalef(2, 2, 2);
                 gl.glTranslatef(sign1 * .75f, 3, -44 + c_zeta * 4.11f);
                 gl.glEnable(GL2.GL_DEPTH_TEST);
-                gl.glPushMatrix();				// TOP
+                gl.glPushMatrix();                // TOP
                 gl.glScalef(sign1, 1, 1);
                 gl.glTranslatef(0, -.25f, -.4f);
                 for (p = 0; p < c_num; p++) if (c_fire[i][p].c_y < .25) shade++;
@@ -954,7 +931,7 @@ final class Scene5 implements Scene {
                 gl.glEnable(GL2.GL_BLEND);
                 gl.glDisable(GL2.GL_DEPTH_TEST);
 
-                gl.glPushMatrix();				// SIDE
+                gl.glPushMatrix();                // SIDE
 
                 gl.glRotatef(sign1 * 90, 0, 1, 0);
 
@@ -982,7 +959,7 @@ final class Scene5 implements Scene {
                 gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
 
                 gl.glDisable(GL2.GL_BLEND);
-                c_drawcone(gl, glu, sign1, ((float) shade) / ((float) c_num));			// CONE
+                c_drawcone(gl, glu, sign1, ((float) shade) / ((float) c_num));            // CONE
 
                 gl.glRotatef(-5 * c_zrot, 0, 0, 1);
                 gl.glRotatef(-5 * c_yrot, 0, 1, 0);
@@ -1072,7 +1049,8 @@ final class Scene5 implements Scene {
             c_Text[1].use(gl);
             if (c_maxnum <= 97) c_maxnum = 3 * (int) (-c_radius - 36.0f);
             if ((-c_radius > 30.0f) && (-c_radius < 38.0f)) {
-                if (-c_radius < 33.0f) c_maxnum = 1; else c_maxnum = 2;
+                if (-c_radius < 33.0f) c_maxnum = 1;
+                else c_maxnum = 2;
             }
             for (int pp = 0; pp < c_maxnum; pp++) {
                 gl.glLoadIdentity();
@@ -1083,7 +1061,8 @@ final class Scene5 implements Scene {
                         c_parts[pp].c_y + c_zeta);
                 //glColor4ub(c_parts[pp].r,c_parts[pp].g,c_parts[pp].b,c_parts[pp].a);
 
-                if (c_parts[pp].a >= 0) c_parts[pp].a = (int) (255.0f * ((((float) c_parts[pp].a) / 255.0f) - .01f * c_parts[pp].spd * c_factor));
+                if (c_parts[pp].a >= 0)
+                    c_parts[pp].a = (int) (255.0f * ((((float) c_parts[pp].a) / 255.0f) - .01f * c_parts[pp].spd * c_factor));
                 gl.glColor4f(c_parts[pp].r / 255.0f, c_parts[pp].g / 255.0f, c_parts[pp].b / 255.0f, c_parts[pp].a / 255.0f);
                 gl.glRotatef(-5 * c_xrot, 1, 0, 0);
                 gl.glRotatef(-5 * c_yrot, 0, 1, 0);
@@ -1099,7 +1078,8 @@ final class Scene5 implements Scene {
                     gl.glRotatef(-c_radius * 75.0f * c_parts[pp].spd, 0, 0, 1);
                     if (pp == 1)
                         c_drawquad(gl, .25f * c_parts[pp].size);
-                    else if (pp == 0) c_drawquad(gl, .25f * c_parts[pp].size + .25f * c_parts[pp].size * (float) Math.sin(c_parts[pp].spd * c_radius * 7.5f));
+                    else if (pp == 0)
+                        c_drawquad(gl, .25f * c_parts[pp].size + .25f * c_parts[pp].size * (float) Math.sin(c_parts[pp].spd * c_radius * 7.5f));
                     gl.glPopMatrix();
                 }
                 c_parts[pp].c_y -= c_factor * c_parts[pp].spd / 2.0f;
@@ -1187,11 +1167,22 @@ final class Scene5 implements Scene {
 
         c_radius = -.0015f * (c_time);
 
-        if (-c_radius > 143.0f) {
-            //************************* FINISH
-            //c_Clean();
-            return false;
-        }
-        return true;
+        //************************* FINISH
+        //c_Clean();
+        return !(-c_radius > 143.0f);
+    }
+
+    private static final class c_part {
+        float size;
+        float phase;
+        float freq;
+        float amp;
+        float spd;
+        float c_y;
+        boolean twice;
+        int r;
+        int g;
+        int b;
+        int a;
     }
 }

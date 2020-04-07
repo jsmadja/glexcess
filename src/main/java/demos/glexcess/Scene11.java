@@ -1,9 +1,7 @@
 package demos.glexcess;
 
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.gl2.GLUgl2;
 import demos.common.ResourceRetriever;
 
@@ -13,45 +11,80 @@ import java.util.Random;
 /**
  * GLExcess v1.0 Demo
  * Copyright (C) 2001-2003 Paolo Martella
- *
+ * <p>
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
  * @author Paolo "Bustard" Martella
  * @author Pepijn Van Eeckhoudt
  */
 final class Scene11 implements Scene {
-    private final Random random = new Random();
-    private Texture[] j_Text;
     private static final int numtexs = 19;
     private static boolean init = true;
-    private float j_time = 0;
-
+    private final Random random = new Random();
     private final float[] j_FogColor = {1.0f, 1.0f, 1.0f, 1.0f};
-    private float j_max = 0.0f;
-
     private final float j_zeta = -6.7f;
-    private float j_radius = 0.0f;
-
     private final boolean[] th = new boolean[2];
     private final int j_num = 150;
+    private final j_part[] parts = new j_part[j_num];
+    private Texture[] j_Text;
+    private float j_time = 0;
+    private float j_max = 0.0f;
+    private float j_radius = 0.0f;
 
-    private static final class j_part {
-        float j_x,j_y,xp;
-        float rad;
-        float phase;
-        float spd;
-        int r,g,b,a;
-        long init;
+    private static void j_drawquad(GL2 gl, float size) {
+        gl.glBegin(GL2.GL_QUADS);
+        gl.glTexCoord2f(0.0f, 0.0f);
+        gl.glVertex3f(-.5f * size, -.5f * size, 0);
+        gl.glTexCoord2f(1.0f, 0.0f);
+        gl.glVertex3f(-.5f * size, .5f * size, 0);
+        gl.glTexCoord2f(1.0f, 1.0f);
+        gl.glVertex3f(.5f * size, .5f * size, 0);
+        gl.glTexCoord2f(0.0f, 1.0f);
+        gl.glVertex3f(.5f * size, -.5f * size, 0);
+        gl.glEnd();
     }
 
-    private final j_part[] parts = new j_part[j_num];
+    private static void j_drawcred(GL2 gl, float sizew, float sizeh, float pos, float facts) {
+//	if (benchmode) return;
+        gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
+        gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP);
+        gl.glBegin(GL2.GL_QUAD_STRIP);
+
+        gl.glColor4f(0, 0, 0, 0);
+        gl.glTexCoord2f(0.0f, 0.0f + pos);
+        gl.glVertex3f(-1 * sizew, -1 * sizeh, 0);
+        gl.glTexCoord2f(1.0f, 0.0f + pos);
+        gl.glVertex3f(1 * sizew, -1 * sizeh, 0);
+
+        gl.glColor4f(1, 1, 1, 1);
+        gl.glTexCoord2f(0.0f, facts * .025f + pos);
+        gl.glVertex3f(-1 * sizew, -.9f * sizeh, 0);
+        gl.glTexCoord2f(1.0f, facts * .025f + pos);
+        gl.glVertex3f(1 * sizew, -.9f * sizeh, 0);
+
+        gl.glTexCoord2f(0.0f, facts * .475f + pos);
+        gl.glVertex3f(-1 * sizew, .9f * sizeh, 0);
+        gl.glTexCoord2f(1.0f, facts * .475f + pos);
+        gl.glVertex3f(1 * sizew, .9f * sizeh, 0);
+
+        gl.glColor4f(0, 0, 0, 0);
+        gl.glTexCoord2f(0.0f, facts * .5f + pos);
+        gl.glVertex3f(-1 * sizew, 1 * sizeh, 0);
+        gl.glTexCoord2f(1.0f, facts * .5f + pos);
+        gl.glVertex3f(1 * sizew, 1 * sizeh, 0);
+
+        gl.glEnd();
+        gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_REPEAT);
+        gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_REPEAT);
+    }
 
     private void init(GLAutoDrawable g) {
         GL2 gl = g.getGL().getGL2();
@@ -88,10 +121,10 @@ final class Scene11 implements Scene {
             throw new RuntimeException(e);
         }
 
-        gl.glMatrixMode(GL2.GL_PROJECTION);						// Select The Projection Matrix
+        gl.glMatrixMode(GL2.GL_PROJECTION);                        // Select The Projection Matrix
         gl.glLoadIdentity();
         glu.gluPerspective(45.0f, (float) g.getSurfaceWidth() / (float) g.getSurfaceHeight(), 0.1f, 150.0f);
-        gl.glMatrixMode(GL2.GL_MODELVIEW);							// Select The Modelview Matrix
+        gl.glMatrixMode(GL2.GL_MODELVIEW);                            // Select The Modelview Matrix
 
         gl.glShadeModel(GL2.GL_SMOOTH);
         gl.glClearColor(0, 0, 0, 0);//.07f, 0.1f, 0.25f, 0.0f);
@@ -154,56 +187,10 @@ final class Scene11 implements Scene {
         init = true;
     }
 
-    private static void j_drawquad(GL2 gl, float size) {
-        gl.glBegin(GL2.GL_QUADS);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-.5f * size, -.5f * size, 0);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(-.5f * size, .5f * size, 0);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(.5f * size, .5f * size, 0);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(.5f * size, -.5f * size, 0);
-        gl.glEnd();
-    }
-
-    private static void j_drawcred(GL2 gl, float sizew, float sizeh, float pos, float facts) {
-//	if (benchmode) return;
-        gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
-        gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP);
-        gl.glBegin(GL2.GL_QUAD_STRIP);
-
-        gl.glColor4f(0, 0, 0, 0);
-        gl.glTexCoord2f(0.0f, 0.0f + pos);
-        gl.glVertex3f(-1 * sizew, -1 * sizeh, 0);
-        gl.glTexCoord2f(1.0f, 0.0f + pos);
-        gl.glVertex3f(1 * sizew, -1 * sizeh, 0);
-
-        gl.glColor4f(1, 1, 1, 1);
-        gl.glTexCoord2f(0.0f, facts * .025f + pos);
-        gl.glVertex3f(-1 * sizew, -.9f * sizeh, 0);
-        gl.glTexCoord2f(1.0f, facts * .025f + pos);
-        gl.glVertex3f(1 * sizew, -.9f * sizeh, 0);
-
-        gl.glTexCoord2f(0.0f, facts * .475f + pos);
-        gl.glVertex3f(-1 * sizew, .9f * sizeh, 0);
-        gl.glTexCoord2f(1.0f, facts * .475f + pos);
-        gl.glVertex3f(1 * sizew, .9f * sizeh, 0);
-
-        gl.glColor4f(0, 0, 0, 0);
-        gl.glTexCoord2f(0.0f, facts * .5f + pos);
-        gl.glVertex3f(-1 * sizew, 1 * sizeh, 0);
-        gl.glTexCoord2f(1.0f, facts * .5f + pos);
-        gl.glVertex3f(1 * sizew, 1 * sizeh, 0);
-
-        gl.glEnd();
-        gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_REPEAT);
-        gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_REPEAT);
-    }
-
     private void j_drawquad1(GL2 gl, int col, float sizex, float sizey) {
         gl.glBegin(GL2.GL_QUADS);
-        if (col > 32) gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) col); else gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 32);
+        if (col > 32) gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) col);
+        else gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 32);
         gl.glTexCoord2f(0.0f + j_radius / 3, 0.0f + j_radius);
         gl.glVertex3f(-.5f * sizex, -.5f * sizey, 0);
         gl.glTexCoord2f(1.0f * 2 + j_radius / 3, 0.0f + j_radius);
@@ -218,7 +205,8 @@ final class Scene11 implements Scene {
 
     private void j_drawquad10(GL2 gl, int col, float sizex, float sizey) {
         gl.glBegin(GL2.GL_QUADS);
-        if (col > 32) gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) col); else gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 32);
+        if (col > 32) gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) col);
+        else gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 32);
         gl.glColor4f(0, 0, 0, 0);
         gl.glVertex3f(-.5f * sizex, -.5f * sizey, 0);
         gl.glVertex3f(-.5f * sizex, .5f * sizey, 0);
@@ -316,10 +304,10 @@ final class Scene11 implements Scene {
                 gl.glPushMatrix();
                 gl.glLoadIdentity();
                 gl.glTranslatef(0, 1.2f, -5);
-                j_drawquad3(gl, (int) (32 * j_radius), 6.0f, 2.5f);		// STELLE
+                j_drawquad3(gl, (int) (32 * j_radius), 6.0f, 2.5f);        // STELLE
                 gl.glPopMatrix();
 
-                gl.glLoadIdentity();			// LUNA
+                gl.glLoadIdentity();            // LUNA
                 gl.glTranslatef(.55f + 3.0f * (float) Math.cos(.35f + j_radius / 2), .4f + 1.25f * (float) Math.sin(.35 + j_radius / 2), -5);
                 gl.glRotatef(-45, 0, 0, 1);
                 gl.glColor4f(1, 1, 1, 1);
@@ -338,7 +326,7 @@ final class Scene11 implements Scene {
 
                     j_Text[12].use(gl);
                     gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
-                    gl.glRotatef(100, 0, 0, 1);		// SCIA
+                    gl.glRotatef(100, 0, 0, 1);        // SCIA
                     gl.glScalef(.1f, (float) Math.sin(55 * (j_radius - .5f)) * (float) Math.sin(55 * (j_radius - .5f)), 1);
                     gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) (64 * (float) Math.sin(55 * (j_radius - .5f)) * (float) Math.sin(55 * (j_radius - .5f))));
                     j_drawquad(gl, 1);
@@ -349,7 +337,7 @@ final class Scene11 implements Scene {
                     gl.glTranslatef(-1.0f + (-.05f + j_radius) * 50, 1.5f - (-.05f + j_radius) * 9, -5);
                     j_Text[12].use(gl);
                     gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
-                    gl.glRotatef(80, 0, 0, 1);		// SCIA
+                    gl.glRotatef(80, 0, 0, 1);        // SCIA
                     gl.glScalef(.07f, .5f * (float) Math.sin(100 * (-.05f + j_radius)) * (float) Math.sin(100 * (-.05f + j_radius)), 1);
                     gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) (255 * (float) Math.sin(100 * (-.05 + j_radius)) * (float) Math.sin(100 * (-.05 + j_radius))));
                     j_drawquad(gl, 1);
@@ -377,10 +365,9 @@ final class Scene11 implements Scene {
                 gl.glEnable(GL2.GL_TEXTURE_2D);
 
 
-
                 //glBindTexture(GL2.GL_TEXTURE_2D, j_Text[ure[0]);
                 j_Text[1].use(gl);
-                j_drawquad1(gl, 100, 10, 15);		// NUVOLE
+                j_drawquad1(gl, 100, 10, 15);        // NUVOLE
                 //glBindTexture(GL2.GL_TEXTURE_2D, j_Text[ure[1]);
                 j_Text[2].use(gl);
 
@@ -458,7 +445,7 @@ final class Scene11 implements Scene {
                     j_drawquad(gl, .75f);
                     gl.glPopMatrix();
                 }
-                gl.glLoadIdentity();			// LUNA
+                gl.glLoadIdentity();            // LUNA
                 gl.glTranslatef(.55f + 3.0f * (float) Math.cos(.35 + j_radius / 2), .4f + 1.25f * (float) Math.sin(.35 + j_radius / 2), -5);
                 gl.glRotatef(-45, 0, 0, 1);
                 gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
@@ -467,8 +454,8 @@ final class Scene11 implements Scene {
                 gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) (53.3 * j_radius));
                 //j_drawquad(3.0f);
 
-            }		//*************************************************************************************************
-            else	//*************************************************************************************************
+            }        //*************************************************************************************************
+            else    //*************************************************************************************************
             {
                 gl.glLoadIdentity();
                 gl.glTranslatef(0.0f, 0.75f, j_zeta - 2.0f);
@@ -481,8 +468,8 @@ final class Scene11 implements Scene {
                 gl.glLoadIdentity();
                 gl.glTranslatef(0, 1.25f, -5);
                 if (j_radius > 2.0f) {
-                    j_drawquad3(gl, 255, 6.0f, 2.5f);		// STELLE
-                    j_drawquad3(gl, 255, 6.0f, 2.5f);		// STELLE
+                    j_drawquad3(gl, 255, 6.0f, 2.5f);        // STELLE
+                    j_drawquad3(gl, 255, 6.0f, 2.5f);        // STELLE
                     gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
                     //glBindTexture(GL2.GL_TEXTURE_2D, j_Text[ure[10]);
                     j_Text[11].use(gl);
@@ -495,7 +482,7 @@ final class Scene11 implements Scene {
                     j_Text[11].use(gl);
                     j_drawquad6(gl, (int) (192 * (2 * (j_radius - 1.5f))), 6.0f, 2.5f);
                 }
-                gl.glLoadIdentity();			// LUNA
+                gl.glLoadIdentity();            // LUNA
                 gl.glTranslatef(.55f + 3.0f * (float) Math.cos(.35f + j_radius / 2), .4f + 1.25f * (float) Math.sin(.35f + j_radius / 2), -5);
                 gl.glRotatef(-45, 0, 0, 1);
                 gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 255);
@@ -528,12 +515,12 @@ final class Scene11 implements Scene {
                 gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_COLOR);
                 //glBindTexture(GL2.GL_TEXTURE_2D, j_Text[ure[0]);
                 j_Text[1].use(gl);
-                j_drawquad1(gl, 100, 10, 15);		// NUVOLE
+                j_drawquad1(gl, 100, 10, 15);        // NUVOLE
                 //glBindTexture(GL2.GL_TEXTURE_2D, j_Text[ure[1]);
                 j_Text[2].use(gl);
-                j_drawquad2(gl, 255, 64, 10, 15);			// NUVOLE
+                j_drawquad2(gl, 255, 64, 10, 15);            // NUVOLE
 
-                gl.glLoadIdentity();			// LUNA
+                gl.glLoadIdentity();            // LUNA
                 gl.glTranslatef(.55f + 3.0f * (float) Math.cos(.35f + j_radius / 2), .4f + 1.25f * (float) Math.sin(.35 + j_radius / 2), -5);
                 gl.glRotatef(-45, 0, 0, 1);
                 gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
@@ -770,11 +757,9 @@ final class Scene11 implements Scene {
             j_drawquad(gl, 1.2f);
             gl.glEnable(GL2.GL_TEXTURE_2D);
         }
-        if (j_radius > 4.75f) {
-            //******************** FINISH
-            //j_Clean();
-            return false;
-        }
+        //******************** FINISH
+        //j_Clean();
+        return !(j_radius > 4.75f);
 /*	if ((j_radius>1.32)&&(th[0]))
 	{
 		th[0]=!th[0];
@@ -790,7 +775,15 @@ final class Scene11 implements Scene {
 		FSOUND_PlaySound(FSOUND_FREE, th2);
 	}
 */
-        return true;
+    }
+
+    private static final class j_part {
+        float j_x, j_y, xp;
+        float rad;
+        float phase;
+        float spd;
+        int r, g, b, a;
+        long init;
     }
 
 }

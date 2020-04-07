@@ -6,23 +6,9 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.DisplayMode;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Toolkit;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -31,8 +17,9 @@ import java.util.ArrayList;
  * @author Pepijn Van Eeckhoudt
  */
 public class GLDisplay {
-    private static final int DEFAULT_WIDTH = 640*3;
-    private static final int DEFAULT_HEIGHT = 480*3;
+    private static final int ZOOM = 1;
+    private static final int DEFAULT_WIDTH = 640 * ZOOM;
+    private static final int DEFAULT_HEIGHT = 480 * ZOOM;
 
     private static final int DONT_CARE = -1;
 
@@ -46,24 +33,6 @@ public class GLDisplay {
 
     private MyHelpOverlayGLEventListener helpOverlayGLEventListener = new MyHelpOverlayGLEventListener();
     private MyExceptionHandler exceptionHandler = new MyExceptionHandler();
-
-    public static GLDisplay createGLDisplay(String title) {
-        GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        boolean fullscreen = false;
-        if (device.isFullScreenSupported()) {
-            int selectedOption = JOptionPane.showOptionDialog(
-                    null,
-                    "How would you like to run this demo?",
-                    title,
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new Object[]{"Fullscreen", "Windowed"},
-                    "Windowed");
-            fullscreen = selectedOption == 0;
-        }
-        return new GLDisplay(title, DEFAULT_WIDTH, DEFAULT_HEIGHT, fullscreen);
-    }
 
     private GLDisplay(String title, int width, int height, boolean fullscreen) {
         glCanvas = new GLCanvas(new GLCapabilities(GLProfile.getDefault()));
@@ -81,6 +50,24 @@ public class GLDisplay {
         this.width = width;
         this.height = height;
         animator = new FPSAnimator(glCanvas, 60, exceptionHandler);
+    }
+
+    public static GLDisplay createGLDisplay(String title) {
+        GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        boolean fullscreen = false;
+        if (device.isFullScreenSupported()) {
+            int selectedOption = JOptionPane.showOptionDialog(
+                    null,
+                    "How would you like to run this demo?",
+                    title,
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    new Object[]{"Fullscreen", "Windowed"},
+                    "Windowed");
+            fullscreen = selectedOption == 0;
+        }
+        return new GLDisplay(title, DEFAULT_WIDTH, DEFAULT_HEIGHT, fullscreen);
     }
 
     public void start() {
@@ -221,48 +208,6 @@ public class GLDisplay {
         animator.setFrameRateLimitEnabled(frameRateLimit);
     }
 
-    private class MyKeyAdapter extends KeyAdapter {
-        public MyKeyAdapter() {
-            registerKeyStrokeForHelp(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), "Show/hide help message");
-            registerKeyStrokeForHelp(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Quit demo");
-            registerKeyStrokeForHelp(KeyStroke.getKeyStroke(KeyEvent.VK_C, 0), "Toggle frame rate limit");
-        }
-
-        public void keyReleased(KeyEvent e) {
-            switch (e.getKeyCode()) {
-                case KeyEvent.VK_ESCAPE:
-                    stop();
-                    break;
-                case KeyEvent.VK_C:
-                    animator.setFrameRateLimitEnabled(!animator.isFrameRateLimitEnabled());
-                    break;
-                case KeyEvent.VK_F1:
-                    helpOverlayGLEventListener.toggleHelp();
-                    break;
-            }
-        }
-    }
-
-    private class MyWindowAdapter extends WindowAdapter {
-        public void windowClosing(WindowEvent e) {
-            stop();
-        }
-    }
-
-    private class MyExceptionHandler implements ExceptionHandler {
-        public void handleException(final Exception e) {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    StringWriter stringWriter = new StringWriter();
-                    PrintWriter printWriter = new PrintWriter(stringWriter);
-                    e.printStackTrace(printWriter);
-                    JOptionPane.showMessageDialog(frame, stringWriter.toString(), "Exception occurred", JOptionPane.ERROR_MESSAGE);
-                    stop();
-                }
-            });
-        }
-    }
-
     private static class MyHelpOverlayGLEventListener implements GLEventListener {
         private java.util.List eventListeners = new ArrayList();
         private HelpOverlay helpOverlay = new HelpOverlay();
@@ -320,6 +265,48 @@ public class GLDisplay {
             for (int i = 0; i < eventListeners.size(); i++) {
                 ((GLEventListener) eventListeners.get(i)).reshape(glDrawable, i0, i1, i2, i3);
             }
+        }
+    }
+
+    private class MyKeyAdapter extends KeyAdapter {
+        public MyKeyAdapter() {
+            registerKeyStrokeForHelp(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), "Show/hide help message");
+            registerKeyStrokeForHelp(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Quit demo");
+            registerKeyStrokeForHelp(KeyStroke.getKeyStroke(KeyEvent.VK_C, 0), "Toggle frame rate limit");
+        }
+
+        public void keyReleased(KeyEvent e) {
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_ESCAPE:
+                    stop();
+                    break;
+                case KeyEvent.VK_C:
+                    animator.setFrameRateLimitEnabled(!animator.isFrameRateLimitEnabled());
+                    break;
+                case KeyEvent.VK_F1:
+                    helpOverlayGLEventListener.toggleHelp();
+                    break;
+            }
+        }
+    }
+
+    private class MyWindowAdapter extends WindowAdapter {
+        public void windowClosing(WindowEvent e) {
+            stop();
+        }
+    }
+
+    private class MyExceptionHandler implements ExceptionHandler {
+        public void handleException(final Exception e) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    StringWriter stringWriter = new StringWriter();
+                    PrintWriter printWriter = new PrintWriter(stringWriter);
+                    e.printStackTrace(printWriter);
+                    JOptionPane.showMessageDialog(frame, stringWriter.toString(), "Exception occurred", JOptionPane.ERROR_MESSAGE);
+                    stop();
+                }
+            });
         }
     }
 }

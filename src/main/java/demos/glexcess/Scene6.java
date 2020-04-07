@@ -16,47 +16,41 @@ import java.util.StringTokenizer;
 /**
  * GLExcess v1.0 Demo
  * Copyright (C) 2001-2003 Paolo Martella
- *
+ * <p>
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
  * @author Paolo "Bustard" Martella
  * @author Pepijn Van Eeckhoudt
  */
 final class Scene6 implements Scene {
-    private Texture[] e_Text;
     private static final int numtexs = 10;
     private static boolean init = true;
-    private float e_time = 0;
-
     private final boolean[] dum = new boolean[4];
+    private final float[] e_FogColor = {1.0f, 1.0f, 1.0f, 1.0f};
+    private final GLUT glut = new GLUT();
+    private Texture[] e_Text;
+    private float e_time = 0;
     private boolean e_lasers = false;
     private boolean e_scene = false;
-
-    private final float[] e_FogColor = {1.0f, 1.0f, 1.0f, 1.0f};
-
     private float e_xrot;
     private float e_yrot;
     private float e_zrot;
     private float e_timer = -1.25f;
     private float e_speed = 0.0f;
-
     private float e_zeta = 0.0f;
     private float e_fade = 0.0f;
-
     private float e_rocca = 1.0f;
     private float e_depth = 60.0f;
-
     private float e_radius = 0.0f;
     private int shiplist;
-
-    private final GLUT glut = new GLUT();
 
     private static int genship(GL2 gl) {
         int[][] face_indicies = null;
@@ -103,7 +97,7 @@ final class Scene6 implements Scene {
             throw new RuntimeException(e);
         }
 
-        int i,j;
+        int i, j;
         int lid = gl.glGenLists(1);
         gl.glNewList(lid, GL2.GL_COMPILE);
 
@@ -121,7 +115,35 @@ final class Scene6 implements Scene {
         gl.glEnd();
         gl.glEndList();
         return lid;
-    };
+    }
+
+    private static void e_drawquad(GL2 gl, float size) {
+        gl.glBegin(GL2.GL_QUADS);
+        gl.glTexCoord2f(0.0f, 0.0f);
+        gl.glVertex3f(-0.5f * size, -0.5f * size, 0.0f);
+        gl.glTexCoord2f(1.0f, 0.0f);
+        gl.glVertex3f(0.5f * size, -0.5f * size, 0.0f);
+        gl.glTexCoord2f(1.0f, 1.0f);
+        gl.glVertex3f(0.5f * size, 0.5f * size, 0.0f);
+        gl.glTexCoord2f(0.0f, 1.0f);
+        gl.glVertex3f(-0.5f * size, 0.5f * size, 0.0f);
+        gl.glEnd();
+    }
+
+    private static void e_Clear(GL2 gl, float quad) {
+        gl.glDisable(GL2.GL_TEXTURE_2D);
+        gl.glDisable(GL2.GL_DEPTH_TEST);
+        gl.glEnable(GL2.GL_BLEND);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+        gl.glLoadIdentity();
+        gl.glTranslatef(0, 0, -1.0f);
+        gl.glColor4f(0, 0, 0, 1 - quad);
+        e_drawquad(gl, 1.2f);
+        gl.glDisable(GL2.GL_BLEND);
+        gl.glEnable(GL2.GL_DEPTH_TEST);
+        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
+        gl.glEnable(GL2.GL_TEXTURE_2D);
+    }
 
     private void init(GLAutoDrawable g) {
         GL2 gl = g.getGL().getGL2();
@@ -208,19 +230,6 @@ final class Scene6 implements Scene {
         init = true;
     }
 
-    private static void e_drawquad(GL2 gl, float size) {
-        gl.glBegin(GL2.GL_QUADS);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-0.5f * size, -0.5f * size, 0.0f);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(0.5f * size, -0.5f * size, 0.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(0.5f * size, 0.5f * size, 0.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(-0.5f * size, 0.5f * size, 0.0f);
-        gl.glEnd();
-    }
-
     private void e_drawmquad(GL2 gl, float size, float mtex) {
         gl.glBegin(GL2.GL_QUADS);
         gl.glTexCoord2f(0.0f, 0.0f - .1f * e_zeta * e_rocca);
@@ -279,21 +288,6 @@ final class Scene6 implements Scene {
         }
     }
 
-    private static void e_Clear(GL2 gl, float quad) {
-        gl.glDisable(GL2.GL_TEXTURE_2D);
-        gl.glDisable(GL2.GL_DEPTH_TEST);
-        gl.glEnable(GL2.GL_BLEND);
-        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
-        gl.glLoadIdentity();
-        gl.glTranslatef(0, 0, -1.0f);
-        gl.glColor4f(0, 0, 0, 1 - quad);
-        e_drawquad(gl, 1.2f);
-        gl.glDisable(GL2.GL_BLEND);
-        gl.glEnable(GL2.GL_DEPTH_TEST);
-        gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
-        gl.glEnable(GL2.GL_TEXTURE_2D);
-    }
-
     public final boolean drawScene(GLAutoDrawable g, float globtime) {
         if (init) {
             init(g);
@@ -334,7 +328,8 @@ final class Scene6 implements Scene {
             e_depth = 30 + 30 * e_radius;
 
             if (e_timer > -1.0f) {
-                if ((e_timer < eoffset) || (e_timer > eoffset + 2)) gl.glDisable(GL2.GL_BLEND); else gl.glEnable(GL2.GL_BLEND);
+                if ((e_timer < eoffset) || (e_timer > eoffset + 2)) gl.glDisable(GL2.GL_BLEND);
+                else gl.glEnable(GL2.GL_BLEND);
                 gl.glLoadIdentity();
 
                 gl.glTranslatef(.75f * (float) Math.sin(e_timer), .35f * (float) Math.cos(e_timer), 0);
@@ -343,22 +338,34 @@ final class Scene6 implements Scene {
                 gl.glRotatef(5 * e_yrot, 0, 1, 0);
                 gl.glRotatef(5 * e_xrot, 1, 0, 0);
 
-                if ((e_timer > 6.0f) && (e_timer < 10.0)) e_xrot = (6.0f - ((e_timer - 6.0f) * 1.5f)) * ((float) Math.cos((e_timer - 6.0f) * 3.1415f / 2.0f) - 1.0f);
-                if ((e_timer > 5.0f) && (e_timer < 9.0)) e_yrot = (36.0f - ((e_timer - 5.0f) * 9.0f)) * ((float) Math.cos((e_timer - 5.0f) * 3.1415f / 2.0f) - 1.0f);
-                if ((e_timer > 2.0f) && (e_timer < 6.0)) e_zrot = -(9.0f - ((e_timer - 2.0f) * 4.5f)) * ((float) Math.cos((e_timer - 2.0f) * 3.1415f / 2.0f) - 1.0f);
+                if ((e_timer > 6.0f) && (e_timer < 10.0))
+                    e_xrot = (6.0f - ((e_timer - 6.0f) * 1.5f)) * ((float) Math.cos((e_timer - 6.0f) * 3.1415f / 2.0f) - 1.0f);
+                if ((e_timer > 5.0f) && (e_timer < 9.0))
+                    e_yrot = (36.0f - ((e_timer - 5.0f) * 9.0f)) * ((float) Math.cos((e_timer - 5.0f) * 3.1415f / 2.0f) - 1.0f);
+                if ((e_timer > 2.0f) && (e_timer < 6.0))
+                    e_zrot = -(9.0f - ((e_timer - 2.0f) * 4.5f)) * ((float) Math.cos((e_timer - 2.0f) * 3.1415f / 2.0f) - 1.0f);
 
-                if ((e_timer > 10.0f) && (e_timer < 12.0)) e_xrot = -(6.0f - ((e_timer - 10.0f) * 3.0f)) * ((float) Math.cos((e_timer - 10.0f) * 3.1415f) - 1.0f);
-                if ((e_timer > 12.0f) && (e_timer < 14.0)) e_xrot = (6.0f - ((e_timer - 12.0f) * 3.0f)) * ((float) Math.cos((e_timer - 12.0f) * 3.1415f) - 1.0f);
-                if ((e_timer > 9.0f) && (e_timer < 13.0)) e_yrot = -(6.0f - ((e_timer - 9.0f) * 1.5f)) * ((float) Math.cos((e_timer - 9.0f) * 3.1415f / 2.0f) - 1.0f);
-                if ((e_timer > 6.0f) && (e_timer < 10.0)) e_zrot = -(16.0f - ((e_timer - 6.0f) * 4.0f)) * ((float) Math.cos((e_timer - 6.0f) * 3.1415f / 2.0f) - 1.0f);
-                if ((e_timer > 10.0f) && (e_timer < 16.0)) e_zrot = (6.0f - ((e_timer - 10.0f) * 1.0f)) * ((float) Math.cos((e_timer - 10.0f) * 3.1415f / 3.0f) - 1.0f);
-                if ((e_timer > 16.0f) && (e_timer < 20.0)) e_zrot = (9.0f - ((e_timer - 16.0f) * 4.5f)) * ((float) Math.cos((e_timer - 16.0f) * 3.1415f / 3.0f) - 1.0f);
+                if ((e_timer > 10.0f) && (e_timer < 12.0))
+                    e_xrot = -(6.0f - ((e_timer - 10.0f) * 3.0f)) * ((float) Math.cos((e_timer - 10.0f) * 3.1415f) - 1.0f);
+                if ((e_timer > 12.0f) && (e_timer < 14.0))
+                    e_xrot = (6.0f - ((e_timer - 12.0f) * 3.0f)) * ((float) Math.cos((e_timer - 12.0f) * 3.1415f) - 1.0f);
+                if ((e_timer > 9.0f) && (e_timer < 13.0))
+                    e_yrot = -(6.0f - ((e_timer - 9.0f) * 1.5f)) * ((float) Math.cos((e_timer - 9.0f) * 3.1415f / 2.0f) - 1.0f);
+                if ((e_timer > 6.0f) && (e_timer < 10.0))
+                    e_zrot = -(16.0f - ((e_timer - 6.0f) * 4.0f)) * ((float) Math.cos((e_timer - 6.0f) * 3.1415f / 2.0f) - 1.0f);
+                if ((e_timer > 10.0f) && (e_timer < 16.0))
+                    e_zrot = (6.0f - ((e_timer - 10.0f) * 1.0f)) * ((float) Math.cos((e_timer - 10.0f) * 3.1415f / 3.0f) - 1.0f);
+                if ((e_timer > 16.0f) && (e_timer < 20.0))
+                    e_zrot = (9.0f - ((e_timer - 16.0f) * 4.5f)) * ((float) Math.cos((e_timer - 16.0f) * 3.1415f / 3.0f) - 1.0f);
 
-                if ((e_timer > 13.5f) && (e_timer < 15.0f)) e_radius = ((float) Math.cos((e_timer - 13.5f) * 3.1415f / 1.5f + 3.1415f) + 1.0f) / 2.0f;
+                if ((e_timer > 13.5f) && (e_timer < 15.0f))
+                    e_radius = ((float) Math.cos((e_timer - 13.5f) * 3.1415f / 1.5f + 3.1415f) + 1.0f) / 2.0f;
 
-                if ((e_timer > 13.25f) && (e_timer < 19.25f)) e_speed = .125f + ((float) Math.cos(3.1415f + (e_timer - 13.25f) * 3.1415f / 4.0f) + 1.0f) / 50.0f;//e_speed=.125+(float)Math.sin(3.1415f*.5f*(e_timer-13.25))*.0125f;//e_speed=.125+((float)Math.cos(3.1415f+(e_timer-13.25f)*3.1415f/2.0f)+1.0f)/50.0f;
+                if ((e_timer > 13.25f) && (e_timer < 19.25f))
+                    e_speed = .125f + ((float) Math.cos(3.1415f + (e_timer - 13.25f) * 3.1415f / 4.0f) + 1.0f) / 50.0f;//e_speed=.125+(float)Math.sin(3.1415f*.5f*(e_timer-13.25))*.0125f;//e_speed=.125+((float)Math.cos(3.1415f+(e_timer-13.25f)*3.1415f/2.0f)+1.0f)/50.0f;
 
-                if (e_timer > 16.0f) e_fade = ((float) Math.cos((e_timer - 16.0f) * 3.1415f / 2.0f + 3.1415f) + 1.0f) * 20.0f;
+                if (e_timer > 16.0f)
+                    e_fade = ((float) Math.cos((e_timer - 16.0f) * 3.1415f / 2.0f + 3.1415f) + 1.0f) * 20.0f;
 
                 if ((e_timer > 15.0f) && (dum[0])) {
                     dum[0] = false;
@@ -382,7 +389,7 @@ final class Scene6 implements Scene {
                         gl.glColor4f(e_timer / 2.0f, e_timer / 2.0f, e_timer / 2.0f, e_timer / 2.0f);
                     else
                         gl.glColor4f(.5f, .5f, .5f, .5f);
-                    e_drawmquad(gl, 1, 6);				// ROOF TOP
+                    e_drawmquad(gl, 1, 6);                // ROOF TOP
                     gl.glPopMatrix();
 
                     gl.glPushMatrix();
@@ -395,7 +402,7 @@ final class Scene6 implements Scene {
                         gl.glColor4f(e_timer, e_timer, e_timer, e_timer);
                     else
                         gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-                    e_drawmquad(gl, 1, 6);				// FLOOR
+                    e_drawmquad(gl, 1, 6);                // FLOOR
                     gl.glPopMatrix();
 
                     for (int pp = 0; pp < 2; pp++) {
@@ -407,7 +414,7 @@ final class Scene6 implements Scene {
                         gl.glTranslatef(-1.35f, -.65f, 0);
                         gl.glRotatef(45, 0, 0, 1);
                         gl.glRotatef(90, 0, 1, 0);
-                        e_drawmquad1(gl, 1, 3);				// BOTT LEFT
+                        e_drawmquad1(gl, 1, 3);                // BOTT LEFT
                         gl.glPopMatrix();
 
                         gl.glPushMatrix();
@@ -419,7 +426,7 @@ final class Scene6 implements Scene {
                         gl.glRotatef(-50, 0, 0, 1);
                         gl.glRotatef(90, 0, 1, 0);
                         gl.glScalef(1, 1.5f, 1);
-                        e_drawmquad1(gl, 1, 6);				// TOP LEFT
+                        e_drawmquad1(gl, 1, 6);                // TOP LEFT
                         gl.glPopMatrix();
                     }
                 }
@@ -435,7 +442,8 @@ final class Scene6 implements Scene {
 
                 if ((e_timer > 1.0f) && (e_timer < 15.0f)) {
                     float var = 0;
-                    if ((e_timer > 3) && (e_timer < 3.4)) var = .5f - .5f * (float) Math.cos((e_timer - 3) * 3.1415f * 5);
+                    if ((e_timer > 3) && (e_timer < 3.4))
+                        var = .5f - .5f * (float) Math.cos((e_timer - 3) * 3.1415f * 5);
                     for (int pp = 0; pp < 2; pp++) {
                         gl.glPushMatrix();
                         //if (pp) gl.glScalef(-1,1,1);
@@ -448,7 +456,7 @@ final class Scene6 implements Scene {
 
                         gl.glScalef(.75f, .25f, .05f);
                         gl.glTranslatef(0, 2, .4f);
-                        for (int zx = 0; zx < 21; zx++)			// LIGHTS SIDE
+                        for (int zx = 0; zx < 21; zx++)            // LIGHTS SIDE
                         {
 
                             gl.glPushMatrix();
@@ -523,7 +531,7 @@ final class Scene6 implements Scene {
                 gl.glFogf(GL2.GL_FOG_START, 10 - 11 * e_radius);
 
                 if (e_timer < 1.0f) {
-                    gl.glLoadIdentity();		// LIGHT MASK
+                    gl.glLoadIdentity();        // LIGHT MASK
                     gl.glTranslatef(0, 0, -.1f);
                     gl.glRotatef(e_timer * 200, 0, 0, 1);
                     gl.glRotatef(180, 1, 0, 0);
@@ -535,12 +543,12 @@ final class Scene6 implements Scene {
                     gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f - e_timer / 1.0f);
                     //glBindTexture(GL2.GL_TEXTURE_2D, e_Text[ure[0]);
                     e_Text[1].use(gl);
-                    glut.glutSolidCone( .2f, e_timer / 3.5f, 20, 20);
+                    glut.glutSolidCone(.2f, e_timer / 3.5f, 20, 20);
                     gl.glDisable(GL2.GL_TEXTURE_GEN_S);
                     gl.glDisable(GL2.GL_TEXTURE_GEN_T);
                 }
 
-                if (e_lasers)				// e_lasers
+                if (e_lasers)                // e_lasers
                 {
                     gl.glEnable(GL2.GL_TEXTURE_GEN_S);
                     gl.glEnable(GL2.GL_TEXTURE_GEN_T);
@@ -572,7 +580,7 @@ final class Scene6 implements Scene {
                     gl.glColor4ub((byte) 128, (byte) 255, (byte) 128, (byte) 64);
                     gl.glColor4f(0.25f, 0.5f, 1.0f, .5f);
                     //	glColor4f(1.0f,1.0f,1.0f,.5f);
-                    glut.glutSolidCone( .25f, 200 - (e_zeta / 1.5f - 200), 10, 3);
+                    glut.glutSolidCone(.25f, 200 - (e_zeta / 1.5f - 200), 10, 3);
                     gl.glPopMatrix();
 
                     gl.glDisable(GL2.GL_TEXTURE_GEN_S);
@@ -710,11 +718,8 @@ final class Scene6 implements Scene {
         }
 
 
-        if (e_timer > 17.0f) {
-            //*********************************** FINISH
-            //e_Clean();
-            return false;
-        }
-        return true;
+        //*********************************** FINISH
+        //e_Clean();
+        return !(e_timer > 17.0f);
     }
 }

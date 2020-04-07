@@ -1,9 +1,7 @@
 package demos.glexcess;
 
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.gl2.GLUgl2;
 import com.jogamp.opengl.util.gl2.GLUT;
 import demos.common.ResourceRetriever;
@@ -15,68 +13,63 @@ import java.util.Random;
 /**
  * GLExcess v1.0 Demo
  * Copyright (C) 2001-2003 Paolo Martella
- *
+ * <p>
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
  * @author Paolo "Bustard" Martella
  * @author Pepijn Van Eeckhoudt
  */
 final class Scene7 implements Scene {
-    private final Random random = new Random();
-    private Texture[] f_Text;
     private static final int numtexs = 7;
     private static boolean init = true;
+    private final Random random = new Random();
+    private final int[][] f_phase = new int[64][64];
+    private final int[][] f_speed = new int[64][64];
+    private final int[][][] f_side = new int[10][10][10];
+    private final int f_num = 500;
+    private final int f_acn = 250;
+    private final f_particle[] particles = new f_particle[f_num];
+    private final f_acc[] accs = new f_acc[f_acn];
+    private final float[][][] f_angle = new float[10][10][10];
+    private final float[] f_FogColor = {1.0f, 1.0f, 1.0f, 1.0f};
+    private final GLUT glut = new GLUT();
+    private Texture[] f_Text;
     private float f_time = 0;
-
     private int f_cycle;
-
     private boolean f_play = true;
     private boolean f_play1 = true;
     private boolean f_play2 = true;
-
     private float f_rot = 0.0f;
     private float f_timer = 0.0f;
     private float f_factor = 1.0f;
     private long f_frames = 0;
     private float f_zeta = -15.0f;//.001;
     private float f_end = 1.0f;
-    private final int[][] f_phase = new int[64][64];
-    private final int[][] f_speed = new int[64][64];
-
     private int f_shade;
     private int f_shadetop;
     private int f_flare;
-
-    private final int[][][] f_side = new int[10][10][10];
-    private final int f_num = 500;
-    private final int f_acn = 250;
-
-    private static final class f_particle {
-        int alfa,f_shade;
-        float mod,f_speed;
-    }
-
-    private static final class f_acc {
-        int arot;
-        long ainit;
-        float amod,aspeed,aalfa,arad;
-    }
-
-    private final f_particle[] particles = new f_particle[f_num];
-    private final f_acc[] accs = new f_acc[f_acn];
-
-    private final float[][][] f_angle = new float[10][10][10];
-
-    private final float[] f_FogColor = {1.0f, 1.0f, 1.0f, 1.0f};
     private float f_density = 0.025f;
-    private final GLUT glut = new GLUT();
+
+    private static void f_drawquad(GL2 gl, float size) {
+        gl.glBegin(GL2.GL_QUADS);
+        gl.glTexCoord2f(0.0f, 0.0f);
+        gl.glVertex3f(-.5f * size, -.5f * size, 0);
+        gl.glTexCoord2f(1.0f, 0.0f);
+        gl.glVertex3f(-.5f * size, .5f * size, 0);
+        gl.glTexCoord2f(1.0f, 1.0f);
+        gl.glVertex3f(.5f * size, .5f * size, 0);
+        gl.glTexCoord2f(0.0f, 1.0f);
+        gl.glVertex3f(.5f * size, -.5f * size, 0);
+        gl.glEnd();
+    }
 
     private void f_initacc(int naccs) {
         accs[naccs] = new f_acc();
@@ -204,19 +197,6 @@ final class Scene7 implements Scene {
         init = true;
     }
 
-    private static void f_drawquad(GL2 gl, float size) {
-        gl.glBegin(GL2.GL_QUADS);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-.5f * size, -.5f * size, 0);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(-.5f * size, .5f * size, 0);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(.5f * size, .5f * size, 0);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(.5f * size, -.5f * size, 0);
-        gl.glEnd();
-    }
-
     public final boolean drawScene(GLAutoDrawable g, float globtime) {
         if (init) {
             init(g);
@@ -249,7 +229,7 @@ final class Scene7 implements Scene {
             gl.glColor3ub((byte) 128, (byte) 160, (byte) 192);
             gl.glPushMatrix();
             gl.glRotatef(f_rot, 1, 0, 0);
-            glut.glutSolidSphere( 1, 50, 50);
+            glut.glutSolidSphere(1, 50, 50);
             gl.glPopMatrix();
             gl.glPopMatrix();
 
@@ -262,7 +242,7 @@ final class Scene7 implements Scene {
                 for (int f_y = 9; f_y >= 0; f_y--)
                     for (int f_z = 9; f_z >= 0; f_z--) {
                         gl.glPushMatrix();
-                        gl.glTranslatef(2f * (float)f_x / f_end, 2f * (float)f_y / f_end, 2f * (float)f_z / f_end);
+                        gl.glTranslatef(2f * (float) f_x / f_end, 2f * (float) f_y / f_end, 2f * (float) f_z / f_end);
                         if (f_side[f_x][f_y][f_z] == 0) gl.glRotatef(f_rot, 1, 0, 0);
                         if (f_side[f_x][f_y][f_z] == 1) gl.glRotatef(f_rot, 0, 1, 0);
                         if (f_side[f_x][f_y][f_z] == 2) gl.glRotatef(f_rot, 0, 0, 1);
@@ -281,7 +261,7 @@ final class Scene7 implements Scene {
                             for (float times = 0; times < tot; times++) {
                                 if (times == 0) gl.glColor4f(1, .65f, .35f, 1.0f);
                                 gl.glColor4f(1, .65f, .35f, .5f - .5f * times / tot);
-                                glut.glutSolidCube( value + .035f * times / tot);
+                                glut.glutSolidCube(value + .035f * times / tot);
                             }
                             gl.glDisable(GL2.GL_TEXTURE_GEN_S);
                             gl.glDisable(GL2.GL_TEXTURE_GEN_T);
@@ -513,11 +493,19 @@ final class Scene7 implements Scene {
         else
             f_zeta = 0.0f + (f_timer - 1.4f) / 1.24f;
         f_timer = (f_time) / 1500.0f;
-        if (f_zeta > 33.0f) {
-            //************************** FINISH
-            //f_Clean();
-            return false;
-        }
-        return true;
+        //************************** FINISH
+        //f_Clean();
+        return !(f_zeta > 33.0f);
+    }
+
+    private static final class f_particle {
+        int alfa, f_shade;
+        float mod, f_speed;
+    }
+
+    private static final class f_acc {
+        int arot;
+        long ainit;
+        float amod, aspeed, aalfa, arad;
     }
 }

@@ -1,9 +1,7 @@
 package demos.glexcess;
 
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.gl2.GLUgl2;
 import demos.common.ResourceRetriever;
 
@@ -14,65 +12,48 @@ import java.util.Random;
 /**
  * GLExcess v1.0 Demo
  * Copyright (C) 2001-2003 Paolo Martella
- *
+ * <p>
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
  * @author Paolo "Bustard" Martella
  * @author Pepijn Van Eeckhoudt
  */
 final class Scene9 implements Scene {
-    private final Random random = new Random();
-    private Texture[] h_Text;
     private static final int numtexs = 16;
     private static boolean init = true;
-    private float h_time = 0;
-
+    private final Random random = new Random();
     private final float[] h_FogColor = {1.0f, 1.0f, 1.0f, 1.0f};
+    private final int h_num = 100;
+    private final int h_num1 = 150;
+    private final h_part[] parts = new h_part[h_num];
+    private final h_part1[] parts1 = new h_part1[h_num1];
+    private Texture[] h_Text;
+    private float h_time = 0;
     private int h_y;
-
-
     private float h_timer = 0.0f;
-
     private float h_zeta = 0.0f;
     private float h_radius = 0.0f;
 
-    private final int h_num = 100;
-    private final int h_num1 = 150;
-
-    private static final class h_part {
-        long init;
-        float size;
-        float phase;
-        float rotspd;
-        float spd;
-        float h_y;
-        float a;
-        float a1;
+    private static void h_drawquad(GL2 gl, float size) {
+        gl.glBegin(GL2.GL_QUADS);
+        gl.glTexCoord2f(0.0f, 0.0f);
+        gl.glVertex3f(-0.5f * size, -0.5f * size, 0);
+        gl.glTexCoord2f(1.0f, 0.0f);
+        gl.glVertex3f(0.5f * size, -0.5f * size, 0);
+        gl.glTexCoord2f(1.0f, 1.0f);
+        gl.glVertex3f(0.5f * size, 0.5f * size, 0);
+        gl.glTexCoord2f(0.0f, 1.0f);
+        gl.glVertex3f(-0.5f * size, 0.5f * size, 0);
+        gl.glEnd();
     }
-
-    private static final class h_part1 {
-        float size;
-        float phase;
-        float amp;
-        float spd;
-        float x,h_y,xpos;
-        int r;
-        int g;
-        int b;
-        int a;
-
-        long init;
-    }
-
-    private final h_part[] parts = new h_part[h_num];
-    private final h_part1[] parts1 = new h_part1[h_num1];
 
     public final void clean(GLAutoDrawable g) {
         GL2 gl = g.getGL().getGL2();
@@ -112,21 +93,21 @@ final class Scene9 implements Scene {
             h_Text[i] = new Texture();
         }
         try {
-            h_Text[1].load(gl,glu,ResourceRetriever.getResourceAsStream("data/fallfront1.raw"));
-            h_Text[2].load(gl,glu,ResourceRetriever.getResourceAsStream("data/water.raw"));
-            h_Text[3].load(gl,glu,ResourceRetriever.getResourceAsStream("data/fallleft1.raw"));
-            h_Text[4].load(gl,glu,ResourceRetriever.getResourceAsStream("data/cl.raw"));
-            h_Text[5].load(gl,glu,ResourceRetriever.getResourceAsStream("data/fallleftmask.raw"));
-            h_Text[6].load(gl,glu,ResourceRetriever.getResourceAsStream("data/fallright.raw"));
-            h_Text[7].load(gl,glu,ResourceRetriever.getResourceAsStream("data/fallrightmask.raw"));
-            h_Text[8].load(gl,glu,ResourceRetriever.getResourceAsStream("data/floodmask1.raw"));
-            h_Text[9].load(gl,glu,ResourceRetriever.getResourceAsStream("data/smoke.raw"));
-            h_Text[10].load(gl,glu,ResourceRetriever.getResourceAsStream("data/circlefill.raw"));
-            h_Text[11].load(gl,glu,ResourceRetriever.getResourceAsStream("data/cl1.raw"));
-            h_Text[12].load(gl,glu,ResourceRetriever.getResourceAsStream("data/noise1.raw"));
-            h_Text[13].load(gl,glu,ResourceRetriever.getResourceAsStream("data/circleempty.raw"));
-            h_Text[14].load(gl,glu,ResourceRetriever.getResourceAsStream("data/watpt.raw"));
-            h_Text[15].load(gl,glu,ResourceRetriever.getResourceAsStream("data/water1.raw"));
+            h_Text[1].load(gl, glu, ResourceRetriever.getResourceAsStream("data/fallfront1.raw"));
+            h_Text[2].load(gl, glu, ResourceRetriever.getResourceAsStream("data/water.raw"));
+            h_Text[3].load(gl, glu, ResourceRetriever.getResourceAsStream("data/fallleft1.raw"));
+            h_Text[4].load(gl, glu, ResourceRetriever.getResourceAsStream("data/cl.raw"));
+            h_Text[5].load(gl, glu, ResourceRetriever.getResourceAsStream("data/fallleftmask.raw"));
+            h_Text[6].load(gl, glu, ResourceRetriever.getResourceAsStream("data/fallright.raw"));
+            h_Text[7].load(gl, glu, ResourceRetriever.getResourceAsStream("data/fallrightmask.raw"));
+            h_Text[8].load(gl, glu, ResourceRetriever.getResourceAsStream("data/floodmask1.raw"));
+            h_Text[9].load(gl, glu, ResourceRetriever.getResourceAsStream("data/smoke.raw"));
+            h_Text[10].load(gl, glu, ResourceRetriever.getResourceAsStream("data/circlefill.raw"));
+            h_Text[11].load(gl, glu, ResourceRetriever.getResourceAsStream("data/cl1.raw"));
+            h_Text[12].load(gl, glu, ResourceRetriever.getResourceAsStream("data/noise1.raw"));
+            h_Text[13].load(gl, glu, ResourceRetriever.getResourceAsStream("data/circleempty.raw"));
+            h_Text[14].load(gl, glu, ResourceRetriever.getResourceAsStream("data/watpt.raw"));
+            h_Text[15].load(gl, glu, ResourceRetriever.getResourceAsStream("data/water1.raw"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -180,33 +161,20 @@ final class Scene9 implements Scene {
             parts1[h_y].x = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
             parts1[h_y].xpos = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
         }
-        for (int xs = 0; xs < h_num; xs++) parts[xs].init = (long)h_time;
-        for (int xs = 0; xs < h_num1; xs++) parts1[xs].init = (long)h_time;
-    }
-
-    private static void h_drawquad(GL2 gl, float size) {
-        gl.glBegin(GL2.GL_QUADS);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-0.5f * size, -0.5f * size, 0);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(0.5f * size, -0.5f * size, 0);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(0.5f * size, 0.5f * size, 0);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(-0.5f * size, 0.5f * size, 0);
-        gl.glEnd();
+        for (int xs = 0; xs < h_num; xs++) parts[xs].init = (long) h_time;
+        for (int xs = 0; xs < h_num1; xs++) parts1[xs].init = (long) h_time;
     }
 
     private void h_drawquad0(GL2 gl, int subdiv, float fact, int shd) {
         float a = 3.0f;
         float b = 3.0f;
-        gl.glColor4ub((byte)255, (byte)255, (byte)255, (byte)shd);
+        gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) shd);
         gl.glBegin(GL2.GL_QUAD_STRIP);
         for (int i = 1; i < subdiv; i++) {
             gl.glTexCoord2f(1.0f, h_radius + fact * ((float) i) / ((float) subdiv));
-            gl.glVertex3f(.25f + .0025f * ((float) subdiv / i), a * (float)Math.cos((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f), b * (float)Math.sin((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f));
+            gl.glVertex3f(.25f + .0025f * ((float) subdiv / i), a * (float) Math.cos((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f), b * (float) Math.sin((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f));
             gl.glTexCoord2f(0.0f, h_radius + fact * ((float) i) / ((float) subdiv));
-            gl.glVertex3f(-.25f - .0025f * ((float) subdiv / i), a * (float)Math.cos((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f), b * (float)Math.sin((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f));
+            gl.glVertex3f(-.25f - .0025f * ((float) subdiv / i), a * (float) Math.cos((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f), b * (float) Math.sin((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f));
         }
         gl.glEnd();
     }
@@ -214,13 +182,13 @@ final class Scene9 implements Scene {
     private void h_drawquad1(GL2 gl, int subdiv, float fact, int shd, float offset) {
         float a = 3.0f;
         float b = 3.0f;
-        gl.glColor4ub((byte)255, (byte)255, (byte)255, (byte)shd);
+        gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) shd);
         gl.glBegin(GL2.GL_QUAD_STRIP);
         for (int i = 1; i < subdiv; i++) {
             gl.glTexCoord2f(1.0f + offset + h_radius / 5, h_radius + fact * ((float) i) / ((float) subdiv));
-            gl.glVertex3f(.25f - .01f * ((float) subdiv / i), a * (float)Math.cos((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f), b * (float)Math.sin((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f));
+            gl.glVertex3f(.25f - .01f * ((float) subdiv / i), a * (float) Math.cos((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f), b * (float) Math.sin((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f));
             gl.glTexCoord2f(0.0f + offset + h_radius / 5, h_radius + fact * ((float) i) / ((float) subdiv));
-            gl.glVertex3f(-.25f + .01f * ((float) subdiv / i), a * (float)Math.cos((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f), b * (float)Math.sin((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f));
+            gl.glVertex3f(-.25f + .01f * ((float) subdiv / i), a * (float) Math.cos((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f), b * (float) Math.sin((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f));
         }
         gl.glEnd();
     }
@@ -230,21 +198,21 @@ final class Scene9 implements Scene {
         float ix = .5f;
         float iy = .35f;
         gl.glBegin(GL2.GL_QUAD_STRIP);
-        gl.glTexCoord2f(0.0f * 1 - (float)Math.cos(shift) * ix, 0.0f * 2 + (float)Math.sin(2.0f * shift) * iy);
+        gl.glTexCoord2f(0.0f * 1 - (float) Math.cos(shift) * ix, 0.0f * 2 + (float) Math.sin(2.0f * shift) * iy);
         gl.glColor4f(0, 0, 0, 0);
         gl.glVertex3f(-.5f * size, -.5f * size, 0);
-        gl.glTexCoord2f(1.0f * 1 - (float)Math.cos(shift) * ix, 0.0f * 2 + (float)Math.sin(2.0f * shift) * iy);
+        gl.glTexCoord2f(1.0f * 1 - (float) Math.cos(shift) * ix, 0.0f * 2 + (float) Math.sin(2.0f * shift) * iy);
         gl.glVertex3f(.5f * size, -.5f * size, 0);
 
         gl.glColor4f(1, 1, 1, shade);
-        gl.glTexCoord2f(0.0f * 1 - (float)Math.cos(shift) * ix, 0.5f * 2 + (float)Math.sin(2.0f * shift) * iy);
+        gl.glTexCoord2f(0.0f * 1 - (float) Math.cos(shift) * ix, 0.5f * 2 + (float) Math.sin(2.0f * shift) * iy);
         gl.glVertex3f(-.5f * size, 0, 0);
-        gl.glTexCoord2f(1.0f * 1 - (float)Math.cos(shift) * ix, 0.5f * 2 + (float)Math.sin(2.0f * shift) * iy);
+        gl.glTexCoord2f(1.0f * 1 - (float) Math.cos(shift) * ix, 0.5f * 2 + (float) Math.sin(2.0f * shift) * iy);
         gl.glVertex3f(.5f * size, 0, 0);
 
-        gl.glTexCoord2f(0.0f * 1 - (float)Math.cos(shift) * ix, 1.0f * 2 + (float)Math.sin(2.0f * shift) * iy);
+        gl.glTexCoord2f(0.0f * 1 - (float) Math.cos(shift) * ix, 1.0f * 2 + (float) Math.sin(2.0f * shift) * iy);
         gl.glVertex3f(-.5f * size, .5f * size, 0);
-        gl.glTexCoord2f(1.0f * 1 - (float)Math.cos(shift) * ix, 1.0f * 2 + (float)Math.sin(2.0f * shift) * iy);
+        gl.glTexCoord2f(1.0f * 1 - (float) Math.cos(shift) * ix, 1.0f * 2 + (float) Math.sin(2.0f * shift) * iy);
         gl.glVertex3f(.5f * size, .5f * size, 0);
 
         gl.glEnd();
@@ -275,13 +243,13 @@ final class Scene9 implements Scene {
     private void h_drawquad3(GL2 gl, int subdiv, float fact, int shd, float offset) {
         float a = 3.0f;
         float b = 3.0f;
-        gl.glColor4ub((byte)255, (byte)255, (byte)255, (byte)shd);
+        gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) shd);
         gl.glBegin(GL2.GL_QUAD_STRIP);
         for (int i = 1; i < subdiv; i++) {
             gl.glTexCoord2f(1.0f + offset, h_radius + fact * ((float) i) / ((float) subdiv));
-            gl.glVertex3f(.25f - .01f * ((float) subdiv / i), a * (float)Math.cos((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f), b * (float)Math.sin((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f));
+            gl.glVertex3f(.25f - .01f * ((float) subdiv / i), a * (float) Math.cos((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f), b * (float) Math.sin((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f));
             gl.glTexCoord2f(0.0f + offset, h_radius + fact * ((float) i) / ((float) subdiv));
-            gl.glVertex3f(-.25f + .01f * ((float) subdiv / i), a * (float)Math.cos((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f), b * (float)Math.sin((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f));
+            gl.glVertex3f(-.25f + .01f * ((float) subdiv / i), a * (float) Math.cos((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f), b * (float) Math.sin((90.0f / subdiv) * i * 2 * 3.1415 / 360.0f));
         }
         gl.glEnd();
     }
@@ -311,7 +279,7 @@ final class Scene9 implements Scene {
                 gl.glTranslatef(-parts1[zx].xpos / 1.5f - parts1[zx].x / 4.0f, -.03f + parts1[zx].h_y, (float) (zx % 10) / 10);
             else
                 gl.glTranslatef(parts1[zx].xpos / 1.5f + parts1[zx].x / 4.0f, -.03f + parts1[zx].h_y, (float) (zx % 10) / 10);
-            gl.glColor4ub((byte)parts1[zx].r, (byte)parts1[zx].g, (byte)parts1[zx].b, (byte)(255 + 255 * ((parts1[zx].h_y) / 2.5f)));
+            gl.glColor4ub((byte) parts1[zx].r, (byte) parts1[zx].g, (byte) parts1[zx].b, (byte) (255 + 255 * ((parts1[zx].h_y) / 2.5f)));
             gl.glTranslatef(0, -.5f, 0);
             if ((zx % 3) == 0) gl.glRotatef(180, 1, 0, 0);
             h_drawquad(gl, parts1[zx].amp);
@@ -320,7 +288,7 @@ final class Scene9 implements Scene {
             parts1[zx].h_y = -1.75f * parts1[zx].x * parts1[zx].x;
 
             if (parts1[zx].h_y < -2.5) {
-                parts1[zx].init = (long)h_time;
+                parts1[zx].init = (long) h_time;
 
                 parts1[zx].spd = .05f + .00025f * ((float) (Math.abs(random.nextInt()) % 1000));
                 parts1[zx].xpos = .001f * ((float) (Math.abs(random.nextInt()) % 1000));
@@ -341,11 +309,11 @@ final class Scene9 implements Scene {
         gl.glPushMatrix();
         gl.glScalef(1.5f, 1.0f, 1.0f);
         gl.glTranslatef(1.55f, 1.9f, .1f + h_zeta / 20.0f);
-        gl.glColor4ub((byte)255, (byte)255, (byte)255, (byte)255);
+        gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 255);
         //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[0]);
         h_Text[1].use(gl);
 
-        h_drawquad(gl, 10.2f);									// FRONT
+        h_drawquad(gl, 10.2f);                                    // FRONT
 
         gl.glPopMatrix();
         gl.glEnable(GL2.GL_BLEND);
@@ -353,74 +321,74 @@ final class Scene9 implements Scene {
         gl.glPushMatrix();
         gl.glScalef(1.75f, 2.0f, 1);
         gl.glTranslatef(-.8f, -1.72f, h_zeta / 20);
-                //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[3]);
-                h_Text[4].use(gl);
-        gl.glColor4ub((byte)255, (byte)255, (byte)255, (byte)128);
-        h_drawquad1(gl, 20, .2f, 128, .7f);							// FALL
+        //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[3]);
+        h_Text[4].use(gl);
+        gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 128);
+        h_drawquad1(gl, 20, .2f, 128, .7f);                            // FALL
         gl.glPopMatrix();
 
         gl.glPushMatrix();
         gl.glScalef(1, 2, 1);
         gl.glTranslatef(-2.1f, -1.71f, h_zeta / 20);
-                //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[10]);
-                h_Text[11].use(gl);
-        h_drawquad3(gl, 20, .3f, 128, .2f);							// FALL
+        //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[10]);
+        h_Text[11].use(gl);
+        h_drawquad3(gl, 20, .3f, 128, .2f);                            // FALL
         gl.glPopMatrix();
 
         gl.glPushMatrix();
         gl.glScalef(1, 2, 1);
         gl.glTranslatef(.1f, -1.71f, h_zeta / 20);
-                //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[10]);
+        //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[10]);
 //	h_Text[11].use(gl);
-                h_drawquad3(gl, 20, .4f, 128, .2f);							// FALL
+        h_drawquad3(gl, 20, .4f, 128, .2f);                            // FALL
         gl.glPopMatrix();
 
         gl.glPushMatrix();
         gl.glScalef(3, 2, 1);
         gl.glTranslatef(-.15f, -1.71f, h_zeta / 20);
-                //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[3]);
-                h_Text[4].use(gl);
-        h_drawquad1(gl, 20, .6f, 128, .5f);							// FALL
+        //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[3]);
+        h_Text[4].use(gl);
+        h_drawquad1(gl, 20, .6f, 128, .5f);                            // FALL
         gl.glPopMatrix();
 
         gl.glPushMatrix();
         gl.glScalef(4.5f, 2, 1);
         gl.glTranslatef(-.24f, -1.725f, h_zeta / 20);
-                //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[10]);
-                h_Text[11].use(gl);
-        h_drawquad0(gl, 20, 1.0f, 128);								// FALL
+        //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[10]);
+        h_Text[11].use(gl);
+        h_drawquad0(gl, 20, 1.0f, 128);                                // FALL
         gl.glPopMatrix();
 
         gl.glPushMatrix();
         gl.glScalef(.5f, 2.2f, 1);
         gl.glTranslatef(4, -1.5f, h_zeta / 20);
-                //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[11]);
-                h_Text[12].use(gl);
+        //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[11]);
+        h_Text[12].use(gl);
         //glTexParameterf(GL2.GL_TEXTURE_2D,GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
-        h_drawquad3(gl, 20, .2f, 192, 0.0f);							// FALL
+        h_drawquad3(gl, 20, .2f, 192, 0.0f);                            // FALL
         gl.glPopMatrix();
 
         gl.glPushMatrix();
         gl.glScalef(.3f, 3, 1);
         gl.glTranslatef(-13, -1.2f, h_zeta / 20);
-                //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[11]);
-                //h_Text[12].use(gl);
-                h_drawquad3(gl, 20, .1f, 160, .3f);							// FALL
+        //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[11]);
+        //h_Text[12].use(gl);
+        h_drawquad3(gl, 20, .1f, 160, .3f);                            // FALL
         gl.glPopMatrix();
 
         gl.glPushMatrix();
         //glEnable(GL2.GL_FOG);
         //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[1]);
         h_Text[2].use(gl);
-        gl.glColor4ub((byte)255, (byte)255, (byte)255, (byte)128);
+        gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 128);
         gl.glTranslatef(-1.0f, -3.0f, 4.4f);//+h_zeta/20);
         gl.glRotatef(90, 1, 0, 0);
         gl.glScalef(1.55f, 1.5f, 1);
-        h_drawquad2(gl, 7, .25f + .1f * (float)Math.cos(h_timer / 2.0f));				// WATER
+        h_drawquad2(gl, 7, .25f + .1f * (float) Math.cos(h_timer / 2.0f));                // WATER
         //glRotatef(90,0,0,1);
         gl.glRotatef(180, 1, 0, 0);
         h_Text[15].use(gl);
-        h_drawquad2b(gl, 7, .25f + .1f * (float)Math.sin(h_timer / 5.0f));
+        h_drawquad2b(gl, 7, .25f + .1f * (float) Math.sin(h_timer / 5.0f));
         gl.glDisable(GL2.GL_FOG);
         gl.glPopMatrix();
 
@@ -431,17 +399,17 @@ final class Scene9 implements Scene {
         h_Text[10].use(gl);
         gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
         gl.glRotatef(90, 1, 0, 0);
-        gl.glColor4ub((byte)255, (byte)255, (byte)255, (byte)255);
+        gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 255);
         h_drawquad(gl, 3.5f);
-        gl.glColor4ub((byte)255, (byte)255, (byte)255, (byte)128);
+        gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 128);
         h_drawquad(gl, 1.2f);
         gl.glPopMatrix();
 
         gl.glPushMatrix();
         gl.glLoadIdentity();
-        gl.glTranslatef(1.065f, -.987f, -5.0f + h_zeta / 55);					// SPOT
+        gl.glTranslatef(1.065f, -.987f, -5.0f + h_zeta / 55);                    // SPOT
         gl.glRotatef(90, 1, 0, 0);
-        gl.glColor4ub((byte)255, (byte)255, (byte)255, (byte)128);
+        gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 128);
         h_drawquad(gl, .25f);
         //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[12]);
         h_Text[13].use(gl);
@@ -453,9 +421,9 @@ final class Scene9 implements Scene {
 
         gl.glPushMatrix();
         gl.glLoadIdentity();
-        gl.glTranslatef(-1.03f, -1.027f, -5.0f + h_zeta / 55);				// SPOT
+        gl.glTranslatef(-1.03f, -1.027f, -5.0f + h_zeta / 55);                // SPOT
         gl.glRotatef(90, 1, 0, 0);
-        gl.glColor4ub((byte)255, (byte)255, (byte)255, (byte)128);
+        gl.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 128);
         //glBindTexture(GL2.GL_TEXTURE_2D, h_Text[ure[9]);
         h_Text[10].use(gl);
         h_drawquad(gl, .15f);
@@ -475,7 +443,7 @@ final class Scene9 implements Scene {
         gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
         for (int p = 0; p < h_num; p++) {
             long time;
-            time = (long)(h_time - parts[p].init);
+            time = (long) (h_time - parts[p].init);
 
             gl.glPushMatrix();
             gl.glTranslatef(-.6f + 1.2f * (float) p / h_num, parts[p].h_y, 0);
@@ -500,7 +468,7 @@ final class Scene9 implements Scene {
 
             //if (parts[p].a<0)
             if (parts[p].a1 < 0.0f) {
-                parts[p].init = (long)h_time;
+                parts[p].init = (long) h_time;
 
                 parts[p].h_y = 0.0f;
                 parts[p].size = 0.0f;
@@ -560,13 +528,13 @@ final class Scene9 implements Scene {
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -1.0f);
             gl.glDisable(GL2.GL_TEXTURE_2D);
-            gl.glColor4f(1, 1, 1, .5f * (1.0f + (float)Math.cos(h_timer * 3.1415 / 4.0f)));
+            gl.glColor4f(1, 1, 1, .5f * (1.0f + (float) Math.cos(h_timer * 3.1415 / 4.0f)));
             h_drawquad(gl, 1.2f);
             gl.glEnable(GL2.GL_TEXTURE_2D);
         }
         if (h_timer > 52.0f) {
             gl.glBlendFunc(GL2.GL_ZERO, GL2.GL_ONE_MINUS_SRC_COLOR);
-            float shader = .5f * (1.0f - (float)Math.cos((h_timer - 52.0f) * 3.1415 / 8.0f));
+            float shader = .5f * (1.0f - (float) Math.cos((h_timer - 52.0f) * 3.1415 / 8.0f));
             gl.glLoadIdentity();
             gl.glTranslatef(0, 0, -1.0f);
             gl.glDisable(GL2.GL_TEXTURE_2D);
@@ -578,16 +546,38 @@ final class Scene9 implements Scene {
         h_radius = -h_timer / 10.0f;
 
         if (h_timer < 3.0f)
-            h_zeta = 2.0f * (1.0f - (float)Math.cos(h_timer * 3.1415f / 6.0f));
+            h_zeta = 2.0f * (1.0f - (float) Math.cos(h_timer * 3.1415f / 6.0f));
         else
             h_zeta = 2.0f + (h_timer - 3.0f);
 
         h_timer = (h_time) / 950.0f;
-        if (h_timer > 60.0f) {
-            //***************** FINISH
-            //h_Clean();
-            return false;
-        }
-        return true;
+        //***************** FINISH
+        //h_Clean();
+        return !(h_timer > 60.0f);
+    }
+
+    private static final class h_part {
+        long init;
+        float size;
+        float phase;
+        float rotspd;
+        float spd;
+        float h_y;
+        float a;
+        float a1;
+    }
+
+    private static final class h_part1 {
+        float size;
+        float phase;
+        float amp;
+        float spd;
+        float x, h_y, xpos;
+        int r;
+        int g;
+        int b;
+        int a;
+
+        long init;
     }
 }

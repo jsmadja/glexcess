@@ -1,6 +1,5 @@
 package demos.glexcess;
 
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.glu.GLU;
@@ -13,35 +12,46 @@ import java.io.IOException;
 /**
  * GLExcess v1.0 Demo
  * Copyright (C) 2001-2003 Paolo Martella
- *
+ * <p>
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
  * @author Paolo "Bustard" Martella
  * @author Pepijn Van Eeckhoudt
  */
 final class Scene3 implements Scene {
-    private Texture[] b_Text;
     private static final int numtexs = 17;
     private static boolean init = true;
+    private final int facesize = 128;
+    private Texture[] b_Text;
     private float b_time = 0;
-
     private float[][][] b_points;
     private float b_zeta = -10.2f;
     private float b_count = 0;
-
-
     private boolean b_switch = true;
     private boolean flag = true;
     private boolean b_switch2 = true;
     private int face;
-    private final int facesize = 128;
+
+    private static void b_drawrect(GL2 gl, float b, float h) {
+        gl.glBegin(GL2.GL_QUADS);
+        gl.glTexCoord2f(0.0f, 0.0f);
+        gl.glVertex3f(-b / 2, -h / 2, 0.0f);
+        gl.glTexCoord2f(1.0f, 0.0f);
+        gl.glVertex3f(b / 2, -h / 2, 0.0f);
+        gl.glTexCoord2f(1.0f, 1.0f);
+        gl.glVertex3f(b / 2, h / 2, 0.0f);
+        gl.glTexCoord2f(0.0f, 1.0f);
+        gl.glVertex3f(-b / 2, h / 2, 0.0f);
+        gl.glEnd();
+    }
 
     private void dolist(GL2 gl) {
         b_points = new float[facesize][facesize][3];
@@ -186,19 +196,6 @@ final class Scene3 implements Scene {
         init = true;
     }
 
-    private static void b_drawrect(GL2 gl, float b, float h) {
-        gl.glBegin(GL2.GL_QUADS);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-b / 2, -h / 2, 0.0f);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(b / 2, -h / 2, 0.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(b / 2, h / 2, 0.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(-b / 2, h / 2, 0.0f);
-        gl.glEnd();
-    }
-
     public final boolean drawScene(GLAutoDrawable g, float globtime) {
         if (init) {
             init(g);
@@ -214,9 +211,9 @@ final class Scene3 implements Scene {
         if ((b_zeta > 92.5f) && (b_zeta < 100.0f)) {
             float canc;
             if (b_zeta < 94.5f)
-                canc = .375f * (1.0f - (float)Math.cos((b_zeta - 92.5f) * 3.1415f / 2.0f));
+                canc = .375f * (1.0f - (float) Math.cos((b_zeta - 92.5f) * 3.1415f / 2.0f));
             else if (b_zeta > 98.0f)
-                canc = .375f * (1.0f + (float)Math.cos((b_zeta - 98.0f) * 3.1415f / 2.0f));
+                canc = .375f * (1.0f + (float) Math.cos((b_zeta - 98.0f) * 3.1415f / 2.0f));
             else
                 canc = .75f;
             gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
@@ -235,8 +232,8 @@ final class Scene3 implements Scene {
             gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();
         if (b_zeta < 6.0f) {
-            glu.gluLookAt(13 * (float)Math.sin(b_zeta / 10), 2 - (b_zeta + 2) * (b_zeta + 2) / 50, -9 + 10 * (float)Math.cos(b_zeta / 10),
-                    13 * (float)Math.sin(.5 + b_zeta / 10), 1.5, -9 + 10 * (float)Math.cos(.5 + b_zeta / 10),
+            glu.gluLookAt(13 * (float) Math.sin(b_zeta / 10), 2 - (b_zeta + 2) * (b_zeta + 2) / 50, -9 + 10 * (float) Math.cos(b_zeta / 10),
+                    13 * (float) Math.sin(.5 + b_zeta / 10), 1.5, -9 + 10 * (float) Math.cos(.5 + b_zeta / 10),
                     0, 1, 0);
             gl.glRotatef(-90, 1, 0, 0);
             gl.glRotatef(-90, 0, 0, 1);
@@ -245,29 +242,29 @@ final class Scene3 implements Scene {
                 gl.glFrontFace(GL2.GL_CCW);
                 b_switch = false;
             }
-            glu.gluLookAt(3 * (float)Math.cos((b_zeta - 7.5f) / 4.0f), 1 + (float)Math.cos((b_zeta - 8.5f) / 6.0f) * (float)Math.cos((b_zeta - 8.5f) / 6.0f), -16 + (b_zeta - 6.5f),
-                    -1 + 3 * (float)Math.cos(b_zeta / 4.8f), -2, 3,
+            glu.gluLookAt(3 * (float) Math.cos((b_zeta - 7.5f) / 4.0f), 1 + (float) Math.cos((b_zeta - 8.5f) / 6.0f) * (float) Math.cos((b_zeta - 8.5f) / 6.0f), -16 + (b_zeta - 6.5f),
+                    -1 + 3 * (float) Math.cos(b_zeta / 4.8f), -2, 3,
                     0, 1, 0);
             gl.glRotatef(180, 0, 0, 1);
-            gl.glRotatef(10 * (float)Math.cos(b_zeta / 2.0f), 0, 0, 1);
+            gl.glRotatef(10 * (float) Math.cos(b_zeta / 2.0f), 0, 0, 1);
             gl.glRotatef(-90, 1, 0, 0);
             gl.glRotatef(-90, 0, 0, 1);
         } else if (b_zeta < 80.0f) {
-            gl.glTranslatef(0, 1, -13.0f + 3 * (float)Math.cos(b_zeta / 6));
+            gl.glTranslatef(0, 1, -13.0f + 3 * (float) Math.cos(b_zeta / 6));
             gl.glRotatef(100, 1, 0, 0);
             gl.glRotatef(b_zeta * 5.0f, 0, 0, 1);
         } else {
             if ((b_zeta - 81.8 > 0) && (b_zeta - 81.8 < 1))
-                gl.glTranslatef(0, 1, -13.0f + (3.0f + .3f * (b_zeta - 80) * (b_zeta - 80)) * (float)Math.cos(b_zeta / 6) + .5f * (1.0f - (float)Math.cos((b_zeta - 81.8f) * 3.1415 * 2.0f)));
+                gl.glTranslatef(0, 1, -13.0f + (3.0f + .3f * (b_zeta - 80) * (b_zeta - 80)) * (float) Math.cos(b_zeta / 6) + .5f * (1.0f - (float) Math.cos((b_zeta - 81.8f) * 3.1415 * 2.0f)));
             else if ((b_zeta - 84.4 > 0) && (b_zeta - 84.4 < .35))
-                gl.glTranslatef(0, 1, -13.0f + (3.0f + .3f * (b_zeta - 80) * (b_zeta - 80)) * (float)Math.cos(b_zeta / 6) + .25f * (1.0f - (float)Math.cos((b_zeta - 84.4f) * 3.1415 * 5.714f)));
+                gl.glTranslatef(0, 1, -13.0f + (3.0f + .3f * (b_zeta - 80) * (b_zeta - 80)) * (float) Math.cos(b_zeta / 6) + .25f * (1.0f - (float) Math.cos((b_zeta - 84.4f) * 3.1415 * 5.714f)));
             else if ((b_zeta - 84.75 > 0) && (b_zeta - 84.75 < 1.5))
-                gl.glTranslatef(0, 1, -13.0f + (3.0f + .3f * (b_zeta - 80) * (b_zeta - 80)) * (float)Math.cos(b_zeta / 6) + 1.5f * (1.0f - (float)Math.cos((b_zeta - 84.75f) * 3.1415 * 1.33f)));
+                gl.glTranslatef(0, 1, -13.0f + (3.0f + .3f * (b_zeta - 80) * (b_zeta - 80)) * (float) Math.cos(b_zeta / 6) + 1.5f * (1.0f - (float) Math.cos((b_zeta - 84.75f) * 3.1415 * 1.33f)));
             else
-                gl.glTranslatef(0, 1, -13.0f + (3.0f + .3f * (b_zeta - 80) * (b_zeta - 80)) * (float)Math.cos(b_zeta / 6));
-            gl.glRotatef(100.0f + (float)Math.sin((b_zeta - 80.0f) / 7.0f) * (float)Math.sin((b_zeta - 80.0f) / 7.0f) * 80.0f, 1.0f, 0.0f, 0.0f);
+                gl.glTranslatef(0, 1, -13.0f + (3.0f + .3f * (b_zeta - 80) * (b_zeta - 80)) * (float) Math.cos(b_zeta / 6));
+            gl.glRotatef(100.0f + (float) Math.sin((b_zeta - 80.0f) / 7.0f) * (float) Math.sin((b_zeta - 80.0f) / 7.0f) * 80.0f, 1.0f, 0.0f, 0.0f);
             if (b_zeta < 88.4) {
-                gl.glRotatef(80.0f * 5.0f + (b_zeta - 80.0f) * 8.9f * (float)Math.cos((b_zeta - 80) / 10), 0, 0, 1);
+                gl.glRotatef(80.0f * 5.0f + (b_zeta - 80.0f) * 8.9f * (float) Math.cos((b_zeta - 80) / 10), 0, 0, 1);
             } else {
                 gl.glRotatef(90, 0, 0, 1);
             }
@@ -297,10 +294,10 @@ final class Scene3 implements Scene {
             gl.glRotatef(180, 1, 0, 0);
             if ((b_zeta + offset) < 2) {
                 gl.glColor4f(1, 1, 1, (b_zeta + offset) / 4.0f);
-                b_drawrect(gl, .5f, (4.5f - 4.0f * (float)Math.sin((b_zeta + offset) * 3.1415f / 4.0f)));
+                b_drawrect(gl, .5f, (4.5f - 4.0f * (float) Math.sin((b_zeta + offset) * 3.1415f / 4.0f)));
             } else if ((b_zeta + offset) > 8) {
                 gl.glColor4f(1, 1, 1, 1 - (b_zeta + offset - 8) / 2.5f);
-                b_drawrect(gl, .5f, (.5f + 1.0f * (1.0f - (float)Math.cos((b_zeta + offset - 8) * 3.1415f / 4.0f))));
+                b_drawrect(gl, .5f, (.5f + 1.0f * (1.0f - (float) Math.cos((b_zeta + offset - 8) * 3.1415f / 4.0f))));
             } else {
                 gl.glColor4f(1, 1, 1, (b_zeta + offset) / 4.0f);
                 b_drawrect(gl, .5f, .5f);
@@ -312,7 +309,7 @@ final class Scene3 implements Scene {
             gl.glColor4f((b_zeta + offset) / 4, (b_zeta + offset) / 4, (b_zeta + offset) / 4, 1);
             gl.glRotatef(180, 1, 0, 0);
             if ((b_zeta + offset) > 8)
-                b_drawrect(gl, 1.5f - (b_zeta + offset) / 20.0f, (.5f + 1.0f * (1.0f - (float)Math.cos((b_zeta + offset - 8) * 3.1415 / 4.0f))));
+                b_drawrect(gl, 1.5f - (b_zeta + offset) / 20.0f, (.5f + 1.0f * (1.0f - (float) Math.cos((b_zeta + offset - 8) * 3.1415 / 4.0f))));
             else
                 b_drawrect(gl, 1.5f - (b_zeta + offset) / 20.0f, .5f);
             gl.glDisable(GL2.GL_BLEND);
@@ -336,7 +333,7 @@ final class Scene3 implements Scene {
                             float_y = y / 127.0f;
                             float_xb = (x + 1) / 127.0f;
                             float_yb = (y + 1) / 127.0f;
-                            float raiser = (float)Math.sin(b_count * 2 * 3.14 / 360.0);
+                            float raiser = (float) Math.sin(b_count * 2 * 3.14 / 360.0);
                             gl.glTexCoord2f(float_x, float_y);
                             gl.glVertex3f(b_points[x][y][0], b_points[x][y][1], b_points[x][y][2] * raiser);
                             gl.glTexCoord2f(float_x, float_yb);
@@ -377,15 +374,15 @@ final class Scene3 implements Scene {
             if (b_zeta < -9)
                 gl.glColor4f(1.0f, 1.0f, 1.0f, -b_zeta - 9.0f);
             else if (b_zeta < -2.5f)
-                gl.glColor4f(1.0f, 1.0f, 1.0f, (float)Math.sin((b_zeta - 2.5) * 3.1415f));
+                gl.glColor4f(1.0f, 1.0f, 1.0f, (float) Math.sin((b_zeta - 2.5) * 3.1415f));
             else if (b_zeta < 6.5f)
-                gl.glColor4f(1.0f, 1.0f, 1.0f, (float)Math.sin((b_zeta - 5.5f) * 3.1415f));
+                gl.glColor4f(1.0f, 1.0f, 1.0f, (float) Math.sin((b_zeta - 5.5f) * 3.1415f));
             else if (b_zeta < 38.0f)
-                gl.glColor4f(1.0f, 1.0f, 1.0f, .5f * (1.0f - (float)Math.cos((b_zeta - 36.0f) * 3.1415f)));
+                gl.glColor4f(1.0f, 1.0f, 1.0f, .5f * (1.0f - (float) Math.cos((b_zeta - 36.0f) * 3.1415f)));
             else if (b_zeta < 48.35f)
-                gl.glColor4f(1.0f, 1.0f, 1.0f, .85f * (float)Math.sin((b_zeta - 47.35f) * 3.1415f));
+                gl.glColor4f(1.0f, 1.0f, 1.0f, .85f * (float) Math.sin((b_zeta - 47.35f) * 3.1415f));
             else if (b_zeta < 60.35f)
-                gl.glColor4f(1.0f, 1.0f, 1.0f, (float)Math.sin((b_zeta - 58.35f) * 3.1415f / 2));
+                gl.glColor4f(1.0f, 1.0f, 1.0f, (float) Math.sin((b_zeta - 58.35f) * 3.1415f / 2));
             else
                 gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f - (b_zeta - 86.35f));
             if (b_switch) gl.glScalef(1, -1, 1);
@@ -413,11 +410,12 @@ final class Scene3 implements Scene {
                 for (int az = 0; az < 6; az++) {
                     float arg = (b_zeta - 92.5f - (float) az / 10.0f) * 3.1415f / 10.0f;
                     gl.glPushMatrix();
-                    gl.glTranslatef(3.0f - 4.65f * (float)Math.sin(arg),
-                            -0.075f * (float)Math.sin(arg),
-                            -15.0f * (float)Math.sin(arg));
-                    if (az == 0) gl.glColor4f(1, 1, 1, 1); else gl.glColor4f(1, 1, 1, (.6f - (float) az * .1f) * (1.0f - (b_zeta - 92.5f) / 5.0f));
-                    gl.glRotatef(60 - 60 * (float)Math.sin((b_zeta - 92.5 - (float) az / 10.0f) * 3.1415 / 10), 0, 1, 0);
+                    gl.glTranslatef(3.0f - 4.65f * (float) Math.sin(arg),
+                            -0.075f * (float) Math.sin(arg),
+                            -15.0f * (float) Math.sin(arg));
+                    if (az == 0) gl.glColor4f(1, 1, 1, 1);
+                    else gl.glColor4f(1, 1, 1, (.6f - (float) az * .1f) * (1.0f - (b_zeta - 92.5f) / 5.0f));
+                    gl.glRotatef(60 - 60 * (float) Math.sin((b_zeta - 92.5 - (float) az / 10.0f) * 3.1415 / 10), 0, 1, 0);
                     b_drawrect(gl, 4.9f, 2.5f);
                     gl.glPopMatrix();
                 }
@@ -461,11 +459,12 @@ final class Scene3 implements Scene {
                 for (int az = 0; az < 6; az++) {
                     float arg = (b_zeta - 95.0f - (float) az / 10.0f) * 3.1415f / 10.0f;
                     gl.glPushMatrix();
-                    gl.glTranslatef(-4.0f + 6.17f * (float)Math.sin(arg),
-                            0.05f * (float)Math.sin(arg),
-                            -15.0f * (float)Math.sin(arg));
-                    if (az == 0) gl.glColor4f(1, 1, 1, 1); else gl.glColor4f(1, 1, 1, (.6f - (float) az * .1f) * (1.0f - (b_zeta - 95.0f) / 5.0f));
-                    gl.glRotatef(-60 + 60 * (float)Math.sin((b_zeta - 95.0 - (float) az / 10.0f) * 3.1415 / 10), 0, 1, 0);
+                    gl.glTranslatef(-4.0f + 6.17f * (float) Math.sin(arg),
+                            0.05f * (float) Math.sin(arg),
+                            -15.0f * (float) Math.sin(arg));
+                    if (az == 0) gl.glColor4f(1, 1, 1, 1);
+                    else gl.glColor4f(1, 1, 1, (.6f - (float) az * .1f) * (1.0f - (b_zeta - 95.0f) / 5.0f));
+                    gl.glRotatef(-60 + 60 * (float) Math.sin((b_zeta - 95.0 - (float) az / 10.0f) * 3.1415 / 10), 0, 1, 0);
                     b_drawrect(gl, 5.6f, 5.35f);
                     gl.glPopMatrix();
                 }
@@ -563,9 +562,9 @@ final class Scene3 implements Scene {
                 gl.glColor4f(.4f, .4f, .4f, 1);
             b_Text[14].use(gl);
             if ((b_zeta - offset) < 2)
-                b_drawrect(gl, (4.55f - 4.0f * (float)Math.sin((b_zeta - offset) * 3.1415 / 4.0f)), .25f);
+                b_drawrect(gl, (4.55f - 4.0f * (float) Math.sin((b_zeta - offset) * 3.1415 / 4.0f)), .25f);
             else if ((b_zeta - offset) > 10)
-                b_drawrect(gl, (.55f + 1.0f * (1.0f - (float)Math.cos((b_zeta - offset - 10) * 3.1415 / 4.0f))), .25f);
+                b_drawrect(gl, (.55f + 1.0f * (1.0f - (float) Math.cos((b_zeta - offset - 10) * 3.1415 / 4.0f))), .25f);
             else
                 b_drawrect(gl, .55f, .25f);
             gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE);
@@ -577,9 +576,9 @@ final class Scene3 implements Scene {
             else
                 gl.glColor4f(1, 1, 1, .66f);
             if ((b_zeta - offset) < 2)
-                b_drawrect(gl, (4.5f - 4.0f * (float)Math.sin((b_zeta - offset) * 3.1415 / 4.0f)), .25f);
+                b_drawrect(gl, (4.5f - 4.0f * (float) Math.sin((b_zeta - offset) * 3.1415 / 4.0f)), .25f);
             else if ((b_zeta - offset) > 10)
-                b_drawrect(gl, (.5f + 1.0f * (1.0f - (float)Math.cos((b_zeta - offset - 10) * 3.1415 / 4.0f))), .25f);
+                b_drawrect(gl, (.5f + 1.0f * (1.0f - (float) Math.cos((b_zeta - offset - 10) * 3.1415 / 4.0f))), .25f);
             else
                 b_drawrect(gl, .5f, .25f);
             gl.glDisable(GL2.GL_BLEND);
@@ -600,7 +599,7 @@ final class Scene3 implements Scene {
             float zoomer;
             //if (b_zeta-offset<10) zoomer=1-.1*(1.0f-(float)Math.cos((b_zeta-offset)*3.1415/5));
             if (b_zeta - offset < 10)
-                zoomer = .8f + .1f * (1.0f - (float)Math.cos((b_zeta - offset) * 3.1415 / 10));
+                zoomer = .8f + .1f * (1.0f - (float) Math.cos((b_zeta - offset) * 3.1415 / 10));
             else
                 zoomer = 1;
             b_zeta = b_zeta - offset - 10.0f;
@@ -615,7 +614,7 @@ final class Scene3 implements Scene {
                 b_Text[8].use(gl);
                 float sizer;
                 if (-b_zeta > 8.2) {
-                    sizer = (float)Math.sin((b_zeta + 10.2) * 3.1415f / 4.0f);
+                    sizer = (float) Math.sin((b_zeta + 10.2) * 3.1415f / 4.0f);
                     gl.glColor4f(1, 1, 1, sizer);
                 } else {
                     sizer = 1.0f;
@@ -640,7 +639,7 @@ final class Scene3 implements Scene {
                 b_Text[9].use(gl);
                 float sizer;
                 if (-b_zeta > 7.2) {
-                    sizer = (float)Math.sin((b_zeta + 9.2) * 3.1415f / 4.0f);
+                    sizer = (float) Math.sin((b_zeta + 9.2) * 3.1415f / 4.0f);
                     gl.glColor4f(1, 1, 1, sizer);
                 } else {
                     sizer = 1.0f;
@@ -664,7 +663,7 @@ final class Scene3 implements Scene {
                 b_Text[10].use(gl);
                 float sizer;
                 if (-b_zeta > 6.2) {
-                    sizer = (float)Math.sin((b_zeta + 8.2) * 3.1415f / 4.0f);
+                    sizer = (float) Math.sin((b_zeta + 8.2) * 3.1415f / 4.0f);
                     gl.glColor4f(1, 1, 1, sizer);
                 } else {
                     sizer = 1.0f;
@@ -688,7 +687,7 @@ final class Scene3 implements Scene {
                 b_Text[11].use(gl);
                 float sizer;
                 if (-b_zeta > 5.2) {
-                    sizer = (float)Math.sin((b_zeta + 7.2) * 3.1415f / 4.0f);
+                    sizer = (float) Math.sin((b_zeta + 7.2) * 3.1415f / 4.0f);
                     gl.glColor4f(1, 1, 1, sizer);
                 } else {
                     sizer = 1.0f;
@@ -712,7 +711,7 @@ final class Scene3 implements Scene {
                 b_Text[12].use(gl);
                 float sizer;
                 if (-b_zeta > 4.2) {
-                    sizer = (float)Math.sin((b_zeta + 6.2) * 3.1415f / 4.0f);
+                    sizer = (float) Math.sin((b_zeta + 6.2) * 3.1415f / 4.0f);
                     gl.glColor4f(1, 1, 1, sizer);
                 } else {
                     sizer = 1.0f;
@@ -746,9 +745,9 @@ final class Scene3 implements Scene {
             gl.glTranslatef(0, 0, -1.25f);
             float rot;
             if (-b_zeta > 6.2)
-                rot = 1.0f - (float)Math.sin((b_zeta + 10.2) * 3.1415 / 8.0f);
+                rot = 1.0f - (float) Math.sin((b_zeta + 10.2) * 3.1415 / 8.0f);
             else if ((b_zeta + 10) > 10.0f)
-                rot = -.5f * (1.0f - (float)Math.cos((b_zeta) * 3.1415f / 10.0f));
+                rot = -.5f * (1.0f - (float) Math.cos((b_zeta) * 3.1415f / 10.0f));
             else
                 rot = 0.0f;
             gl.glRotatef(90.0f * rot, 1, 0, 0);
